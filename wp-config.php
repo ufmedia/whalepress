@@ -113,16 +113,7 @@ define( 'WP_DEBUG_DISPLAY', !!getenv_docker('WP_DEBUG_DISPLAY', '') );
 define( 'WP_DISABLE_FATAL_ERROR_HANDLER', !!getenv_docker('WP_DISABLE_FATAL_ERROR_HANDLER', '') );
 define( 'WP_ENVIRONMENT_TYPE', getenv_docker('WP_ENVIRONMENT_TYPE', 'local') );
 
-/**
- * WordPress Multisite settings
- */
-define('WP_ALLOW_MULTISITE', !!getenv_docker('WP_ALLOW_MULTISITE', ''));
-define( 'MULTISITE', true );
-define( 'SUBDOMAIN_INSTALL', false );
-define( 'DOMAIN_CURRENT_SITE', 'localhost:8087' );
-define( 'PATH_CURRENT_SITE', '/' );
-define( 'SITE_ID_CURRENT_SITE', 1 );
-define( 'BLOG_ID_CURRENT_SITE', 1 );
+
 //Add the additional configutations from setup below.
 
 /* Add any custom values between this line and the "stop editing" line. */
