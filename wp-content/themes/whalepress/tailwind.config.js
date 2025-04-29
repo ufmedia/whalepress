@@ -5,7 +5,7 @@ module.exports = {
 	content: [
 		'./*/*.{twig,php}',
 		'./**/*.{twig,php}',
-		//'./public/src/js/*.js',
+		'./public/src/js/*.js',
 		'./safelist.txt',
 		'!./node_modules/**',
 		'!./vendor/**',
@@ -14,7 +14,5 @@ module.exports = {
 	theme: {
 		extend: {},
 	},
-	plugins: [
-		require('@tailwindcss/typography'),
-	],
+	plugins: [],
 };

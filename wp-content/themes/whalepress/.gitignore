@@ -1,3 +1,4 @@
 node_modules
 PHPCS-report.txt
 includes/vendor
+build
