@@ -1,8 +1,5 @@
 name: OWASPZAP Basline
 on:
-  #schedule:
-    # Every 15 minutes
-   # - cron: "*/15 * * * *"
   workflow_dispatch:
     inputs:
       target:

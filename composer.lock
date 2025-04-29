@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "b989ec2cb27386983df1559d911672d1",
+    "content-hash": "28ec8eb96f2f5134319fb65f1fecebc5",
     "packages": [
         {
             "name": "composer/installers",
@@ -169,6 +169,24 @@
             },
             "type": "wordpress-plugin",
             "homepage": "https://wordpress.org/plugins/classic-editor/"
+        },
+        {
+            "name": "wpackagist-plugin/switcheroo",
+            "version": "1.0.2",
+            "source": {
+                "type": "svn",
+                "url": "https://plugins.svn.wordpress.org/switcheroo/",
+                "reference": "tags/1.0.2"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://downloads.wordpress.org/plugin/switcheroo.1.0.2.zip"
+            },
+            "require": {
+                "composer/installers": "^1.0 || ^2.0"
+            },
+            "type": "wordpress-plugin",
+            "homepage": "https://wordpress.org/plugins/switcheroo/"
         }
     ],
     "packages-dev": [],

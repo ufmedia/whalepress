@@ -39,16 +39,16 @@
   "author": "John Thompson",
   "license": "ISC",
   "devDependencies": {
-    "@commitlint/cli": "^19.7.1",
-    "@commitlint/config-conventional": "^19.7.1",
-    "@semantic-release/github": "^11.0.1",
+    "@commitlint/cli": "^19.8.0",
+    "@commitlint/config-conventional": "^19.8.0",
+    "@semantic-release/github": "^11.0.2",
     "chalk": "^5.4.1",
-    "commitlint": "^19.7.1",
-    "cypress": "^14.0.1",
-    "dockerode": "^4.0.4",
+    "commitlint": "^19.8.0",
+    "cypress": "^14.3.2",
+    "dockerode": "^4.0.6",
     "husky": "^9.1.7",
-    "inquirer": "^12.4.1",
+    "inquirer": "^12.6.0",
     "random-words": "^2.0.1",
-    "semantic-release": "^24.2.1"
+    "semantic-release": "^24.2.3"
   }
 }

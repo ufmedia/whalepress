@@ -15,7 +15,9 @@
         }
     ],
     "require": {
-        "wpackagist-plugin/classic-editor": "^1.6"
+        "wpackagist-plugin/classic-editor": "*",
+	"wpackagist-plugin/switcheroo": "*"
+
     },
     "config": {
         "vendor-dir": "wp-content/vendor",
