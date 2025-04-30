@@ -23,8 +23,8 @@ class Init {
 	 * Add hooks for theme initialization.
 	 */
 	public function __construct() {
-		add_action( 'wp_enqueue_scripts', array( $this, 'dokpress_enqueue_scripts' ) );
-		add_action( 'init', array( $this, 'dokpress_register_menus' ) );
+		add_action( 'wp_enqueue_scripts', array( $this, 'whalepress_enqueue_scripts' ) );
+		add_action( 'init', array( $this, 'whalepress_register_menus' ) );
 	}
 
 	/**
@@ -32,11 +32,11 @@ class Init {
 	 *
 	 * @return void
 	 */
-	public function dokpress_enqueue_scripts(): void {
+	public function whalepress_enqueue_scripts(): void {
 		$theme = wp_get_theme();
 
-		wp_enqueue_style( 'dokpress-styles', $this->dokpress_asset( 'style-index.css' ), __return_empty_array(), $theme->get( 'Version' ) ); // Theme styles.
-		wp_enqueue_script( 'dokpress-scripts', $this->dokpress_asset( 'index.js' ), __return_empty_array(), $theme->get( 'Version' ), true ); // Theme scripts.
+		wp_enqueue_style( 'dokpress-styles', $this->whalepress_asset( 'style-index.css' ), null, $theme->get( 'Version' ) ); // Theme styles.
+		wp_enqueue_script( 'dokpress-scripts', $this->whalepress_asset( 'index.js' ), null, $theme->get( 'Version' ), true ); // Theme scripts.
 	}
 
 	/**
@@ -44,7 +44,7 @@ class Init {
 	 *
 	 * @return void
 	 */
-	public function dokpress_register_menus(): void {
+	public function whalepress_register_menus(): void {
 		register_nav_menu( 'main-menu', __( 'Main Menu' ) );
 	}
 
@@ -54,7 +54,7 @@ class Init {
 	 * @param  string $path Path to asset.
 	 * @return string
 	 */
-	protected function dokpress_asset( $path ) {
+	protected function whalepress_asset( $path ) {
 		if ( wp_get_environment_type() === 'production' ) {
 			return get_stylesheet_directory_uri() . '/public/build/' . $path;
 		}
