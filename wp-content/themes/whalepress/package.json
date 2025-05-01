@@ -23,18 +23,19 @@
 		"@eslint/js": "^9.25.1",
 		"@tailwindcss/postcss": "^4.1.4",
 		"@tailwindcss/typography": "0.5.16",
+		"@tailwindcss/vite": "^4.1.5",
 		"@wordpress/eslint-plugin": "^22.8.0",
 		"browser-sync": "^3.0.4",
 		"concurrently": "^9.1.2",
 		"eslint": "^9.25.1",
 		"eslint-plugin-prettier": "^5.2.6",
+		"globals": "^16.0.0",
 		"postcss": "^8.5.3",
 		"sass": "^1.87.0",
 		"stylelint": "^16.19.1",
 		"stylelint-config-standard-scss": "^14.0.0",
 		"tailwindcss": "^4.1.4",
 		"utopia-core-scss": "^1.2.1",
-		"@tailwindcss/vite": "^4.1.5",
 		"vite": "^6.3.4"
 	}
 }
