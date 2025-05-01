@@ -1,0 +1,43 @@
+/* stylelint-disable */
+@use "utopia-core-scss/src/utopia" as utopia;
+
+/* @link https://utopia.fyi/type/calculator?c=320,18,1.2,1240,20,1.25,5,2,&s=0.75|0.5|0.25,1.5|2|3|4|6,s-l&g=s,l,xl,12 */
+
+@layer base {
+  @include utopia.generateTypeScale((
+    "minWidth": 320,
+    "maxWidth": 1240,
+    "minFontSize": 18,
+    "maxFontSize": 20,
+    "minTypeScale": 1.2,
+    "maxTypeScale": 1.25,
+    "positiveSteps": 5,
+    "negativeSteps": 2,
+  ));
+}
+
+@theme {
+  /* core steps */
+  --spacing-3xs:    var(--space-3xs);
+  --spacing-2xs:    var(--space-2xs);
+  --spacing-xs:     var(--space-xs);
+  --spacing-s:      var(--space-s);
+  --spacing-m:      var(--space-m);
+  --spacing-l:      var(--space-l);
+  --spacing-xl:     var(--space-xl);
+  --spacing-2xl:    var(--space-2xl);
+  --spacing-3xl:    var(--space-3xl);
+
+  /* one-up pairs */
+  --spacing-3xs-2xs: var(--space-3xs-2xs);
+  --spacing-2xs-xs:  var(--space-2xs-xs);
+  --spacing-xs-s:    var(--space-xs-s);
+  --spacing-s-m:     var(--space-s-m);
+  --spacing-m-l:     var(--space-m-l);
+  --spacing-l-xl:    var(--space-l-xl);
+  --spacing-xl-2xl:  var(--space-xl-2xl);
+  --spacing-2xl-3xl: var(--space-2xl-3xl);
+
+  /* custom */
+  --spacing-s-l:     var(--space-s-l);
+}

@@ -1,0 +1,29 @@
+@use 'utopia-core-scss/src/utopia' as utopia;
+
+/* @link https://utopia.fyi/type/calculator?c=320,18,1.2,1240,20,1.25,5,2,&s=0.75|0.5|0.25,1.5|2|3|4|6,s-l&g=s,l,xl,12 */
+
+@layer base {
+  :root {
+    @include utopia.generateTypeScale((
+      "minWidth":     320,
+      "maxWidth":     1240,
+      "minFontSize":  18,
+      "maxFontSize":  20,
+      "minTypeScale": 1.2,
+      "maxTypeScale": 1.25,
+      "positiveSteps": 5,
+      "negativeSteps": 2,
+    ));
+  }
+}
+
+@theme { 
+  --text-step--2: var(--step--2);
+  --text-step--1: var(--step--1);
+  --text-step-0: var(--step-0);
+  --text-step-1: var(--step-1);
+  --text-step-2: var(--step-2);
+  --text-step-3: var(--step-3);
+  --text-step-4: var(--step-4);
+  --text-step-5: var(--step-5);
+}

@@ -35,7 +35,7 @@ class Init {
 	public function whalepress_enqueue_scripts(): void {
 		$theme = wp_get_theme();
 
-		wp_enqueue_style( 'dokpress-styles', $this->whalepress_asset( 'style-index.css' ), null, $theme->get( 'Version' ) ); // Theme styles.
+		wp_enqueue_style( 'dokpress-styles', $this->whalepress_asset( 'index.css' ), null, $theme->get( 'Version' ) ); // Theme styles.
 		wp_enqueue_script( 'dokpress-scripts', $this->whalepress_asset( 'index.js' ), null, $theme->get( 'Version' ), true ); // Theme scripts.
 	}
 

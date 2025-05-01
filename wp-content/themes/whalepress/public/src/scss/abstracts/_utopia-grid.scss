@@ -1,0 +1,15 @@
+/* stylelint-disable */
+@layer base {
+    :root {
+      --grid-max-width: 77.50rem;
+      --grid-gutter:    var(--space-s-l); /* or inline clamp(...) if you prefer */
+      --grid-columns:   12;
+    }
+  }
+
+@theme {
+  --max-w-grid: var(--grid-max-width);
+  --px-grid: var(--grid-gutter);
+  --gap-grid: var(--grid-gutter);
+  --grid-template-columns-fluid: repeat(var(--grid-columns), minmax(0, 1fr));
+}

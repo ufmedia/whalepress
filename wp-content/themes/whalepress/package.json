@@ -5,11 +5,11 @@
 	"engines": {
 		"node": ">=22.0.0"
 	},
+	"type": "module",
 	"scripts": {
-		"build:assets": "webpack --mode production",
-		"build": "npm run lint:js:fix && npm run lint:css:fix && npm run build:assets",
+		"build": "vite build --config vite.config.js",
 		"dev": "webpack --mode development",
-		"watch": "concurrently \"webpack --watch --mode development\" \"browser-sync start --proxy 'http://localhost:8088' --files 'public/dist/css/*.css, public/dist/js/*.js, **/*.php, **/*.twig' --port 3002\"",
+		"watch": "concurrently \"vite build --watch --config vite.config.js\" \"browser-sync start --proxy 'http://localhost:8088' --files 'public/dist/css/*.css, public/dist/js/*.js, **/*.php, **/*.twig' --port 3002\"",
 		"lint:js": "eslint 'public/src/js/**/*.js'",
 		"lint:js:fix": "eslint 'public/src/js/**/*.js' --fix",
 		"lint:php": "./includes/vendor/bin/phpcs --report-file=PHPCS-report.txt --ignore=*/vendor/*,tests,build,*/node_modules/* --extensions=php --standard=WordPress .",
@@ -26,28 +26,15 @@
 		"@wordpress/eslint-plugin": "^22.8.0",
 		"browser-sync": "^3.0.4",
 		"concurrently": "^9.1.2",
-		"css-loader": "^7.1.2",
 		"eslint": "^9.25.1",
 		"eslint-plugin-prettier": "^5.2.6",
-		"glob-all": "^3.3.1",
-		"globals": "^16.0.0",
-		"ignore-loader": "^0.1.2",
-		"mini-css-extract-plugin": "^2.9.2",
 		"postcss": "^8.5.3",
-		"postcss-import": "16.1.0",
-		"postcss-loader": "8.1.1",
-		"postcss-nested": "7.0.2",
-		"postcss-nested-ancestors": "3.0.0",
-		"postcss-preset-env": "10.1.6",
-		"prettier": "^3.5.3",
 		"sass": "^1.87.0",
-		"sass-loader": "^16.0.5",
-		"style-loader": "^4.0.0",
 		"stylelint": "^16.19.1",
 		"stylelint-config-standard-scss": "^14.0.0",
 		"tailwindcss": "^4.1.4",
-		"webpack": "^5.99.7",
-		"webpack-cli": "^6.0.1",
-		"webpack-merge": "^6.0.1"
+		"utopia-core-scss": "^1.2.1",
+		"@tailwindcss/vite": "^4.1.5",
+		"vite": "^6.3.4"
 	}
 }
