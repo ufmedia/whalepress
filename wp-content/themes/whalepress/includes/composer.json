@@ -9,7 +9,7 @@
 		}
 	},
 	"require-dev": {
-		"squizlabs/php_codesniffer": "*",
+		"squizlabs/php_codesniffer": "3.10.2",
 		"wp-coding-standards/wpcs": "*"
 	}
 }

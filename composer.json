@@ -16,7 +16,7 @@
     ],
     "require": {
         "wpackagist-plugin/classic-editor": "*",
-	"wpackagist-plugin/switcheroo": "*"
+	    "wpackagist-plugin/switcheroo": "*"
 
     },
     "config": {

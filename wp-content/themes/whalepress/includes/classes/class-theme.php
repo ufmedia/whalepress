@@ -40,8 +40,9 @@ class Theme extends Site {
 	 * @param string $context context['this'] Being the Twig's {{ this }}.
 	 */
 	public function add_to_context( $context ) {
-		$context['menu'] = Timber::get_menu( 'main-menu' );
-		$context['site'] = $this;
+		$context['menu']        = Timber::get_menu( 'main-menu' );
+		$context['site']        = $this;
+		$context['app_version'] = getenv( 'APP_VERSION' ) ? getenv( 'APP_VERSION' ) : 'dev';
 		return $context;
 	}
 

@@ -1,34 +1,42 @@
-import { defineConfig } from 'vite';
-import tailwindcss from '@tailwindcss/vite';
-import path from 'path';
+import { defineConfig } from "vite";
+import tailwindVite from "@tailwindcss/vite";
+import path from "path";
+import autoprefixer from "autoprefixer";
+import tailwindPostCss from '@tailwindcss/postcss';
 
 export default defineConfig({
-  plugins: [tailwindcss()],
+  plugins: [
+    tailwindVite()
+  ],
   css: {
+    postcss: {
+      plugins: [
+        tailwindPostCss(),
+        autoprefixer
+      ],
+    },
     preprocessorOptions: {
       scss: {
-        includePaths: [path.resolve(__dirname, 'node_modules')],
+        api: "modern-compiler",
       },
     },
   },
-  root: path.resolve(__dirname, 'public'),
   build: {
-    outDir: 'build',
-    publicDir: false,
+    outDir: "dist",
     emptyOutDir: true,
     manifest: true,
     cssCodeSplit: true,
     rollupOptions: {
       input: {
-        main: '/src/js/index.js',
+        main: path.resolve(__dirname, "src/js/index.js"),
       },
       output: {
-        entryFileNames: 'index.js',
+        entryFileNames: "index.js",
         assetFileNames: ({ filename }) => {
-          if (filename && filename.endsWith('.css')) {
-            return 'style-index.css';
+          if (filename && filename.endsWith(".css")) {
+            return "style-index.css";
           }
-          return 'index.[ext]';
+          return "index.[ext]";
         },
       },
     },

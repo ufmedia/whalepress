@@ -25,6 +25,7 @@ class Init {
 	public function __construct() {
 		add_action( 'wp_enqueue_scripts', array( $this, 'whalepress_enqueue_scripts' ) );
 		add_action( 'init', array( $this, 'whalepress_register_menus' ) );
+				add_action( 'init', array( $this, 'whalepress_blocks' ) );
 	}
 
 	/**
@@ -33,10 +34,15 @@ class Init {
 	 * @return void
 	 */
 	public function whalepress_enqueue_scripts(): void {
-		$theme = wp_get_theme();
 
-		wp_enqueue_style( 'dokpress-styles', $this->whalepress_asset( 'index.css' ), null, $theme->get( 'Version' ) ); // Theme styles.
-		wp_enqueue_script( 'dokpress-scripts', $this->whalepress_asset( 'index.js' ), null, $theme->get( 'Version' ), true ); // Theme scripts.
+		$app_version = getenv( 'APP_VERSION' ) ? getenv( 'APP_VERSION' ) : 'dev';
+
+		if ( 'dev' !== $app_version ) {
+
+			wp_enqueue_style( 'whalepress-styles', $this->whalepress_asset( 'index.css' ), null, $this->theme->get( 'Version' ) ); // Theme styles.
+			wp_enqueue_script( 'whalepress-scripts', $this->whalepress_asset( 'index.js' ), null, $this->theme->get( 'Version' ), true ); // Theme scripts.
+
+		}
 	}
 
 	/**
@@ -60,6 +66,14 @@ class Init {
 		}
 
 		return add_query_arg( 'time', time(), get_stylesheet_directory_uri() . '/public/build/' . $path );
+	}
+
+	/**
+	 * Register blocks.
+	 *
+	 * @return void
+	 */
+	public function whalepress_blocks(): void {
 	}
 }
 

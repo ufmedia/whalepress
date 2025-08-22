@@ -1,0 +1,13 @@
+{
+  "version": 2,
+  "settings": {
+    "layout": {
+      "contentSize": "1200px",
+      "wideSize": "100%"
+    },
+    "typography": {
+      "fontSize": [],
+      "lineHeight": []
+    }
+  }
+}

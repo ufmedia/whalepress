@@ -1,0 +1,102 @@
+@mixin container {
+  @apply max-w-screen-xl! mx-auto px-6;
+}
+
+@mixin content-spacing {
+  @apply mb-2!;
+}
+
+@mixin content-padding {
+  @apply pr-12!;
+}
+
+// ––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––
+
+.wp-block-columns {
+  @include container;
+  @apply py-6 mb-0;
+
+  .wp-block-column {
+    p,
+    h2,
+    h3,
+    h4,
+    h5 {
+      @include content-padding;
+      @apply text-affinity-text;
+      @include content-spacing;
+    }
+  }
+}
+
+.wp-block-image {
+  @apply py-6;
+  @apply w-full;
+  @apply aspect-video;
+  @apply 2xl:translate-x-0 2xl:max-w-screen-xl 2xl:mx-auto 2xl:px-6;
+
+  img {
+    @apply rounded-bl-[3rem];
+    @apply object-cover;
+    @apply w-full;
+    @apply h-full;
+    @apply ml-6;
+    @apply xl:translate-x-[calc(50%-40rem)];
+    @apply 2xl:translate-x-0 2xl:ml-0;
+  }
+}
+
+#main {
+  @each $el in p, h1, h2, h3, h4, h5 {
+    & > #{$el} {
+      @include container;
+      @include content-spacing;
+
+      padding-right: clamp(2rem, 15vw, 6rem);
+    }
+  }
+
+  & > .wp-block-file,
+  & > .wp-block-buttons {
+    @include container;
+    @apply py-6;
+  }
+
+  .wp-block-separator {
+    @apply border-affinity my-12;
+    @include container;
+  }
+
+  strong {
+    @apply text-affinity;
+  }
+}
+
+.is-layout-flex {
+  @apply items-stretch!;
+}
+
+.wp-block-gallery {
+  @include container;
+  @apply py-6;
+  @apply pb-0;
+  @apply mb-0;
+}
+
+// 1) Override the WP default align-items on the flex container:
+.wp-block-gallery.is-layout-flex {
+  @apply items-stretch!; // → align-items: stretch !important
+  @apply max-w-screen-lg; // ensure the gallery does not exceed the max-width of the container
+}
+
+// 2) Force each <figure.wp-block-image> to fill that height…
+.wp-block-gallery.is-layout-flex .wp-block-image {
+  @apply self-stretch!; // → align-self: stretch
+  @apply flex items-center; // make each wrapper its own flex container and center the IMG vertically
+  @apply mb-0!; // remove the default margin-bottom
+  img {
+    @apply rounded-none!;
+    @apply px-1 lg:px-3;
+    @apply translate-x-[0] translate-y-[0];
+  }
+}

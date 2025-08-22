@@ -1,0 +1,59 @@
+
+h2 {
+  @apply text-step-2;
+  @apply leading-[160%]!;
+  @apply mb-6;
+  @apply font-bold;
+}
+
+h3 {
+  @apply text-step-1;
+  @apply leading-[160%]!;
+  @apply mb-6;
+  @apply font-bold;
+}
+
+h4 {
+  @apply text-step-0;
+  @apply leading-[160%]!;
+  @apply mb-6;
+  @apply font-bold;
+}
+
+h5 {
+  @apply text-step--1;
+  @apply leading-none;
+  @apply mb-6;
+  @apply font-bold;
+}
+
+p {
+  @apply text-step-0;
+  @apply leading-[160%]!;
+  @apply mb-6!;
+  @apply last:mb-12;
+}
+
+a {
+  @apply no-underline;
+}
+
+.has-small-font-size {
+  @apply text-step--1!;
+  @apply leading-none!;
+}
+
+.has-medium-font-size {
+  @apply text-step-1!;
+  @apply leading-[160%]!;
+}
+
+.has-large-font-size {
+  @apply text-step-4!;
+  @apply leading-none!;
+}
+
+.has-x-large-font-size {
+  @apply text-step-5!;
+  @apply leading-none!;
+}
