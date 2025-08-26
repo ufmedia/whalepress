@@ -1,6 +1,4 @@
- 
-x-www-volume:  
-  &www-volume
+x-www-volume: &www-volume
   type: bind
   source: ./
   target: /var/www/html/
@@ -18,7 +16,7 @@ services:
       MYSQL_DATABASE: ${MYSQL_DATABASE}
       MYSQL_USER: ${DB_USER}
       MYSQL_PASSWORD: ${MYSQL_ROOT_PASSWORD}
-    
+
   phpmyadmin:
     container_name: ${PROJECT_NAME}_phpmyadmin
     image: phpmyadmin/phpmyadmin
@@ -41,7 +39,7 @@ services:
     platform: linux/amd64
     build:
       context: ./
-      dockerfile: Dockerfile
+      dockerfile: Dockerfile.dev
       args:
         WP_VERSION: ${WP_VERSION}
     ports:
@@ -57,4 +55,4 @@ services:
       WORDPRESS_DEBUG: ${WORDPRESS_DEBUG}
       XDEBUG_CONFIG: client_host=${XDEBUG_CLIENT_HOST}
     volumes:
-      - *www-volume  
+      - *www-volume
