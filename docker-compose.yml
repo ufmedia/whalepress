@@ -1,7 +1,12 @@
-x-www-volume: &www-volume
+x-www-volume:  
+  &www-volume
   type: bind
   source: ./
   target: /var/www/html/
+
+volumes:
+  mysql_data:
+    name: ${PROJECT_NAME}_mysql_data
 
 services:
   db:
@@ -9,28 +14,13 @@ services:
     image: mysql:9.0.1
     platform: linux/amd64
     volumes:
-      - ./local/var/lib/mysql:/var/lib/mysql
+      - mysql_data:/var/lib/mysql
     restart: unless-stopped
     environment:
       MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
       MYSQL_DATABASE: ${MYSQL_DATABASE}
       MYSQL_USER: ${DB_USER}
       MYSQL_PASSWORD: ${MYSQL_ROOT_PASSWORD}
-
-  phpmyadmin:
-    container_name: ${PROJECT_NAME}_phpmyadmin
-    image: phpmyadmin/phpmyadmin
-    platform: linux/amd64
-    links:
-      - db
-    environment:
-      PMA_HOST: db
-      PMA_PORT: 3306
-      PMA_ARBITRARY: 1
-      UPLOAD_LIMIT: 2000M
-    restart: unless-stopped
-    ports:
-      - ${PHPMYADMIN_PORT}:80
 
   wordpress:
     container_name: ${PROJECT_NAME}_wordpress
@@ -39,7 +29,7 @@ services:
     platform: linux/amd64
     build:
       context: ./
-      dockerfile: Dockerfile.dev
+      dockerfile: Dockerfile
       args:
         WP_VERSION: ${WP_VERSION}
     ports:
