@@ -10,7 +10,7 @@
 # -----------------------------------------------------------------------------
 # Build Stage - Build theme front-end assets
 # -----------------------------------------------------------------------------
-FROM node:20 AS builder
+FROM node:25 AS builder
 WORKDIR /app
 COPY wp-content/themes/ wp-content/themes/
 RUN for theme in wp-content/themes/*/; do \
