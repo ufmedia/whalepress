@@ -59,6 +59,8 @@ jobs:
           context: .
           file: ./Dockerfile
           push: true
+          build-args: |
+            THEME_NAME=${{ vars.THEME_NAME }}
           tags: |
             ${{ env.IMAGE_NAME }}:latest
             ${{ env.IMAGE_NAME }}:${{ env.VERSION_TAG }}
