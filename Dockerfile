@@ -22,7 +22,8 @@ RUN for theme in wp-content/themes/*/; do \
       if [ -f "${theme}package.json" ]; then \
         echo "Building theme: ${theme}" && \
         cd "${theme}" && \
-        npm ci && \
+        rm -f package-lock.json && \
+        npm install --legacy-peer-deps && \
         npm run build && \
         rm -rf node_modules && \
         cd /app; \
