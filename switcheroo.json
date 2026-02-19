@@ -1,0 +1,9 @@
+[
+  {
+    "id": "petalon001",
+    "title": "Block Editor Output",
+    "status": "Experimental",
+    "description": "Enable output from the block editor in the frontend.",
+    "link": "#"
+  }
+]

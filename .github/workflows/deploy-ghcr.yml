@@ -2,7 +2,7 @@ name: Deploy to GHCR
 
 on:
   workflow_run:
-    workflows: ["DISABLED"] #Change to "Create Release"
+    workflows: ["Create Release"] #Change to "Create Release"
     types: [completed]
 
 jobs:
@@ -39,8 +39,8 @@ jobs:
           {
             "http-basic": {
               "connect.advancedcustomfields.com": {
-                "username": "${{ secrets.ACF_EMAIL }}",
-                "password": "${{ secrets.ACF_KEY }}"
+                "username": "${{ secrets.ACF_KEY }}",
+                "password": "http://localhost"
               }
             }
           }
@@ -57,7 +57,7 @@ jobs:
         uses: docker/build-push-action@v5
         with:
           context: .
-          file: Dockerfile
+          file: ./Dockerfile
           push: true
           tags: |
             ${{ env.IMAGE_NAME }}:latest

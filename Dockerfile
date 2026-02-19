@@ -11,58 +11,50 @@
 # Build Stage - Build theme front-end assets
 # -----------------------------------------------------------------------------
 FROM node:20 AS builder
+ARG THEME_NAME
 WORKDIR /app
-COPY wp-content/themes/affinity/package*.json wp-content/themes/affinity/
-RUN cd wp-content/themes/affinity && npm ci
-COPY wp-content/themes/affinity wp-content/themes/affinity
-RUN cd wp-content/themes/affinity && npm run build && rm -rf node_modules
+COPY wp-content/themes/${THEME_NAME}/ wp-content/themes/${THEME_NAME}/
+RUN if [ -f "wp-content/themes/${THEME_NAME}/package.json" ]; then \
+      echo "Building theme: ${THEME_NAME}" && \
+      cd "wp-content/themes/${THEME_NAME}" && \
+      npm ci && \
+      npm run build && \
+      rm -rf node_modules; \
+    fi
 
 # -----------------------------------------------------------------------------
-# Composer Stage - Install PHP dependencies for plugins and theme
+# Composer Stage - Install PHP dependencies
 # -----------------------------------------------------------------------------
-
 FROM composer:2 AS composer
-
-# 1) Plugins
 WORKDIR /app/plugins
 COPY composer.json composer.lock .env auth.json ./
 RUN composer install --no-dev --optimize-autoloader \
     && rm .env auth.json
 
-# 2) Theme dependencies (autoload)
-WORKDIR /app/theme-includes
-COPY wp-content/themes/affinity/includes/composer.json wp-content/themes/affinity/includes/composer.lock ./
-# Install into a dedicated vendor directory
-RUN composer install --no-dev --optimize-autoloader \
-    && echo "Vendor tree for theme includes:" \
-    && ls -R vendor \
-    && test -f vendor/autoload.php
-
-
-# -----------------------------------------------------------------------------
-# WP Core Stage - Pre-bake WordPress core into the image
-# -----------------------------------------------------------------------------
-FROM wordpress:latest AS wp-core
-
 # -----------------------------------------------------------------------------
 # Final Stage - Assemble WordPress container
 # -----------------------------------------------------------------------------
 FROM wordpress:latest
+ARG THEME_NAME=
 
-# 0) Copy pre-baked WP core so entrypoint skips runtime copy
-COPY --from=wp-core /usr/src/wordpress/ /var/www/html/
+# Install phpredis extension and WP-CLI
+RUN apt-get update \
+    && apt-get install -y --no-install-recommends libz-dev libssl-dev git unzip \
+    && pecl install redis \
+    && docker-php-ext-enable redis \
+    && apt-get clean \
+    && rm -rf /var/lib/apt/lists/*
 
-# 1) Copy built theme (with includes)
-COPY --from=builder /app/wp-content/themes/affinity /var/www/html/wp-content/themes/affinity
-# Merge in composer-installed includes/vendor
-COPY --from=composer /app/theme-includes/vendor /var/www/html/wp-content/themes/affinity/includes/vendor
+COPY --from=wordpress:cli /usr/local/bin/wp /usr/local/bin/wp
 
-# 2) Copy plugins
-COPY --from=composer /app/plugins/wp-content/plugins /var/www/html/wp-content/plugins/
-#COPY wp-content/plugins /var/www/html/wp-content/plugins/
+# Copy WordPress core files
+COPY --from=wordpress:latest /usr/src/wordpress/ /var/www/html/
 
-# 3) Ownership
-# RUN chown -R www-data:www-data /var/www/html/wp-content
+# Copy built theme and plugins
+COPY --chown=www-data:www-data --from=builder /app/wp-content/themes/${THEME_NAME} /var/www/html/wp-content/themes/${THEME_NAME}
+COPY --chown=www-data:www-data --from=composer /app/plugins/wp-content/plugins /var/www/html/wp-content/plugins/
+COPY --chown=www-data:www-data wp-content/plugins /var/www/html/wp-content/plugins/
+COPY --chown=www-data:www-data wp-config.php /var/www/html/wp-config.php
 
-# 4) Add custom PHP settings
-COPY local/uploads.ini /usr/local/etc/php/conf.d/uploads.ini
+# Add custom PHP settings
+COPY build/uploads.ini /usr/local/etc/php/conf.d/uploads.ini

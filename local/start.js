@@ -31,16 +31,6 @@ try {
     console.error(chalk.red('Error starting Docker containers:', error));
 }
 
-// Display border   
-displayBorder();
-
-//Start theme:watch npm script from pakagge.json one directory up from this script
-console.log(chalk.black.bgWhite('Starting Theme Scripts'));
-try {
-    execSync('npm run theme:watch --silent', { stdio: 'inherit' });
-} catch (error) {
-    console.error(chalk.red('Error starting theme:watch:', error));
-}
 
 // Display border
 displayBorder();

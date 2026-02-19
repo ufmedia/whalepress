@@ -17,10 +17,10 @@ services:
       - mysql_data:/var/lib/mysql
     restart: unless-stopped
     environment:
-      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
-      MYSQL_DATABASE: ${MYSQL_DATABASE}
-      MYSQL_USER: ${DB_USER}
-      MYSQL_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+      MYSQL_ROOT_PASSWORD: ${WORDPRESS_DB_PASSWORD}
+      MYSQL_DATABASE: ${WORDPRESS_DB_NAME}
+      MYSQL_USER: ${WORDPRESS_DB_USER}
+      MYSQL_PASSWORD: ${WORDPRESS_DB_PASSWORD}
 
   wordpress:
     container_name: ${PROJECT_NAME}_wordpress
@@ -29,9 +29,9 @@ services:
     platform: linux/amd64
     build:
       context: ./
-      dockerfile: Dockerfile
+      dockerfile: ./Dockerfile
       args:
-        WP_VERSION: ${WP_VERSION}
+        THEME_NAME: ${THEME_NAME}
     ports:
       - ${WP_PORT}:80
     env_file:
@@ -39,10 +39,13 @@ services:
     restart: unless-stopped
     environment:
       WORDPRESS_DB_HOST: db
-      WORDPRESS_DB_USER: ${DB_USER}
-      WORDPRESS_DB_PASSWORD: ${MYSQL_ROOT_PASSWORD}
-      WORDPRESS_DB_NAME: ${MYSQL_DATABASE}
-      WORDPRESS_DEBUG: ${WORDPRESS_DEBUG}
-      XDEBUG_CONFIG: client_host=${XDEBUG_CLIENT_HOST}
+      WORDPRESS_DB_USER: ${WORDPRESS_DB_USER}
+      WORDPRESS_DB_PASSWORD: ${WORDPRESS_DB_PASSWORD}
+      WORDPRESS_DB_NAME: ${WORDPRESS_DB_NAME}
+      WORDPRESS_TABLE_PREFIX: ${WORDPRESS_TABLE_PREFIX}
+      WP_DEBUG: ${WP_DEBUG}
+      WP_DISABLE_FATAL_ERROR_HANDLER: ${WP_DISABLE_FATAL_ERROR_HANDLER}
+      WP_DEBUG_LOG: ${WP_DEBUG_LOG}
+      WP_DEBUG_DISPLAY: ${WP_DEBUG_DISPLAY}
     volumes:
       - *www-volume

@@ -46,3 +46,4 @@ local/var
 cypress.env.json
 cypress/screenshots
 cypress/videos
+auth.json
