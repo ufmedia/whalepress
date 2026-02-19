@@ -2,19 +2,17 @@ version: '3.8'
 
 services:
   wordpress:
-    # Remove container_name for atomic deployments! 
-    # Having a fixed name prevents a second "Green" instance from starting.
-    image: ghcr.io/ufmedia/docker-wp-ottersurfboards.co.uk:latest
+    image: ghcr.io/[ORG]/[PACKAGE]:latest
     restart: always
     environment:
       # Database Configuration
-      WORDPRESS_DB_HOST: private-db-ufmedia-docker-do-user-10867521-0.g.db.ondigitalocean.com:25060
-      WORDPRESS_DB_USER: doadmin
-      WORDPRESS_DB_PASSWORD: [DO_PWD]
-      WORDPRESS_DB_NAME: otter_prd
+      WORDPRESS_DB_HOST: [DB_HOST]
+      WORDPRESS_DB_USER: [DB_USER]
+      WORDPRESS_DB_PASSWORD: [DB_PWD]
+      WORDPRESS_DB_NAME: [DB_NAME]
       WORDPRESS_DB_CHARSET: utf8
       WORDPRESS_DB_COLLATE: ""
-      WORDPRESS_TABLE_PREFIX: zxbSMi_
+      WORDPRESS_TABLE_PREFIX: wp_
       
       # Security Keys and Salts
       WORDPRESS_AUTH_KEY: "xK9vN2mR8wP5qL7hT4jF6nB3sY1cW0eZ8dG5uV4bX2aQ6mK9pL3fR7wT1hN5sC4j"
@@ -67,15 +65,16 @@ services:
       start_period: 30s
 
     labels:
+    # Assumes a Traefik setup
       - "traefik.enable=true"
       - "traefik.docker.network=web_gateway"
-      - "traefik.http.routers.ottersurfboards.rule=Host(`ottersurfboards.co.uk`) || Host(`www.ottersurfboards.co.uk`)"
-      - "traefik.http.routers.ottersurfboards.entrypoints=websecure"
-      - "traefik.http.routers.ottersurfboards.tls=true"
-      - "traefik.http.routers.ottersurfboards.tls.certresolver=letsencrypt"
-      - "traefik.http.services.ottersurfboards.loadbalancer.server.port=80"
+      - "traefik.http.routers.[DOMAIN]].rule=Host(`[DOMAIN]].co.uk`) || Host(`www.[DOMAIN]].co.uk`)"
+      - "traefik.http.routers.[DOMAIN]].entrypoints=websecure"
+      - "traefik.http.routers.[DOMAIN]].tls=true"
+      - "traefik.http.routers.[DOMAIN]].tls.certresolver=letsencrypt"
+      - "traefik.http.services.[DOMAIN]].loadbalancer.server.port=80"
       
-      # Cron configuration via Ofelia
+      # Assumes an Ofelia setup
       - "ofelia.enabled=true"
       - "ofelia.job-exec.wp-cron.schedule=@every 5m"
       - "ofelia.job-exec.wp-cron.command=wp cron event run --due-now"
