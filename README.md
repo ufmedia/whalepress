@@ -1,4 +1,4 @@
-![release workflow](https://github.com/ufmedia/WhalePress/actions/workflows/release.yml/badge.svg) ![lint-checks workflow](https://github.com/ufmedia/WhalePress/actions/workflows/lint-checks.yml/badge.svg) ![e2e workflow](https://github.com/ufmedia/WhalePress/actions/workflows/e2e-tests.yml/badge.svg) ![owasp basline workflow](https://github.com/ufmedia/WhalePress/actions/workflows/owasp.yml/badge.svg)
+![release workflow](https://github.com/ufmedia/WhalePress/actions/workflows/create-release.yml/badge.svg) ![lint-checks workflow](https://github.com/ufmedia/WhalePress/actions/workflows/lint-checks.yml/badge.svg) ![e2e workflow](https://github.com/ufmedia/WhalePress/actions/workflows/e2e-tests.yml/badge.svg) ![owasp basline workflow](https://github.com/ufmedia/WhalePress/actions/workflows/owasp.yml/badge.svg)
 
 ![GitHub contributors](https://img.shields.io/github/contributors-anon/ufmedia/dockpress) ![GitHub last commit (by committer)](https://img.shields.io/github/last-commit/ufmedia/dockpress)
 
