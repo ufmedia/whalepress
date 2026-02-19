@@ -16,6 +16,7 @@ on:
 jobs:
   cypress-tests:
     runs-on: ubuntu-latest
+    environment: ${{ github.event.inputs.environment }}
 
     steps:
         
@@ -35,18 +36,9 @@ jobs:
 
       - name: Generate cypress.env.json
         run: |
-          # Define host URLs for different environments
-          if [ "${{ github.event.inputs.environment }}" = "production" ]; then
-            HOST="https://whalepress.org"
-          elif [ "${{ github.event.inputs.environment }}" = "preproduction" ]; then
-            HOST="https://preproduction.whalepress.org"
-          elif [ "${{ github.event.inputs.environment }}" = "development" ]; then
-            HOST="https://development.whalepress.org"
-          fi
-
-          # Write the cypress.env.json file with the appropriate HOST
+          # Write the cypress.env.json file using environment variable
           echo '{
-            "HOST": "'$HOST'",
+            "HOST": "${{ vars.HOST_URL }}",
             "PORT": 80
           }' > cypress.env.json
 
