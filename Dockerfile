@@ -14,6 +14,11 @@ FROM node:20 AS builder
 WORKDIR /app
 COPY wp-content/themes/ wp-content/themes/
 RUN for theme in wp-content/themes/*/; do \
+      theme_name=$(basename "${theme}"); \
+      if echo "${theme_name}" | grep -q "^twenty"; then \
+        echo "Skipping default theme: ${theme_name}"; \
+        continue; \
+      fi; \
       if [ -f "${theme}package.json" ]; then \
         echo "Building theme: ${theme}" && \
         cd "${theme}" && \
