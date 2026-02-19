@@ -5,6 +5,7 @@ on:
     branches:
       - preproduction
       - development
+      - main
 
 jobs:
   lint:
