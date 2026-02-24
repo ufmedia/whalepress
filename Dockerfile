@@ -10,25 +10,17 @@
 # -----------------------------------------------------------------------------
 # Build Stage - Build theme front-end assets
 # -----------------------------------------------------------------------------
-FROM node:25 AS builder
+FROM node:20 AS builder
+ARG THEME_NAME="whalepress"
 WORKDIR /app
-COPY wp-content/themes/ wp-content/themes/
-RUN for theme in wp-content/themes/*/; do \
-      theme_name=$(basename "${theme}"); \
-      if echo "${theme_name}" | grep -q "^twenty"; then \
-        echo "Skipping default theme: ${theme_name}"; \
-        continue; \
-      fi; \
-      if [ -f "${theme}package.json" ]; then \
-        echo "Building theme: ${theme}" && \
-        cd "${theme}" && \
-        rm -f package-lock.json && \
-        npm install --legacy-peer-deps && \
-        npm run build && \
-        rm -rf node_modules && \
-        cd /app; \
-      fi; \
-    done
+COPY wp-content/themes/${THEME_NAME}/ wp-content/themes/${THEME_NAME}/
+RUN if [ -f "wp-content/themes/${THEME_NAME}/package.json" ]; then \
+      echo "Building theme: ${THEME_NAME}" && \
+      cd "wp-content/themes/${THEME_NAME}" && \
+      npm ci && \
+      npm run build && \
+      rm -rf node_modules; \
+    fi
 
 # -----------------------------------------------------------------------------
 # Composer Stage - Install PHP dependencies
@@ -43,6 +35,7 @@ RUN composer install --no-dev --optimize-autoloader \
 # Final Stage - Assemble WordPress container
 # -----------------------------------------------------------------------------
 FROM wordpress:latest
+ARG THEME_NAME="whalepress"
 
 # Install phpredis extension and WP-CLI
 RUN apt-get update \
@@ -57,8 +50,8 @@ COPY --from=wordpress:cli /usr/local/bin/wp /usr/local/bin/wp
 # Copy WordPress core files
 COPY --from=wordpress:latest /usr/src/wordpress/ /var/www/html/
 
-# Copy built themes and plugins
-COPY --chown=www-data:www-data --from=builder /app/wp-content/themes/ /var/www/html/wp-content/themes/
+# Copy built theme and plugins
+COPY --chown=www-data:www-data --from=builder /app/wp-content/themes/${THEME_NAME} /var/www/html/wp-content/themes/${THEME_NAME}
 COPY --chown=www-data:www-data --from=composer /app/plugins/wp-content/plugins /var/www/html/wp-content/plugins/
 COPY --chown=www-data:www-data wp-content/plugins /var/www/html/wp-content/plugins/
 COPY --chown=www-data:www-data wp-config.php /var/www/html/wp-config.php
