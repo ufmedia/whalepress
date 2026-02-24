@@ -39,7 +39,7 @@ jobs:
       - name: OWASP ZAP Baseline Scan
         # You may pin to the exact commit or the version.
 
-        uses: zaproxy/action-baseline@v0.14.0
+        uses: zaproxy/action-baseline@v0.15.0
         with:
           # Target URL
           target: ${{ env.TARGET_URL }}
