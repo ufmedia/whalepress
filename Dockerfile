@@ -10,7 +10,7 @@
 # -----------------------------------------------------------------------------
 # Build Stage - Build theme front-end assets
 # -----------------------------------------------------------------------------
-FROM node:20 AS builder
+FROM node:25 AS builder
 ARG THEME_NAME="whalepress"
 WORKDIR /app
 COPY wp-content/themes/${THEME_NAME}/ wp-content/themes/${THEME_NAME}/
