@@ -1,0 +1,14 @@
+{#
+  Page heading.
+
+  @param string title
+  @param string description Optional, may contain HTML.
+#}
+<header class="container-content mb-l">
+  <h1 class="text-step-4 font-bold">{{ title }}</h1>
+  {% if description %}
+    <div class="mt-s text-step-1 text-neutral">
+      {{ description }}
+    </div>
+  {% endif %}
+</header>

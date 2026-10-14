@@ -1,0 +1,115 @@
+# Docker Swarm stack for the GHCR pathway, behind Traefik.
+#
+#   docker stack deploy -c stack.yml --with-registry-auth mysite
+#
+# Replace the [PLACEHOLDERS]. Keep secrets out of this file: create them with
+# `docker secret create` and reference them through the *_FILE variables, which
+# wp-config.php reads.
+
+services:
+  wordpress:
+    image: ghcr.io/[ORG]/[REPO]:latest
+    environment:
+      WP_ENVIRONMENT_TYPE: production
+      WP_HOME: https://[DOMAIN]
+      WORDPRESS_DB_HOST: [DB_HOST]
+      WORDPRESS_DB_NAME: [DB_NAME]
+      WORDPRESS_DB_USER: [DB_USER]
+      WORDPRESS_DB_PASSWORD_FILE: /run/secrets/db_password
+      WORDPRESS_TABLE_PREFIX: wp_
+      # One secret per key/salt, or leave unset and WordPress stores its own in the database.
+      WORDPRESS_AUTH_KEY_FILE: /run/secrets/wp_auth_key
+      WORDPRESS_SECURE_AUTH_KEY_FILE: /run/secrets/wp_secure_auth_key
+      WORDPRESS_LOGGED_IN_KEY_FILE: /run/secrets/wp_logged_in_key
+      WORDPRESS_NONCE_KEY_FILE: /run/secrets/wp_nonce_key
+      WORDPRESS_AUTH_SALT_FILE: /run/secrets/wp_auth_salt
+      WORDPRESS_SECURE_AUTH_SALT_FILE: /run/secrets/wp_secure_auth_salt
+      WORDPRESS_LOGGED_IN_SALT_FILE: /run/secrets/wp_logged_in_salt
+      WORDPRESS_NONCE_SALT_FILE: /run/secrets/wp_nonce_salt
+      REDIS_HOST: redis
+      # A system cron (Ofelia, below) runs scheduled events instead of page loads.
+      DISABLE_WP_CRON: 'true'
+      WP_DEBUG: 'false'
+      WP_DEBUG_LOG: 'true'
+      SMTP_HOST: [SMTP_HOST]
+      SMTP_PORT: '587'
+      SMTP_SECURE: tls
+      SMTP_USER: [SMTP_USER]
+      SMTP_PASSWORD_FILE: /run/secrets/smtp_password
+      SMTP_FROM: [FROM_ADDRESS]
+    secrets:
+      - db_password
+      - smtp_password
+      - wp_auth_key
+      - wp_secure_auth_key
+      - wp_logged_in_key
+      - wp_nonce_key
+      - wp_auth_salt
+      - wp_secure_auth_salt
+      - wp_logged_in_salt
+      - wp_nonce_salt
+    volumes:
+      # Uploads are the only persistent state in the container.
+      - uploads:/var/www/html/wp-content/uploads
+    networks:
+      - web_gateway
+      - internal
+    deploy:
+      replicas: 1
+      update_config:
+        order: start-first # Start the new task before stopping the old one.
+        failure_action: rollback
+        delay: 10s
+      resources:
+        limits:
+          memory: 1024M
+      labels:
+        - traefik.enable=true
+        - traefik.docker.network=web_gateway
+        - traefik.http.routers.[NAME].rule=Host(`[DOMAIN]`) || Host(`www.[DOMAIN]`)
+        - traefik.http.routers.[NAME].entrypoints=websecure
+        - traefik.http.routers.[NAME].tls=true
+        - traefik.http.routers.[NAME].tls.certresolver=letsencrypt
+        - traefik.http.services.[NAME].loadbalancer.server.port=80
+        - ofelia.enabled=true
+        - ofelia.job-exec.[NAME]-cron.schedule=@every 5m
+        - ofelia.job-exec.[NAME]-cron.command=wp cron event run --due-now
+        - ofelia.job-exec.[NAME]-cron.user=www-data
+    # The image defines a HEALTHCHECK; Swarm waits for it before routing traffic.
+
+  redis:
+    image: redis:8-alpine
+    command: ['redis-server', '--maxmemory', '128mb', '--maxmemory-policy', 'allkeys-lru']
+    networks:
+      - internal
+
+volumes:
+  uploads:
+
+networks:
+  web_gateway:
+    external: true
+  internal:
+    driver: overlay
+
+secrets:
+  db_password:
+    external: true
+  smtp_password:
+    external: true
+  wp_auth_key:
+    external: true
+  wp_secure_auth_key:
+    external: true
+  wp_logged_in_key:
+    external: true
+  wp_nonce_key:
+    external: true
+  wp_auth_salt:
+    external: true
+  wp_secure_auth_salt:
+    external: true
+  wp_logged_in_salt:
+    external: true
+  wp_nonce_salt:
+    external: true

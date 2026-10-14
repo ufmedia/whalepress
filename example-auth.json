@@ -1,8 +1,0 @@
-{
-  "http-basic": {
-    "connect.advancedcustomfields.com": {
-      "username": "[ACF KEY]",
-      "password": "http://localhost"
-    }
-  }
-}

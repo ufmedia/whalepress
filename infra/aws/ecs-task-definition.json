@@ -1,0 +1,82 @@
+{
+	"family": "[APP_NAME]",
+	"requiresCompatibilities": ["FARGATE"],
+	"networkMode": "awsvpc",
+	"cpu": "512",
+	"memory": "1024",
+	"runtimePlatform": { "cpuArchitecture": "X86_64", "operatingSystemFamily": "LINUX" },
+	"executionRoleArn": "arn:aws:iam::[ACCOUNT_ID]:role/ecsTaskExecutionRole",
+	"containerDefinitions": [
+		{
+			"name": "wordpress",
+			"image": "[ACCOUNT_ID].dkr.ecr.[REGION].amazonaws.com/[REPOSITORY]:latest",
+			"essential": true,
+			"portMappings": [{ "containerPort": 80, "protocol": "tcp" }],
+			"environment": [
+				{ "name": "WP_ENVIRONMENT_TYPE", "value": "production" },
+				{ "name": "WP_HOME", "value": "https://[DOMAIN]" },
+				{ "name": "WORDPRESS_DB_HOST", "value": "[RDS_ENDPOINT]" },
+				{ "name": "WORDPRESS_DB_NAME", "value": "[DB_NAME]" },
+				{ "name": "WORDPRESS_DB_USER", "value": "[DB_USER]" },
+				{ "name": "REDIS_HOST", "value": "[ELASTICACHE_ENDPOINT]" },
+				{ "name": "DISABLE_WP_CRON", "value": "true" }
+			],
+			"secrets": [
+				{
+					"name": "WORDPRESS_DB_PASSWORD",
+					"valueFrom": "arn:aws:secretsmanager:[REGION]:[ACCOUNT_ID]:secret:[SECRET]:password::"
+				},
+				{
+					"name": "WORDPRESS_AUTH_KEY",
+					"valueFrom": "arn:aws:secretsmanager:[REGION]:[ACCOUNT_ID]:secret:[SECRET]:auth_key::"
+				},
+				{
+					"name": "WORDPRESS_SECURE_AUTH_KEY",
+					"valueFrom": "arn:aws:secretsmanager:[REGION]:[ACCOUNT_ID]:secret:[SECRET]:secure_auth_key::"
+				},
+				{
+					"name": "WORDPRESS_LOGGED_IN_KEY",
+					"valueFrom": "arn:aws:secretsmanager:[REGION]:[ACCOUNT_ID]:secret:[SECRET]:logged_in_key::"
+				},
+				{
+					"name": "WORDPRESS_NONCE_KEY",
+					"valueFrom": "arn:aws:secretsmanager:[REGION]:[ACCOUNT_ID]:secret:[SECRET]:nonce_key::"
+				},
+				{
+					"name": "WORDPRESS_AUTH_SALT",
+					"valueFrom": "arn:aws:secretsmanager:[REGION]:[ACCOUNT_ID]:secret:[SECRET]:auth_salt::"
+				},
+				{
+					"name": "WORDPRESS_SECURE_AUTH_SALT",
+					"valueFrom": "arn:aws:secretsmanager:[REGION]:[ACCOUNT_ID]:secret:[SECRET]:secure_auth_salt::"
+				},
+				{
+					"name": "WORDPRESS_LOGGED_IN_SALT",
+					"valueFrom": "arn:aws:secretsmanager:[REGION]:[ACCOUNT_ID]:secret:[SECRET]:logged_in_salt::"
+				},
+				{
+					"name": "WORDPRESS_NONCE_SALT",
+					"valueFrom": "arn:aws:secretsmanager:[REGION]:[ACCOUNT_ID]:secret:[SECRET]:nonce_salt::"
+				}
+			],
+			"mountPoints": [
+				{ "sourceVolume": "uploads", "containerPath": "/var/www/html/wp-content/uploads" }
+			],
+			"logConfiguration": {
+				"logDriver": "awslogs",
+				"options": {
+					"awslogs-group": "/ecs/[APP_NAME]",
+					"awslogs-region": "[REGION]",
+					"awslogs-stream-prefix": "wordpress",
+					"awslogs-create-group": "true"
+				}
+			}
+		}
+	],
+	"volumes": [
+		{
+			"name": "uploads",
+			"efsVolumeConfiguration": { "fileSystemId": "[EFS_ID]", "transitEncryption": "ENABLED" }
+		}
+	]
+}

@@ -1,0 +1,64 @@
+# Runs the production image against throwaway services for end-to-end tests.
+# Used by CI; locally:
+#
+#   docker compose -f docker-compose.test.yml up -d --build --wait
+#   docker compose -f docker-compose.test.yml exec -T -u www-data wordpress bash -s < local/bin/install.sh
+#   BASE_URL=http://localhost:8099 WP_ADMIN_USER=admin WP_ADMIN_PASSWORD=password npx playwright test
+#   docker compose -f docker-compose.test.yml down -v
+
+name: whalepress-test
+
+services:
+  wordpress:
+    build:
+      context: .
+      target: production
+      args:
+        APP_VERSION: 0.0.0-test
+    image: ${E2E_IMAGE:-whalepress:test}
+    depends_on:
+      db:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    ports:
+      - 8099:80
+    environment:
+      WORDPRESS_DB_HOST: db
+      WORDPRESS_DB_NAME: wordpress
+      WORDPRESS_DB_USER: wordpress
+      WORDPRESS_DB_PASSWORD: wordpress
+      WP_ENVIRONMENT_TYPE: staging
+      WP_HOME: http://localhost:8099
+      WP_DEBUG: 'true'
+      WP_DEBUG_LOG: 'true'
+      WP_DEBUG_DISPLAY: 'false'
+      REDIS_HOST: redis
+      # Read by local/bin/install.sh.
+      WP_ADMIN_USER: admin
+      WP_ADMIN_PASSWORD: password
+      WP_ADMIN_EMAIL: admin@example.com
+      THEME_NAME: whalepress
+
+  db:
+    image: mariadb:11.8
+    environment:
+      MARIADB_DATABASE: wordpress
+      MARIADB_USER: wordpress
+      MARIADB_PASSWORD: wordpress
+      MARIADB_ROOT_PASSWORD: root
+    tmpfs:
+      - /var/lib/mysql
+    healthcheck:
+      test: ['CMD', 'healthcheck.sh', '--connect', '--innodb_initialized']
+      interval: 5s
+      timeout: 5s
+      retries: 30
+
+  redis:
+    image: redis:8-alpine
+    healthcheck:
+      test: ['CMD', 'redis-cli', 'ping']
+      interval: 5s
+      timeout: 3s
+      retries: 10

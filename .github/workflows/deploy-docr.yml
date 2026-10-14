@@ -1,0 +1,79 @@
+name: Deploy (DigitalOcean)
+
+# Pushes the release image to DigitalOcean Container Registry, then optionally
+# deploys a DigitalOcean App Platform app.
+#
+# Variables: DOCR_REGISTRY (registry name), DOCR_REPOSITORY (defaults to the
+#            repository name), DO_APP_ID (optional)
+# Secrets:   DIGITALOCEAN_ACCESS_TOKEN, COMPOSER_AUTH (optional)
+# Runs from the CI/CD pipeline after a release when DEPLOY_DOCR is "true", or
+# manually for any tag.
+
+on:
+  workflow_call:
+    inputs:
+      version:
+        type: string
+        required: true
+  workflow_dispatch:
+    inputs:
+      version:
+        description: Version to deploy, without the "v" (e.g. 1.4.0).
+        type: string
+        required: true
+
+permissions:
+  contents: read
+
+concurrency:
+  group: deploy-docr
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    environment: production
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          ref: v${{ inputs.version }}
+
+      - uses: digitalocean/action-doctl@3cb3953159719656269e044e0e24ca16dd2a690f # v2.5.2
+        with:
+          token: ${{ secrets.DIGITALOCEAN_ACCESS_TOKEN }}
+
+      - name: Log in to DOCR
+        run: doctl registry login --expiry-seconds 1800
+
+      - name: Image name
+        env:
+          REGISTRY: ${{ vars.DOCR_REGISTRY }}
+          REPOSITORY: ${{ vars.DOCR_REPOSITORY }}
+        run: |
+          if [ -z "$REGISTRY" ]; then
+            echo "::error::Set the DOCR_REGISTRY repository variable to your registry name."
+            exit 1
+          fi
+          echo "IMAGE=registry.digitalocean.com/${REGISTRY}/${REPOSITORY:-${GITHUB_REPOSITORY#*/}}" >> "$GITHUB_ENV"
+
+      - id: build
+        uses: ./.github/actions/build-image
+        with:
+          image: ${{ env.IMAGE }}
+          version: ${{ inputs.version }}
+          push: 'true'
+          cache-scope: docr
+          composer-auth: ${{ secrets.COMPOSER_AUTH }}
+
+      - name: Deploy App Platform app
+        if: vars.DO_APP_ID != ''
+        run: doctl apps create-deployment "${{ vars.DO_APP_ID }}" --wait
+
+      - name: Summary
+        run: |
+          {
+            echo "### Pushed to DOCR"
+            echo '```'
+            echo "${{ steps.build.outputs.tags }}"
+            echo '```'
+          } >> "$GITHUB_STEP_SUMMARY"

@@ -1,0 +1,30 @@
+{
+  "useTabs": true,
+  "singleQuote": true,
+  "printWidth": 100,
+  "plugins": ["@zackad/prettier-plugin-twig"],
+  "overrides": [
+    {
+      "files": ["*.yml", "*.yaml", "*.md", "package.json", "package-lock.json", ".prettierrc.json"],
+      "options": {
+        "useTabs": false,
+        "tabWidth": 2
+      }
+    },
+    {
+      "files": ["composer.json"],
+      "options": {
+        "useTabs": false,
+        "tabWidth": 4
+      }
+    },
+    {
+      "files": "*.twig",
+      "options": {
+        "useTabs": false,
+        "tabWidth": 2,
+        "twigSingleQuote": true
+      }
+    }
+  ]
+}

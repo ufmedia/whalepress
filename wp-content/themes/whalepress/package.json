@@ -1,47 +1,33 @@
 {
   "name": "whalepress-theme",
-  "version": "2.0.0",
-  "description": "NPM Scripts for the Whalepress theme.",
-  "engines": {
-    "node": ">=22.0.0"
-  },
-  "type": "module",
-  "scripts": {
-    "build": "vite build --config vite.config.js",
-    "build:watch": "vite build --watch --config vite.config.js",
-    "dev": "npm run watch",
-    "watch:scss": "node vite.scss-patch.js",
-    "watch": "concurrently \"npm run watch:scss\" \"vite --host --config vite.config.js\"",
-    "lint:js": "eslint 'src/js/**/*.js'",
-    "lint:js:fix": "eslint 'src/js/**/*.js' --fix",
-    "lint:php": "./includes/vendor/bin/phpcs --report-file=PHPCS-report.txt --ignore=*/vendor/*,tests,build,*/node_modules/* --extensions=php --standard=WordPress .",
-    "lint:php:fix": "./includes/vendor/bin/phpcbf --ignore=*/vendor/*,tests,build,*/node_modules/* --extensions=php --standard=WordPress .",
-    "lint:css": "stylelint 'src/scss/**/*.scss'",
-    "lint:css:fix": "stylelint 'src/scss/**/*.scss' --fix"
-  },
+  "version": "0.0.0-development",
+  "private": true,
+  "description": "Front-end build for the WhalePress theme.",
+  "license": "GPL-2.0-or-later",
   "author": "John Thompson",
-  "license": "ISC",
-  "devDependencies": {
-    "@eslint/js": "^9.33.0",
-    "@tailwindcss/postcss": "^4.2.0",
-    "@tailwindcss/typography": "^0.5.19",
-    "@tailwindcss/vite": "^4.2.0",
-    "@wordpress/eslint-plugin": "^24.2.0",
-    "autoprefixer": "^10.4.24",
-    "concurrently": "^9.2.1",
-    "eslint": "^10.0.0",
-    "eslint-plugin-prettier": "^5.5.5",
-    "globals": "^17.3.0",
-    "postcss": "^8.5.6",
-    "sass-embedded": "^1.97.3",
-    "stylelint": "^17.3.0",
-    "stylelint-config-standard-scss": "^17.0.0",
-    "tailwindcss": "^4.2.0",
-    "utopia-core-scss": "^1.3.1",
-    "vite": "^7.3.1"
+  "type": "module",
+  "engines": {
+    "node": ">=24"
   },
-  "dependencies": {
-    "@fontsource/atkinson-hyperlegible": "^5.2.8",
-    "chokidar": "^5.0.0"
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "tokens": "node scripts/fluid-scales.js",
+    "lint": "npm run lint:js && npm run lint:css",
+    "lint:js": "eslint .",
+    "lint:css": "stylelint \"assets/**/*.css\"",
+    "lint:fix": "eslint . --fix && stylelint \"assets/**/*.css\" --fix"
+  },
+  "devDependencies": {
+    "@eslint/js": "^10.0.1",
+    "@fontsource/atkinson-hyperlegible": "^5.3.0",
+    "@tailwindcss/vite": "^4.3.3",
+    "eslint": "^10.12.0",
+    "eslint-config-prettier": "^10.1.8",
+    "globals": "^17.13.0",
+    "stylelint": "^17.16.0",
+    "stylelint-config-standard": "^40.0.0",
+    "tailwindcss": "^4.3.3",
+    "vite": "^8.3.4"
   }
 }

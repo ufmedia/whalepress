@@ -1,16 +1,27 @@
-{% extends "base.twig" %}
+{% extends 'base.twig' %}
 
 {% block content %}
-	<section class="bg-white dark:bg-gray-900">
-		<div class="py-8 px-4 mx-auto max-w-screen-xl lg:py-16 lg:px-6">
-			<div class="prose lg:prose-lg prose-headings:text-black mb-4 dark:prose-headings:text-white dark:text-white">
-				{% for post in posts %}
-					<article>
-						<h3><a href="{{ post.link }}">{{ post.title }}</a></h3>
-						<p>{{ post.excerpt }}</p>
-					</article>
-				{% endfor %}
-			</div>
-		</div>
-	</section>
+  {% if title %}
+    {% include 'partials/page-header.twig' with {
+      title: title,
+      description: description
+    } only %}
+  {% endif %}
+
+  <div class="container-content">
+    {% for post in posts %}
+      {% include ['partials/tease-' ~ post.post_type ~ '.twig', 'partials/tease.twig'] %}
+    {% else %}
+      <p>
+        {{ __('Nothing found.', 'whalepress') }}
+      </p>
+    {% endfor %}
+
+    {% include 'partials/pagination.twig' with {
+      pagination: posts.pagination({
+        mid_size: 2,
+        end_size: 1
+      })
+    } only %}
+  </div>
 {% endblock %}

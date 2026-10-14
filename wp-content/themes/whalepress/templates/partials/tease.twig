@@ -1,0 +1,21 @@
+{#
+  Post summary for lists.
+
+  @param Timber\Post post
+#}
+<article class="border-b border-neutral/20 py-m first:pt-0">
+  <h2 class="text-step-2 font-bold">
+    <a href="{{ post.link }}" class="no-underline hover:underline">{{ post.title }}</a>
+  </h2>
+  <p class="mt-2-xs text-step-minus-1 text-neutral">
+    <time datetime="{{ post.date('c') }}">{{ post.date }}</time>
+  </p>
+  <div class="mt-xs">
+    {{
+      post.excerpt({
+        words: 40,
+        read_more: false
+      })
+    }}
+  </div>
+</article>

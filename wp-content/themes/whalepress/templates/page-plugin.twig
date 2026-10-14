@@ -1,0 +1,11 @@
+{#
+  Wraps output from plugins that call get_header()/get_footer().
+  See header.php and footer.php.
+#}
+{% extends 'base.twig' %}
+
+{% block content %}
+  <div class="container-wide">
+    {{ content }}
+  </div>
+{% endblock %}

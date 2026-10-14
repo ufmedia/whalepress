@@ -1,0 +1,10 @@
+/* Containers that match the content and wide sizes in theme.json. */
+@utility container-content {
+	width: min(100% - 2 * var(--spacing-gutter), var(--container-content));
+	margin-inline: auto;
+}
+
+@utility container-wide {
+	width: min(100% - 2 * var(--spacing-gutter), var(--container-wide));
+	margin-inline: auto;
+}

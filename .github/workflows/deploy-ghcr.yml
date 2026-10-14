@@ -1,72 +1,70 @@
-name: Deploy to GHCR
-run-name: "Deploy to GHCR"
+name: Deploy (GHCR)
+
+# Pushes the release image to GitHub Container Registry, then optionally calls
+# a redeploy webhook (Portainer, Swarm/Shepherd, Coolify, etc.).
+#
+# Secrets (optional): GHCR_DEPLOY_WEBHOOK_URL, COMPOSER_AUTH
+# Runs from the CI/CD pipeline after a release, or manually for any tag.
 
 on:
-  workflow_run:
-    workflows: ["Create Release"]
-    types: [completed]
+  workflow_call:
+    inputs:
+      version:
+        type: string
+        required: true
+  workflow_dispatch:
+    inputs:
+      version:
+        description: Version to deploy, without the "v" (e.g. 1.4.0).
+        type: string
+        required: true
+
+permissions:
+  contents: read
+  packages: write
+
+concurrency:
+  group: deploy-ghcr
+  cancel-in-progress: false
 
 jobs:
-  build-and-push:
+  deploy:
     runs-on: ubuntu-latest
-
-    permissions:
-      contents: read
-      packages: write
-
+    environment: production
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          ref: v${{ inputs.version }}
 
-      - uses: docker/setup-buildx-action@v3
+      - name: Image name
+        run: echo "IMAGE=ghcr.io/${GITHUB_REPOSITORY,,}" >> "$GITHUB_ENV"
 
-      - uses: docker/login-action@v3
+      - uses: docker/login-action@dbcb813823bdd20940b903addbd779551569679f # v4.6.0
         with:
           registry: ghcr.io
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Set lowercase image name
-        run: |
-          echo "IMAGE_NAME=ghcr.io/${GITHUB_REPOSITORY,,}" >> $GITHUB_ENV
-
-      - name: Fetch latest SemVer tag
-        run: |
-          git fetch --tags
-          TAG=$(git tag --sort=-v:refname | grep -E '^v[0-9]+\.[0-9]+\.[0-9]+$' | head -n 1)
-          echo "VERSION_TAG=$TAG" >> $GITHUB_ENV
-          echo "Deploying version: $TAG"
-
-      - name: Create auth.json
-        run: |
-          cat <<EOF > auth.json
-          {
-            "http-basic": {
-              "connect.advancedcustomfields.com": {
-                "username": "${{ secrets.ACF_KEY }}",
-                "password": "http://localhost"
-              }
-            }
-          }
-          EOF
-
-      - name: Create .env file for Composer
-        run: |
-          cat <<EOF > .env
-          GRAVITY_FORMS_KEY=${{ secrets.GRAVITY_FORMS_KEY }}
-          RELEVANSSI_KEY=${{ secrets.RELEVANSSI_KEY }}
-          EOF
-
-      - name: Build and push image
-        uses: docker/build-push-action@v5
+      - id: build
+        uses: ./.github/actions/build-image
         with:
-          context: .
-          file: ./Dockerfile
-          push: true
-          tags: |
-            ${{ env.IMAGE_NAME }}:latest
-            ${{ env.IMAGE_NAME }}:${{ env.VERSION_TAG }}
+          image: ${{ env.IMAGE }}
+          version: ${{ inputs.version }}
+          push: 'true'
+          cache-scope: ghcr
+          composer-auth: ${{ secrets.COMPOSER_AUTH }}
 
-      - name: Clean up auth.json
-        run: rm auth.json
-      - name: Restore clean composer.json
-        run: git checkout composer.json
+      - name: Trigger redeploy
+        env:
+          WEBHOOK_URL: ${{ secrets.GHCR_DEPLOY_WEBHOOK_URL }}
+        if: env.WEBHOOK_URL != ''
+        run: curl --fail --silent --show-error -X POST "$WEBHOOK_URL"
+
+      - name: Summary
+        run: |
+          {
+            echo "### Pushed to GHCR"
+            echo '```'
+            echo "${{ steps.build.outputs.tags }}"
+            echo '```'
+          } >> "$GITHUB_STEP_SUMMARY"

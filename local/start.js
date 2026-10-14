@@ -1,67 +1,33 @@
+/**
+ * Start the containers and the Vite dev server.
+ *
+ * Usage: npm start [-- --no-vite]
+ */
+import path from 'node:path';
+import process from 'node:process';
 import chalk from 'chalk';
-import { execSync } from 'child_process';
-import fs from 'fs';
+import { banner, compose, requireEnv, root, run, step } from './lib.js';
 
-console.clear();
+const env = requireEnv();
+const withVite = !process.argv.includes('--no-vite');
 
-console.log(chalk.blue(`
-        .
-       ":"
-     ___:____     |"\\/""|
-   ,'        \`.    \\  /
-   |  ${chalk.yellow('O')}        \\___/  |
- ~^~^~^~^~^~^~^~^~^~^~^~^~
- ------- ${chalk.yellow('WhalePress')} --------
-`));
+banner('Time to build something awesome…');
 
-console.log(chalk.black.bgGreen('Time to build something awesome...'));
-// Display border   
-displayBorder();
+step('Starting containers');
+compose(['up', '-d', '--wait']);
 
-console.log(chalk.black.bgWhite('Local configuration'))
-// Call the function to create the console.table
-createEnvTable();
+console.table({
+	Site: env.WP_HOME,
+	Admin: `${env.WP_HOME}/wp-admin`,
+	Mailpit: `http://localhost:${env.MAILPIT_PORT}`,
+	Adminer: `http://localhost:${env.ADMINER_PORT}`,
+	...(withVite && { Vite: `http://localhost:${env.VITE_PORT}` }),
+});
 
-//Start up docker compose -d
-console.log('Starting up Docker containers...');
-try {
-    execSync('docker compose up -d', { stdio: 'inherit' });
-    console.log(chalk.green('Docker containers started successfully!'));
-} catch (error) {
-    console.error(chalk.red('Error starting Docker containers:', error));
+if (withVite) {
+	step(
+		`Starting Vite ${chalk.gray('(Ctrl+C stops Vite; containers keep running, `npm stop` stops them)')}`,
+	);
+	const themeDir = path.join(root, 'wp-content', 'themes', env.THEME_NAME || 'whalepress');
+	run('npm', ['run', 'dev'], { cwd: themeDir, allowFailure: true });
 }
-
-
-// Display border
-displayBorder();
-
-// Function to display border
-function displayBorder() {
-    console.log(chalk.gray('\n-------------------------------------------\n'));
-}
-
-// Function to parse the .env file and create a console.table with selected keys
-function createEnvTable() {
-    const envFilePath = '../.env'; // Path to the .env file
-
-    // Check if .env file exists
-    if (!fs.existsSync(envFilePath)) {
-        console.log(chalk.red('The .env file does not exist. Please run "npm run setup" to create it.'));
-        process.exit(1);
-    }
-
-    const envContent = fs.readFileSync(envFilePath, 'utf8');
-    const envLines = envContent.split('\n');
-    const envData = {};
-
-    envLines.forEach(line => {
-        const [key, value] = line.split('=');
-        const trimmedKey = key.trim();
-        if (['PROJECT_NAME', 'SITE_URL', 'WP_PORT', 'WP_VERSION', 'WORDPRESS_DEBUG', 'THEME_NAME'].includes(trimmedKey)) {
-            envData[trimmedKey] = value;
-        }
-    });
-
-    console.table(envData);
-}
-

@@ -1,18 +1,18 @@
 <?php
 /**
- * The template for displaying Author Archive pages
+ * Author archive.
  *
- * @package  DokPress
- * @since    1.0.0
+ * @package WhalePress
  */
 
-global $wp_query;
+declare(strict_types=1);
 
-$context          = Timber::context();
-$context['posts'] = new Timber\PostQuery();
-if ( isset( $wp_query->query_vars['author'] ) ) {
-	$author            = new Timber\User( $wp_query->query_vars['author'] );
-	$context['author'] = $author;
-	$context['title']  = 'Author Archives: ' . $author->name();
-}
-Timber::render( array( 'author.twig', 'archive.twig' ), $context );
+use Timber\Timber;
+
+$context           = Timber::context();
+$author            = Timber::get_user( get_queried_object_id() );
+$context['author'] = $author;
+$context['title']  = $author ? $author->name() : get_the_archive_title();
+$context['posts']  = Timber::get_posts();
+
+Timber::render( array( 'author.twig', 'archive.twig', 'index.twig' ), $context );

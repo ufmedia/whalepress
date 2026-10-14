@@ -1,49 +1,100 @@
-x-www-volume:  
-  &www-volume
-  type: bind
-  source: ./
-  target: /var/www/html/
+# Local development stack. Values come from .env (see .env-example).
+#
+# Only wp-content, wp-config.php and vendor/ are mounted from the repository;
+# WordPress core lives in the container (copied from the image on start), so
+# the repository root is never served. Apache denies all access to vendor/
+# (see build/apache.conf).
 
-volumes:
-  mysql_data:
-    name: ${PROJECT_NAME}_mysql_data
+name: ${PROJECT_NAME:-whalepress}
 
 services:
-  db:
-    container_name: ${PROJECT_NAME}_db
-    image: mysql:9.0.1
-    platform: linux/amd64
-    volumes:
-      - mysql_data:/var/lib/mysql
-    restart: unless-stopped
-    environment:
-      MYSQL_ROOT_PASSWORD: ${WORDPRESS_DB_PASSWORD}
-      MYSQL_DATABASE: ${WORDPRESS_DB_NAME}
-      MYSQL_USER: ${WORDPRESS_DB_USER}
-      MYSQL_PASSWORD: ${WORDPRESS_DB_PASSWORD}
-
   wordpress:
-    container_name: ${PROJECT_NAME}_wordpress
-    depends_on:
-      - db
-    platform: linux/amd64
     build:
-      context: ./
-      dockerfile: ./Dockerfile
-    ports:
-      - ${WP_PORT}:80
-    env_file:
-      - ./.env
+      context: .
+      target: dev
+      args:
+        THEME_NAME: ${THEME_NAME:-whalepress}
+    image: ${PROJECT_NAME:-whalepress}-wordpress:dev
     restart: unless-stopped
+    depends_on:
+      db:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    ports:
+      - ${WP_PORT:-8088}:80
+    env_file: .env
     environment:
       WORDPRESS_DB_HOST: db
-      WORDPRESS_DB_USER: ${WORDPRESS_DB_USER}
-      WORDPRESS_DB_PASSWORD: ${WORDPRESS_DB_PASSWORD}
-      WORDPRESS_DB_NAME: ${WORDPRESS_DB_NAME}
-      WORDPRESS_TABLE_PREFIX: ${WORDPRESS_TABLE_PREFIX}
-      WP_DEBUG: ${WP_DEBUG}
-      WP_DISABLE_FATAL_ERROR_HANDLER: ${WP_DISABLE_FATAL_ERROR_HANDLER}
-      WP_DEBUG_LOG: ${WP_DEBUG_LOG}
-      WP_DEBUG_DISPLAY: ${WP_DEBUG_DISPLAY}
+      # Run Apache as your host user so bind-mounted files stay writable on Linux.
+      APACHE_RUN_USER: '#${HOST_UID:-1000}'
+      APACHE_RUN_GROUP: '#${HOST_GID:-1000}'
+      HOME: /tmp
+    extra_hosts:
+      - host.docker.internal:host-gateway
     volumes:
-      - *www-volume
+      - ./wp-content:/var/www/html/wp-content
+      - ./wp-config.php:/var/www/html/wp-config.php:ro
+      - ./vendor:/var/www/html/vendor
+
+  db:
+    image: mariadb:11.8
+    restart: unless-stopped
+    environment:
+      MARIADB_DATABASE: ${WORDPRESS_DB_NAME:-wordpress}
+      MARIADB_USER: ${WORDPRESS_DB_USER:-wordpress}
+      MARIADB_PASSWORD: ${WORDPRESS_DB_PASSWORD:-wordpress}
+      MARIADB_ROOT_PASSWORD: ${DB_ROOT_PASSWORD:-root}
+    volumes:
+      - db_data:/var/lib/mysql
+      # .sql / .sql.gz files here are imported the first time the volume is created.
+      - ./local/initial-db:/docker-entrypoint-initdb.d:ro
+    healthcheck:
+      test: ['CMD', 'healthcheck.sh', '--connect', '--innodb_initialized']
+      interval: 5s
+      timeout: 5s
+      retries: 30
+      start_period: 20s
+
+  redis:
+    image: redis:8-alpine
+    restart: unless-stopped
+    healthcheck:
+      test: ['CMD', 'redis-cli', 'ping']
+      interval: 5s
+      timeout: 3s
+      retries: 10
+
+  mailpit:
+    image: axllent/mailpit:v1
+    restart: unless-stopped
+    ports:
+      - ${MAILPIT_PORT:-8025}:8025
+
+  adminer:
+    image: adminer:6
+    restart: unless-stopped
+    depends_on:
+      - db
+    environment:
+      ADMINER_DEFAULT_SERVER: db
+    ports:
+      - ${ADMINER_PORT:-8080}:8080
+
+  # One-off Composer runs without PHP on the host: `npm run composer -- <command>`.
+  composer:
+    image: composer:2
+    profiles: [tools]
+    working_dir: /app
+    user: ${HOST_UID:-1000}:${HOST_GID:-1000}
+    environment:
+      COMPOSER_HOME: /tmp/composer
+      # The repository is owned by your host user, not the container's.
+      GIT_CONFIG_COUNT: 1
+      GIT_CONFIG_KEY_0: safe.directory
+      GIT_CONFIG_VALUE_0: /app
+    volumes:
+      - .:/app
+
+volumes:
+  db_data:

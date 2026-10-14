@@ -1,0 +1,14 @@
+{
+	"recommendations": [
+		"bmewburn.vscode-intelephense-client",
+		"xdebug.php-debug",
+		"valeryanm.vscode-phpsab",
+		"bradlc.vscode-tailwindcss",
+		"mblode.twig-language-2",
+		"dbaeumer.vscode-eslint",
+		"stylelint.vscode-stylelint",
+		"esbenp.prettier-vscode",
+		"ms-playwright.playwright",
+		"editorconfig.editorconfig"
+	]
+}

@@ -1,0 +1,40 @@
+{#
+  Numbered pagination.
+
+  @param Timber\Pagination pagination From posts.pagination().
+#}
+{% if (pagination.pages|length) > 1 %}
+  <nav class="mt-l" aria-label="{{ __('Pagination', 'whalepress') }}">
+    <ul class="flex flex-wrap items-center gap-2-xs">
+      {% if pagination.prev %}
+        <li>
+          <a class="block px-xs py-3-xs" href="{{ pagination.prev.link }}">
+            {{ __('Previous', 'whalepress') }}
+          </a>
+        </li>
+      {% endif %}
+
+      {% for page in pagination.pages %}
+        <li>
+          {% if page.link %}
+            <a class="block px-xs py-3-xs" href="{{ page.link }}">{{ page.title }}</a>
+          {% elseif page.current %}
+            <span class="block bg-foreground px-xs py-3-xs text-background" aria-current="page">
+              {{ page.title }}
+            </span>
+          {% else %}
+            <span class="block px-xs py-3-xs">{{ page.title }}</span>
+          {% endif %}
+        </li>
+      {% endfor %}
+
+      {% if pagination.next %}
+        <li>
+          <a class="block px-xs py-3-xs" href="{{ pagination.next.link }}">
+            {{ __('Next', 'whalepress') }}
+          </a>
+        </li>
+      {% endif %}
+    </ul>
+  </nav>
+{% endif %}

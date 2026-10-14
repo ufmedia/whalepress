@@ -1,1 +1,17 @@
-**/node_modules
+# Allow-list: the build context contains only what the Dockerfile copies.
+*
+
+!composer.json
+!composer.lock
+!wp-config.php
+!build/
+
+!wp-content/mu-plugins/
+!wp-content/plugins/index.php
+# Custom (non-Composer) plugins: add an exception here and in .gitignore.
+# !wp-content/plugins/my-plugin/
+
+!wp-content/themes/
+wp-content/themes/*/node_modules
+wp-content/themes/*/dist
+wp-content/themes/*/hot

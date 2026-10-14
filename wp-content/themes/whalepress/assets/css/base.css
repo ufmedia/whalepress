@@ -1,0 +1,38 @@
+@layer base {
+	body {
+		font-size: var(--text-step-0);
+		line-height: var(--text-step-0--line-height);
+	}
+
+	:where(h1, h2, h3, h4, h5, h6) {
+		text-wrap: balance;
+	}
+
+	:focus-visible {
+		outline: 2px solid var(--color-primary);
+		outline-offset: 2px;
+	}
+
+	@media (prefers-reduced-motion: no-preference) {
+		html {
+			scroll-behavior: smooth;
+		}
+	}
+}
+
+@layer components {
+	.skip-link {
+		position: absolute;
+		inset-inline-start: var(--spacing-s);
+		top: var(--spacing-s);
+		z-index: 50;
+		padding: var(--spacing-2-xs) var(--spacing-s);
+		background-color: var(--color-foreground);
+		color: var(--color-background);
+		transform: translateY(-200%);
+
+		&:focus {
+			transform: none;
+		}
+	}
+}

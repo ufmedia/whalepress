@@ -1,38 +1,29 @@
-<!doctype html>
-<!--[if lt IE 9]><html class="no-js no-svg ie lt-ie9 lt-ie8 lt-ie7" {{ site.language_attributes }}> <![endif]-->
-<!--[if IE 9]><html class="no-js no-svg ie ie9 lt-ie9 lt-ie8" {{ site.language_attributes }}> <![endif]-->
-<!--[if gt IE 9]><!-->
-	<html
-	class="no-js no-svg overflow-x-hidden" {{ site.language_attributes }}> <!--<![endif]-->
-	<head>
-		<meta charset="{{ site.charset }}"/>
-		<link rel="stylesheet" href="{{ site.theme.link }}/style.css" type="text/css" media="screen"/>
-		<meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
-		<meta http-equiv="X-UA-Compatible" content="IE=edge">
-		<meta name="viewport" content="width=device-width, initial-scale=1">
+<!DOCTYPE html>
+<html {{ site.language_attributes }}>
+  <head>
+    <meta charset="{{ site.charset }}" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    {{ function('wp_head') }}
+  </head>
+  <body class="{{ body_class }} bg-background font-sans text-foreground antialiased">
+    {{ function('wp_body_open') }}
 
-		{% if app_version == 'dev' %}
-			<script type="module" src="http://localhost:5173/@vite/client"></script>
-			<script type="module" src="http://localhost:5173/src/js/index.js"></script>
-		{% endif %}
+    <a class="skip-link" href="#main">{{ __('Skip to content', 'whalepress') }}</a>
 
-		<script src="https://assets.calendly.com/assets/external/widget.js" type="text/javascript"></script>
+    {% block header %}
+      {% include 'sections/header.twig' %}
+    {% endblock %}
 
-		{{function('wp_head')}}
-	</head>
+    <main id="main" class="py-xl" tabindex="-1">
+      {% block content %}
 
-	<body class="{{body_class}} overflow-x-hidden relative bg-red" data-template="base.twig" data-version="{{ app_version }}">
-		<a class="skip-link screen-reader-text" href="#content">{{ _e( 'Skip to content') }}</a>
+      {% endblock %}
+    </main>
 
-		{% block header %}
-			{% include 'sections/header.twig' %}
-		{% endblock %}
+    {% block footer %}
+      {% include 'sections/footer.twig' %}
+    {% endblock %}
 
-		{% block content %}{% endblock %}
-
-		{% block footer %}
-			{% include 'sections/footer.twig' %}
-		{% endblock %}
-		{{ function('wp_footer') }}
-	</body>
+    {{ function('wp_footer') }}
+  </body>
 </html>

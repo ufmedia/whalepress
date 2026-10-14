@@ -1,13 +1,15 @@
-<footer id="footer" class="p-4 bg-white md:p-8 lg:p-10 dark:bg-gray-800">
-	<div class="mx-auto max-w-screen-xl text-center prose">
-		<a href="{{site_url}}" class="flex justify-center items-center text-xl no-underline">
-			<span class="font-bold text-slate-800 dark:text-white">Whale</span>
-			<span class="text-slate-500 dark:text-white">Press</span>
-		</a>
-		<p class="dark:text-white">For more information on getting started with DokPress, visit the wiki
-			<a class="dark:text-white" href="https://github.com/ufmedia/DokPress/wiki">here</a>.</p>
-		<span class="text-sm text-gray-500 sm:text-center dark:text-gray-400">©
-			{{ fn('date', 'Y') }}
-			<a href="#" class="hover:underline dark:text-white">WhalePress</a>. All Rights Reserved.</span>
-	</div>
+{% import 'components/menu.twig' as nav %}
+
+<footer class="border-t border-neutral/20 py-l">
+  <div class="container-wide flex flex-col gap-s md:flex-row md:items-center md:justify-between">
+    <p class="text-step-minus-1">
+      &copy; {{ 'now'|date('Y') }} {{ site.name }}
+    </p>
+
+    {% if menus.footer and menus.footer.items %}
+      <nav aria-label="{{ __('Footer', 'whalepress') }}">
+        {{ nav.list(menus.footer.items, 'flex flex-wrap gap-s text-step-minus-1') }}
+      </nav>
+    {% endif %}
+  </div>
 </footer>

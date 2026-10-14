@@ -1,0 +1,17 @@
+/*
+ * Block editor canvas entry point.
+ *
+ * Loaded into the editor iframe via enqueue_block_assets. Deliberately
+ * excludes Tailwind's preflight and utilities so it can't leak into the
+ * editor UI; it only carries the content styles shared with the front end.
+ */
+@import './fonts.css';
+@import './content.css';
+
+.editor-styles-wrapper {
+	background-color: var(--wp--preset--color--background);
+	color: var(--wp--preset--color--foreground);
+	font-family: var(--wp--preset--font-family--body);
+	font-size: var(--wp--preset--font-size--step-0);
+	line-height: 1.6;
+}

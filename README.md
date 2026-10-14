@@ -1,21 +1,41 @@
-![release workflow](https://github.com/ufmedia/WhalePress/actions/workflows/create-release.yml/badge.svg) ![lint-checks workflow](https://github.com/ufmedia/WhalePress/actions/workflows/lint-checks.yml/badge.svg) ![e2e workflow](https://github.com/ufmedia/WhalePress/actions/workflows/e2e-tests.yml/badge.svg) ![owasp basline workflow](https://github.com/ufmedia/WhalePress/actions/workflows/owasp.yml/badge.svg)
+![CI/CD](https://github.com/ufmedia/WhalePress/actions/workflows/ci.yml/badge.svg)
+![GitHub contributors](https://img.shields.io/github/contributors-anon/ufmedia/WhalePress)
+![GitHub last commit](https://img.shields.io/github/last-commit/ufmedia/WhalePress)
 
-![GitHub contributors](https://img.shields.io/github/contributors-anon/ufmedia/dockpress) ![GitHub last commit (by committer)](https://img.shields.io/github/last-commit/ufmedia/dockpress)
-
-<img src="https://github.com/ufmedia/dockpress/blob/main/local/dockpress.png" align="center" height="332" width="400" >
+<img src="local/whalepress.png" align="center" height="332" width="400">
 
 # WhalePress
 
-WhalePress isn't just a helper script; it’s the full-stack power suit for WordPress developers who are tired of the "it works on my machine" nightmare. We’ve bridged the gap between your local localhost and the high-seas of production.
+A WordPress starter for developers who build bespoke sites in code: **Timber 2** templates, **Tailwind CSS 4 + Vite** assets with design tokens in `theme.json`, the block editor for content only, and immutable **Docker** images from local to production.
 
-Head over to the project [Wiki](https://github.com/ufmedia/dockpress/wiki) to learn more and get started.
+- **Local:** Docker Compose with MariaDB, Redis, Mailpit, Adminer and on-demand Xdebug; one-command setup; HMR; database pull and import with URL rewriting; an uploads proxy; a devcontainer.
+- **Theme:** PSR-4 service classes, Twig views, Utopia fluid type and space generated into `theme.json` and mapped to Tailwind, and a content-only block editor whose styles match the front end.
+- **Quality:** PHPCS (WPCS), PHPStan level 8, Rector, PHPUnit + Brain Monkey, ESLint, Stylelint, Prettier (Twig included), Playwright with axe, and Husky + lint-staged + commitlint.
+- **Delivery:** every PR is tested against the production image; merges to `main` are released by semantic-release and deployed to **GHCR**, **AWS** (ECR/ECS) and/or **DigitalOcean** (DOCR/App Platform).
 
-## TL;DR
+## Quick start
 
-```
-gh repo clone ufmedia/WhalePress
+Requires Docker with Compose and Node 24. PHP is optional.
+
+```sh
+gh repo clone ufmedia/WhalePress my-site && cd my-site
+nvm use
 npm install
-npm run setup
+npm run setup   # .env, assets, containers, Composer, WordPress
+npm start       # Containers + Vite dev server
 ```
 
-![WordPress](https://img.shields.io/badge/WordPress-%23117AC9.svg?style=for-the-badge&logo=WordPress&logoColor=white) ![Docker](https://img.shields.io/badge/docker-%230db7ed.svg?style=for-the-badge&logo=docker&logoColor=white) ![MySQL](https://img.shields.io/badge/mysql-%2300f.svg?style=for-the-badge&logo=mysql&logoColor=white) ![PHP](https://img.shields.io/badge/php-%23777BB4.svg?style=for-the-badge&logo=php&logoColor=white) ![NodeJS](https://img.shields.io/badge/node.js-6DA55F?style=for-the-badge&logo=node.js&logoColor=white) ![Webpack](https://img.shields.io/badge/webpack-%238DD6F9.svg?style=for-the-badge&logo=webpack&logoColor=black) ![TailwindCSS](https://img.shields.io/badge/tailwindcss-%2338B2AC.svg?style=for-the-badge&logo=tailwind-css&logoColor=white)
+## Documentation
+
+Start at [docs/Home.md](docs/Home.md).
+
+|                                                                                                                                                                         |                 |
+| ----------------------------------------------------------------------------------------------------------------------------------------------------------------------- | --------------- |
+| [Prerequisites](docs/1.0-Prerequisites.md) · [Installation](docs/1.1-Installation.md) · [Database](docs/1.2-Database.md) · [Local services](docs/1.3-Local-Services.md) | Getting started |
+| [WordPress configuration](docs/2.0-WordPress.md) · [Theme](docs/2.1-Theme.md) · [Plugins](docs/2.2-Plugins.md)                                                          | Building        |
+| [Testing and standards](docs/3.0-Testing-and-Standards.md) · [Deployment](docs/3.1-Deployment.md)                                                                       | Shipping        |
+| [Further reading](docs/4.0-Further-Reading.md) · [Troubleshooting](docs/4.1-Troubleshooting.md)                                                                         | Reference       |
+
+## License
+
+GPL-2.0-or-later.

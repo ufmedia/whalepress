@@ -1,7 +1,13 @@
 /*
- * Theme Name: WhalePress
- * Theme URI: https://whalepress.org/
- * Description: A boilerplate theme included with the WhalePress development environment.
- * Author: John Thompson
- * Version: 1.0.2
+Theme Name: WhalePress
+Theme URI: https://github.com/ufmedia/WhalePress
+Description: A Timber, Tailwind CSS and Vite starter theme. Templates are Twig; the block editor is used for content only.
+Author: John Thompson
+Version: 0.0.0-development
+Requires at least: 7.0
+Requires PHP: 8.3
+License: GPL-2.0-or-later
+License URI: https://www.gnu.org/licenses/gpl-2.0.html
+Text Domain: whalepress
+Domain Path: /languages
 */

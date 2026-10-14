@@ -1,0 +1,50 @@
+{#
+  A single comment and its replies.
+
+  @param Timber\Comment comment
+#}
+<li id="comment-{{ comment.ID }}" class="mt-m">
+  <article>
+    <header class="flex items-center gap-xs">
+      <img
+        src="{{ comment.avatar(48) }}"
+        alt=""
+        width="48"
+        height="48"
+        class="rounded-full"
+        loading="lazy"
+      />
+      <div>
+        <p class="font-bold">
+          {{ comment.author.name }}
+        </p>
+        <p class="text-step-minus-1 text-neutral">
+          <time datetime="{{ comment.date('c') }}">{{ comment.date }}</time>
+        </p>
+      </div>
+    </header>
+
+    {% if not comment.approved %}
+      <p class="mt-xs text-step-minus-1">
+        {{ __('Your comment is awaiting moderation.', 'whalepress') }}
+      </p>
+    {% endif %}
+
+    <div class="comment-content mt-xs">
+      {{ comment.content }}
+    </div>
+    <div class="mt-2-xs text-step-minus-1">
+      {{ comment.reply_link(__('Reply', 'whalepress')) }}
+    </div>
+  </article>
+
+  {% if comment.children %}
+    <ol class="ms-m">
+      {% for child in comment.children %}
+        {% include 'partials/comment.twig' with {
+          comment: child
+        } only %}
+      {% endfor %}
+    </ol>
+  {% endif %}
+</li>

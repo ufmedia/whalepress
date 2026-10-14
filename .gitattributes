@@ -1,0 +1,12 @@
+* text=auto eol=lf
+
+*.png binary
+*.jpg binary
+*.gif binary
+*.ico binary
+*.woff binary
+*.woff2 binary
+
+# Keep lockfiles out of diffs and language stats.
+composer.lock -diff linguist-generated
+package-lock.json -diff linguist-generated

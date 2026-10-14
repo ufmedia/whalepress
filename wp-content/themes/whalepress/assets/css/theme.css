@@ -1,0 +1,55 @@
+/*
+ * Tailwind theme, mapped from theme.json presets.
+ *
+ * theme.json is the source of truth: WordPress outputs each preset as a
+ * --wp--preset--* custom property on the front end and in the editor. Change
+ * values there (or in scripts/fluid-scales.js and run `npm run tokens`), then
+ * add or remove the matching line here.
+ */
+@theme inline {
+	--font-sans: var(--wp--preset--font-family--body);
+	--font-mono: var(--wp--preset--font-family--mono);
+
+	--color-background: var(--wp--preset--color--background);
+	--color-foreground: var(--wp--preset--color--foreground);
+	--color-primary: var(--wp--preset--color--primary);
+	--color-secondary: var(--wp--preset--color--secondary);
+	--color-neutral: var(--wp--preset--color--neutral);
+
+	--text-step-minus-2: var(--wp--preset--font-size--step-minus-2);
+	--text-step-minus-2--line-height: 1.6;
+	--text-step-minus-1: var(--wp--preset--font-size--step-minus-1);
+	--text-step-minus-1--line-height: 1.6;
+	--text-step-0: var(--wp--preset--font-size--step-0);
+	--text-step-0--line-height: 1.6;
+	--text-step-1: var(--wp--preset--font-size--step-1);
+	--text-step-1--line-height: 1.4;
+	--text-step-2: var(--wp--preset--font-size--step-2);
+	--text-step-2--line-height: 1.3;
+	--text-step-3: var(--wp--preset--font-size--step-3);
+	--text-step-3--line-height: 1.2;
+	--text-step-4: var(--wp--preset--font-size--step-4);
+	--text-step-4--line-height: 1.15;
+	--text-step-5: var(--wp--preset--font-size--step-5);
+	--text-step-5--line-height: 1.1;
+	--text-step-6: var(--wp--preset--font-size--step-6);
+	--text-step-6--line-height: 1.1;
+
+	--spacing-3-xs: var(--wp--preset--spacing--3-xs);
+	--spacing-2-xs: var(--wp--preset--spacing--2-xs);
+	--spacing-xs: var(--wp--preset--spacing--xs);
+	--spacing-s: var(--wp--preset--spacing--s);
+	--spacing-m: var(--wp--preset--spacing--m);
+	--spacing-l: var(--wp--preset--spacing--l);
+	--spacing-xl: var(--wp--preset--spacing--xl);
+	--spacing-2-xl: var(--wp--preset--spacing--2-xl);
+	--spacing-3-xl: var(--wp--preset--spacing--3-xl);
+	--spacing-s-m: var(--wp--preset--spacing--s-m);
+	--spacing-m-l: var(--wp--preset--spacing--m-l);
+	--spacing-l-xl: var(--wp--preset--spacing--l-xl);
+	--spacing-s-l: var(--wp--preset--spacing--s-l);
+	--spacing-gutter: var(--wp--preset--spacing--s);
+
+	--container-content: var(--wp--style--global--content-size);
+	--container-wide: var(--wp--style--global--wide-size);
+}

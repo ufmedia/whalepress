@@ -1,45 +1,31 @@
-name: OWASPZAP Basline
+name: OWASP ZAP baseline
+
+# Passive security scan of a deployed environment. Set the HOST_URL variable on
+# each GitHub environment, and optionally ZAP_AUTH_HEADER_VALUE as a secret if
+# the site sits behind an auth header (e.g. a staging password).
+
 on:
   workflow_dispatch:
     inputs:
       environment:
-        description: "Select the environment for the OWASP ZAP scan"
+        description: Environment to scan
+        type: environment
         required: true
-        default: "production"
-        type: choice
-        options:
-          - "production"
-          - "preproduction"
-          - "development"
-      custom-header:
-        description: "ZAP_AUTH_HEADER_VALUE"
-        required: true
-        default: ""
+
+permissions:
+  contents: read
+  issues: write
 
 jobs:
-  build:
-    # The type of runner that the job will run on
+  scan:
     runs-on: ubuntu-latest
-    environment: ${{ github.event.inputs.environment }}
-    # Environment variables
+    environment: ${{ inputs.environment }}
     env:
-      ZAP_AUTH_HEADER_VALUE: ${{ github.event.inputs.custom-header }}
-      TARGET_URL: ${{ vars.HOST_URL }}
-
-    # Steps represent a sequence of tasks that will be executed as part of the job
+      ZAP_AUTH_HEADER_VALUE: ${{ secrets.ZAP_AUTH_HEADER_VALUE }}
     steps:
-      # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
 
-      # Add a delay of 30 minutes for push and pull_request events only giving time for the application to be deployed
-      - name: Wait for 30 minutes
-        if: ${{ github.event_name == 'push' || github.event_name == 'pull_request' }}
-        run: sleep 1800
-
-      - name: OWASP ZAP Baseline Scan
-        # You may pin to the exact commit or the version.
-
-        uses: zaproxy/action-baseline@v0.14.0
+      - uses: zaproxy/action-baseline@de8ad967d3548d44ef623df22cf95c3b0baf8b25 # v0.15.0
         with:
-          # Target URL
-          target: ${{ env.TARGET_URL }}
+          target: ${{ vars.HOST_URL }}
+          issue_title: ZAP baseline report (${{ inputs.environment }})

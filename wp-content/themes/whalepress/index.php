@@ -1,19 +1,19 @@
 <?php
 /**
- * The main template file
- * This is the most generic template file in a WordPress theme
- * and one of the two required files for a theme (the other being style.css).
- * It is used to display a page when nothing more specific matches a query.
+ * Fallback template, also used for the blog posts index.
  *
  * @package WhalePress
- * @since   1.0.0
  */
+
+declare(strict_types=1);
+
+use Timber\Timber;
 
 $context          = Timber::context();
 $context['posts'] = Timber::get_posts();
 
-$templates = array( 'index.twig' );
-if ( is_home() ) {
-	array_unshift( $templates, 'front-page.twig', 'home.twig' );
+if ( is_home() && ! is_front_page() ) {
+	$context['title'] = single_post_title( '', false );
 }
-Timber::render( $templates, $context );
+
+Timber::render( array( 'home.twig', 'index.twig' ), $context );

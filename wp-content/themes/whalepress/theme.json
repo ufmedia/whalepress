@@ -1,13 +1,224 @@
 {
-  "version": 2,
-  "settings": {
-    "layout": {
-      "contentSize": "1200px",
-      "wideSize": "100%"
-    },
-    "typography": {
-      "fontSize": [],
-      "lineHeight": []
-    }
-  }
+	"$schema": "https://schemas.wp.org/trunk/theme.json",
+	"version": 3,
+	"settings": {
+		"appearanceTools": false,
+		"useRootPaddingAwareAlignments": false,
+		"layout": {
+			"contentSize": "48rem",
+			"wideSize": "80rem"
+		},
+		"border": {
+			"color": false,
+			"radius": false,
+			"style": false,
+			"width": false
+		},
+		"color": {
+			"custom": false,
+			"customDuotone": false,
+			"customGradient": false,
+			"defaultDuotone": false,
+			"defaultGradients": false,
+			"defaultPalette": false,
+			"duotone": [],
+			"gradients": [],
+			"link": false,
+			"palette": [
+				{
+					"slug": "background",
+					"name": "Background",
+					"color": "#ffffff"
+				},
+				{
+					"slug": "foreground",
+					"name": "Foreground",
+					"color": "#0f172a"
+				},
+				{
+					"slug": "primary",
+					"name": "Primary",
+					"color": "#0b6bcb"
+				},
+				{
+					"slug": "secondary",
+					"name": "Secondary",
+					"color": "#0f2a44"
+				},
+				{
+					"slug": "neutral",
+					"name": "Neutral",
+					"color": "#64748b"
+				}
+			]
+		},
+		"shadow": {
+			"defaultPresets": false,
+			"presets": []
+		},
+		"spacing": {
+			"blockGap": true,
+			"customSpacingSize": false,
+			"defaultSpacingSizes": false,
+			"margin": false,
+			"padding": false,
+			"units": [
+				"rem",
+				"%"
+			],
+			"spacingSizes": [
+				{
+					"slug": "3-xs",
+					"name": "3-XS",
+					"size": "clamp(0.25rem, 0.2054rem + 0.1116vw, 0.3125rem)"
+				},
+				{
+					"slug": "2-xs",
+					"name": "2-XS",
+					"size": "clamp(0.5rem, 0.4107rem + 0.2232vw, 0.625rem)"
+				},
+				{
+					"slug": "xs",
+					"name": "XS",
+					"size": "clamp(0.75rem, 0.6161rem + 0.3348vw, 0.9375rem)"
+				},
+				{
+					"slug": "s",
+					"name": "S",
+					"size": "clamp(1rem, 0.8214rem + 0.4464vw, 1.25rem)"
+				},
+				{
+					"slug": "m",
+					"name": "M",
+					"size": "clamp(1.5rem, 1.2321rem + 0.6696vw, 1.875rem)"
+				},
+				{
+					"slug": "l",
+					"name": "L",
+					"size": "clamp(2rem, 1.6429rem + 0.8929vw, 2.5rem)"
+				},
+				{
+					"slug": "xl",
+					"name": "XL",
+					"size": "clamp(3rem, 2.4643rem + 1.3393vw, 3.75rem)"
+				},
+				{
+					"slug": "2-xl",
+					"name": "2-XL",
+					"size": "clamp(4rem, 3.2857rem + 1.7857vw, 5rem)"
+				},
+				{
+					"slug": "3-xl",
+					"name": "3-XL",
+					"size": "clamp(6rem, 4.9286rem + 2.6786vw, 7.5rem)"
+				},
+				{
+					"slug": "s-m",
+					"name": "S → M",
+					"size": "clamp(1rem, 0.375rem + 1.5625vw, 1.875rem)"
+				},
+				{
+					"slug": "m-l",
+					"name": "M → L",
+					"size": "clamp(1.5rem, 0.7857rem + 1.7857vw, 2.5rem)"
+				},
+				{
+					"slug": "l-xl",
+					"name": "L → XL",
+					"size": "clamp(2rem, 0.75rem + 3.125vw, 3.75rem)"
+				},
+				{
+					"slug": "s-l",
+					"name": "S → L",
+					"size": "clamp(1rem, -0.0714rem + 2.6786vw, 2.5rem)"
+				}
+			]
+		},
+		"typography": {
+			"customFontSize": false,
+			"defaultFontSizes": false,
+			"dropCap": false,
+			"fluid": false,
+			"fontStyle": false,
+			"fontWeight": false,
+			"letterSpacing": false,
+			"lineHeight": false,
+			"textDecoration": false,
+			"textTransform": false,
+			"writingMode": false,
+			"fontFamilies": [
+				{
+					"slug": "body",
+					"name": "Body",
+					"fontFamily": "\"Atkinson Hyperlegible\", ui-sans-serif, system-ui, sans-serif"
+				},
+				{
+					"slug": "mono",
+					"name": "Monospace",
+					"fontFamily": "ui-monospace, SFMono-Regular, Menlo, Consolas, monospace"
+				}
+			],
+			"fontSizes": [
+				{
+					"slug": "step-minus-2",
+					"name": "Step -2",
+					"size": "clamp(0.6944rem, 0.619rem + 0.1885vw, 0.8rem)",
+					"fluid": false
+				},
+				{
+					"slug": "step-minus-1",
+					"name": "Step -1",
+					"size": "clamp(0.8333rem, 0.7143rem + 0.2976vw, 1rem)",
+					"fluid": false
+				},
+				{
+					"slug": "step-0",
+					"name": "Step 0",
+					"size": "clamp(1rem, 0.8214rem + 0.4464vw, 1.25rem)",
+					"fluid": false
+				},
+				{
+					"slug": "step-1",
+					"name": "Step 1",
+					"size": "clamp(1.2rem, 0.9411rem + 0.6473vw, 1.5625rem)",
+					"fluid": false
+				},
+				{
+					"slug": "step-2",
+					"name": "Step 2",
+					"size": "clamp(1.44rem, 1.0735rem + 0.9163vw, 1.9531rem)",
+					"fluid": false
+				},
+				{
+					"slug": "step-3",
+					"name": "Step 3",
+					"size": "clamp(1.728rem, 1.2184rem + 1.2739vw, 2.4414rem)",
+					"fluid": false
+				},
+				{
+					"slug": "step-4",
+					"name": "Step 4",
+					"size": "clamp(2.0736rem, 1.3749rem + 1.7467vw, 3.0518rem)",
+					"fluid": false
+				},
+				{
+					"slug": "step-5",
+					"name": "Step 5",
+					"size": "clamp(2.4883rem, 1.5409rem + 2.3685vw, 3.8147rem)",
+					"fluid": false
+				},
+				{
+					"slug": "step-6",
+					"name": "Step 6",
+					"size": "clamp(2.986rem, 1.7129rem + 3.1828vw, 4.7684rem)",
+					"fluid": false
+				}
+			]
+		}
+	},
+	"styles": {
+		"spacing": {
+			"blockGap": "var(--wp--preset--spacing--m)"
+		}
+	}
 }

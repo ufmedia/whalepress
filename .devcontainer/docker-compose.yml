@@ -1,0 +1,6 @@
+# Devcontainer additions: mount the whole repository at /workspace. Paths are
+# relative to the project directory (the repository root), not this file.
+services:
+  wordpress:
+    volumes:
+      - .:/workspace

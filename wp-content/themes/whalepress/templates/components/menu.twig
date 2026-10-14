@@ -1,0 +1,27 @@
+{#
+  Recursive menu list.
+
+  Usage:
+    {% import 'components/menu.twig' as nav %}
+    {{ nav.list(menus.primary.items, 'flex gap-m') }}
+#}
+{% macro list(items, class = '') %}
+  <ul class="{{ class }}">
+    {% for item in items %}
+      <li class="{{ item.classes|join(' ') }}">
+        <a
+          href="{{ item.link }}"
+          class="no-underline hover:underline aria-[current=page]:font-bold"
+          aria-current="{{ item.current ? 'page' : 'false' }}"
+          target="{{ item.target }}"
+          rel="{{ item.is_target_blank ? 'noopener' }}"
+        >
+          {{- item.title -}}
+        </a>
+        {% if item.children %}
+          {{ _self.list(item.children, 'ms-s mt-2-xs flex flex-col gap-2-xs') }}
+        {% endif %}
+      </li>
+    {% endfor %}
+  </ul>
+{% endmacro %}

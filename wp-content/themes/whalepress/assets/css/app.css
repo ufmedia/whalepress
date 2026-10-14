@@ -1,0 +1,17 @@
+/*
+ * Front-end entry point.
+ *
+ * Sources are listed explicitly so class detection is predictable; add a line
+ * if you keep markup anywhere else.
+ */
+@import 'tailwindcss' source(none);
+@import './fonts.css';
+@import './theme.css';
+@import './base.css';
+@import './layout.css';
+@import './content.css';
+
+@source '../../templates';
+@source '../../src';
+@source '../../*.php';
+@source '../js';

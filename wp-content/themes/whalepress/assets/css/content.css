@@ -1,0 +1,148 @@
+/*
+ * Styles for block editor content.
+ *
+ * Shared by the front end (.entry-content) and the editor canvas
+ * (.editor-styles-wrapper), and built only on theme.json custom properties so
+ * both render identically. Kept unlayered so it wins over WordPress's own
+ * unlayered editor styles, with :where() keeping specificity at zero so block
+ * styles and utility classes can still override it.
+ */
+
+:where(.entry-content, .editor-styles-wrapper) {
+	:where(h1, h2, h3, h4, h5, h6) {
+		font-weight: 700;
+		line-height: 1.2;
+	}
+
+	:where(h1) {
+		font-size: var(--wp--preset--font-size--step-5);
+	}
+
+	:where(h2) {
+		font-size: var(--wp--preset--font-size--step-3);
+	}
+
+	:where(h3) {
+		font-size: var(--wp--preset--font-size--step-2);
+	}
+
+	:where(h4) {
+		font-size: var(--wp--preset--font-size--step-1);
+	}
+
+	:where(h5, h6) {
+		font-size: var(--wp--preset--font-size--step-0);
+	}
+
+	:where(p) {
+		text-wrap: pretty;
+	}
+
+	:where(a:not(.wp-element-button)) {
+		color: var(--wp--preset--color--primary);
+		text-decoration-line: underline;
+		text-underline-offset: 0.15em;
+	}
+
+	:where(ul, ol) {
+		padding-inline-start: 1.5em;
+	}
+
+	:where(ul) {
+		list-style-type: disc;
+	}
+
+	:where(ol) {
+		list-style-type: decimal;
+	}
+
+	:where(blockquote) {
+		border-inline-start: 4px solid var(--wp--preset--color--primary);
+		padding-inline-start: var(--wp--preset--spacing--s);
+		font-style: italic;
+	}
+
+	:where(figcaption) {
+		margin-block-start: var(--wp--preset--spacing--2-xs);
+		color: var(--wp--preset--color--neutral);
+		font-size: var(--wp--preset--font-size--step-minus-1);
+	}
+
+	:where(code, kbd, samp, pre) {
+		font-family: var(--wp--preset--font-family--mono);
+		font-size: 0.9em;
+	}
+
+	:where(pre) {
+		overflow-x: auto;
+		padding: var(--wp--preset--spacing--s);
+		background-color: color-mix(in srgb, var(--wp--preset--color--neutral) 10%, transparent);
+	}
+
+	:where(table) {
+		width: 100%;
+		border-collapse: collapse;
+	}
+
+	:where(th, td) {
+		border: 1px solid color-mix(in srgb, var(--wp--preset--color--neutral) 40%, transparent);
+		padding: var(--wp--preset--spacing--2-xs) var(--wp--preset--spacing--xs);
+		text-align: start;
+	}
+
+	:where(hr) {
+		border: 0;
+		border-block-start: 1px solid
+			color-mix(in srgb, var(--wp--preset--color--neutral) 40%, transparent);
+	}
+
+	:where(img, video) {
+		max-width: 100%;
+		height: auto;
+	}
+}
+
+/*
+ * Front-end flow layout. The editor applies the equivalent layout itself from
+ * the contentSize and wideSize settings in theme.json.
+ */
+.entry-content {
+	--gutter: var(--wp--preset--spacing--s);
+
+	> * {
+		max-width: min(100% - 2 * var(--gutter), var(--wp--style--global--content-size));
+		margin-inline: auto;
+	}
+
+	> * + * {
+		margin-block-start: var(--wp--style--block-gap, 1.5rem);
+	}
+
+	> :where(h2, h3, h4) {
+		margin-block-start: var(--wp--preset--spacing--l);
+	}
+
+	> .alignwide {
+		max-width: min(100% - 2 * var(--gutter), var(--wp--style--global--wide-size));
+	}
+
+	> .alignfull {
+		max-width: none;
+	}
+
+	> .alignleft {
+		float: inline-start;
+		margin-inline-end: var(--wp--preset--spacing--m);
+	}
+
+	> .alignright {
+		float: inline-end;
+		margin-inline-start: var(--wp--preset--spacing--m);
+	}
+
+	&::after {
+		display: table;
+		clear: both;
+		content: '';
+	}
+}

@@ -1,9 +1,5 @@
-if [ "$CI" = "true" ]; then
-  exit 0
-fi
+# Load nvm for GUI git clients that don't source your shell profile.
 export NVM_DIR="$HOME/.nvm"
-[ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
-cd wp-content/themes/whalepress 
-npm run lint:js
-npm run lint:css
-npm run lint:php
+[ -s "$NVM_DIR/nvm.sh" ] && . "$NVM_DIR/nvm.sh"
+
+npx --no -- lint-staged

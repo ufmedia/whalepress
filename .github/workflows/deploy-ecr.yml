@@ -1,73 +1,83 @@
-name: Deploy to ECR
-run-name: "Deploy to ECR"
+name: Deploy (AWS)
+
+# Pushes the release image to Amazon ECR, then optionally rolls an ECS service.
+#
+# Variables: AWS_REGION, ECR_REPOSITORY (defaults to the repository name),
+#            AWS_ROLE_ARN (recommended: OIDC), ECS_CLUSTER + ECS_SERVICE (optional)
+# Secrets:   AWS_ACCESS_KEY_ID + AWS_SECRET_ACCESS_KEY (only without OIDC),
+#            COMPOSER_AUTH (optional)
+# Runs from the CI/CD pipeline after a release when DEPLOY_ECR is "true", or
+# manually for any tag.
 
 on:
-  workflow_run:
-    workflows: ["DISABLED"] # Change to "Create Release" to enable
+  workflow_call:
+    inputs:
+      version:
+        type: string
+        required: true
+  workflow_dispatch:
+    inputs:
+      version:
+        description: Version to deploy, without the "v" (e.g. 1.4.0).
+        type: string
+        required: true
+
+permissions:
+  contents: read
+  id-token: write
+
+concurrency:
+  group: deploy-ecr
+  cancel-in-progress: false
 
 jobs:
-  build-and-push:
+  deploy:
     runs-on: ubuntu-latest
-
+    environment: production
     steps:
-      - name: Checkout repo
-        uses: actions/checkout@v6
-
-      - name: Configure AWS credentials
-        uses: aws-actions/configure-aws-credentials@v6
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
+          ref: v${{ inputs.version }}
+
+      # Uses OIDC when AWS_ROLE_ARN is set, otherwise the access key secrets.
+      - uses: aws-actions/configure-aws-credentials@e1253824e5c10ff9df46874f81ed3ec929e19cfd # v6.3.0
+        with:
+          aws-region: ${{ vars.AWS_REGION }}
+          role-to-assume: ${{ vars.AWS_ROLE_ARN }}
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          aws-region: ${{ secrets.AWS_REGION }}
 
-      - name: Login to Amazon ECR
-        uses: aws-actions/amazon-ecr-login@v1
+      - id: ecr
+        uses: aws-actions/amazon-ecr-login@03f1aad4c6c7ffd436567f42f9384779290529bd # v2.1.7
 
-      - name: Set image name
-        run: |
-          ACCOUNT_ID=$(aws sts get-caller-identity --query Account --output text)
-          echo "ACCOUNT_ID=$ACCOUNT_ID" >> $GITHUB_ENV
-          REPO_NAME=$(basename "${GITHUB_REPOSITORY}")
-          echo "IMAGE_NAME=${ACCOUNT_ID}.dkr.ecr.${{ secrets.AWS_REGION }}.amazonaws.com/${REPO_NAME}" >> $GITHUB_ENV
+      - name: Image name
+        env:
+          REGISTRY: ${{ steps.ecr.outputs.registry }}
+          REPOSITORY: ${{ vars.ECR_REPOSITORY }}
+        run: echo "IMAGE=${REGISTRY}/${REPOSITORY:-${GITHUB_REPOSITORY#*/}}" >> "$GITHUB_ENV"
 
-      - name: Fetch latest SemVer tag
-        run: |
-          git fetch --tags
-          TAG=$(git tag --sort=-v:refname | grep -E '^v[0-9]+\.[0-9]+\.[0-9]+$' | head -n 1)
-          echo "VERSION_TAG=$TAG" >> $GITHUB_ENV
-          echo "Deploying version: $TAG"
-
-      - name: Create auth.json
-        run: |
-          cat <<EOF > auth.json
-          {
-            "http-basic": {
-              "connect.advancedcustomfields.com": {
-                "username": "${{ secrets.ACF_EMAIL }}",
-                "password": "${{ secrets.ACF_KEY }}"
-              }
-            }
-          }
-          EOF
-
-      - name: Create .env file for Composer
-        run: |
-          cat <<EOF > .env
-          GRAVITY_FORMS_KEY=${{ secrets.GRAVITY_FORMS_KEY }}
-          RELEVANSSI_KEY=${{ secrets.RELEVANSSI_KEY }}
-          EOF
-
-      - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v3
-
-      - name: Build and push Docker image to ECR
-        uses: docker/build-push-action@v5
+      - id: build
+        uses: ./.github/actions/build-image
         with:
-          context: .
-          push: true
-          tags: |
-            ${{ env.IMAGE_NAME }}:${{ env.VERSION_TAG }}
-            ${{ env.IMAGE_NAME }}:latest
+          image: ${{ env.IMAGE }}
+          version: ${{ inputs.version }}
+          push: 'true'
+          cache-scope: ecr
+          composer-auth: ${{ secrets.COMPOSER_AUTH }}
 
-      - name: Cleanup sensitive files
-        run: rm -f auth.json
+      # The ECS task definition should reference the :latest tag (see
+      # infra/aws/ecs-task-definition.json) so a new deployment pulls this image.
+      - name: Roll ECS service
+        if: vars.ECS_CLUSTER != '' && vars.ECS_SERVICE != ''
+        run: |
+          aws ecs update-service --cluster "${{ vars.ECS_CLUSTER }}" --service "${{ vars.ECS_SERVICE }}" --force-new-deployment > /dev/null
+          aws ecs wait services-stable --cluster "${{ vars.ECS_CLUSTER }}" --services "${{ vars.ECS_SERVICE }}"
+
+      - name: Summary
+        run: |
+          {
+            echo "### Pushed to ECR"
+            echo '```'
+            echo "${{ steps.build.outputs.tags }}"
+            echo '```'
+          } >> "$GITHUB_STEP_SUMMARY"

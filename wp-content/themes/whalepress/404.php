@@ -1,10 +1,12 @@
 <?php
 /**
- * The template for displaying 404 pages (Not Found)
+ * Not found.
  *
  * @package WhalePress
- * @since    1.0.0
  */
 
-$context = Timber::context();
-Timber::render( '404.twig', $context );
+declare(strict_types=1);
+
+use Timber\Timber;
+
+Timber::render( '404.twig', Timber::context() );

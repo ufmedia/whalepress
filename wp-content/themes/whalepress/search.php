@@ -1,15 +1,18 @@
 <?php
 /**
- * Search results page
+ * Search results.
  *
  * @package WhalePress
- * @since   1.0.0
  */
 
-$templates = array( 'search.twig', 'archive.twig', 'index.twig' );
+declare(strict_types=1);
 
-$context          = Timber::context();
-$context['title'] = 'Search results for ' . get_search_query();
-$context['posts'] = new Timber\PostQuery();
+use Timber\Timber;
 
-Timber::render( $templates, $context );
+$context = Timber::context();
+
+/* translators: %s: search query. */
+$context['title'] = sprintf( __( 'Search results for “%s”', 'whalepress' ), get_search_query() );
+$context['posts'] = Timber::get_posts();
+
+Timber::render( array( 'search.twig', 'archive.twig', 'index.twig' ), $context );

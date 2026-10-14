@@ -1,7 +1,8 @@
 {
-    "name": "ufmedia/dokpress",
-    "description": "A complete wordpress development environment.",
+    "name": "ufmedia/whalepress",
+    "description": "A containerised WordPress starter built on Timber, Tailwind CSS and Vite.",
     "type": "project",
+    "license": "GPL-2.0-or-later",
     "authors": [
         {
             "name": "John Thompson",
@@ -11,20 +12,54 @@
     "repositories": [
         {
             "type": "composer",
-            "url": "https://wpackagist.org"
+            "url": "https://wpackagist.org",
+            "only": [
+                "wpackagist-plugin/*",
+                "wpackagist-theme/*"
+            ]
         }
     ],
     "require": {
-        "wpackagist-plugin/classic-editor": "*",
-	    "wpackagist-plugin/switcheroo": "*"
-
+        "php": ">=8.3",
+        "composer/installers": "^2.3",
+        "timber/timber": "^2.5",
+        "wpackagist-plugin/redis-cache": "^2.8",
+        "wpackagist-plugin/switcheroo": "^1.0"
+    },
+    "require-dev": {
+        "brain/monkey": "^2.6",
+        "dealerdirect/phpcodesniffer-composer-installer": "^1.0",
+        "php-stubs/wordpress-stubs": "^7.1",
+        "phpstan/extension-installer": "^1.4",
+        "phpstan/phpstan": "^2.3",
+        "phpunit/phpunit": "^12.5",
+        "rector/rector": "^2.7",
+        "szepeviktor/phpstan-wordpress": "^2.0",
+        "wp-coding-standards/wpcs": "^3.4",
+        "wpackagist-plugin/query-monitor": "^4.0",
+        "wpackagist-plugin/user-switching": "^1.12",
+        "wpackagist-plugin/wp-crontrol": "^1.22"
+    },
+    "autoload": {
+        "psr-4": {
+            "WhalePress\\": "wp-content/themes/whalepress/src/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "WhalePress\\Tests\\": "tests/php/"
+        }
     },
     "config": {
-        "vendor-dir": "wp-content/vendor",
+        "optimize-autoloader": true,
+        "sort-packages": true,
+        "platform": {
+            "php": "8.3.0"
+        },
         "allow-plugins": {
             "composer/installers": true,
-            "gotoandplay/gravityforms-composer-installer": true,
-            "ffraenz/private-composer-installer": true
+            "dealerdirect/phpcodesniffer-composer-installer": true,
+            "phpstan/extension-installer": true
         }
     },
     "extra": {
@@ -32,9 +67,35 @@
             "wp-content/plugins/{$name}/": [
                 "type:wordpress-plugin"
             ],
+            "wp-content/mu-plugins/{$name}/": [
+                "type:wordpress-muplugin"
+            ],
             "wp-content/themes/{$name}/": [
                 "type:wordpress-theme"
             ]
         }
+    },
+    "scripts": {
+        "lint": "phpcs",
+        "lint:fix": "phpcbf",
+        "analyse": "phpstan analyse --memory-limit=1G",
+        "rector": "rector process --dry-run",
+        "rector:fix": "rector process",
+        "test": "phpunit",
+        "qa": [
+            "@lint",
+            "@analyse",
+            "@rector",
+            "@test"
+        ]
+    },
+    "scripts-descriptions": {
+        "lint": "Check PHP against the WordPress Coding Standards.",
+        "lint:fix": "Automatically fix coding standard violations.",
+        "analyse": "Run PHPStan static analysis.",
+        "rector": "Preview Rector refactors.",
+        "rector:fix": "Apply Rector refactors.",
+        "test": "Run the PHPUnit suite.",
+        "qa": "Run every PHP quality check."
     }
 }

@@ -1,49 +1,62 @@
-# Ignore WordPress root files and directories
+# ---------------------------------------------------------------------------
+# WordPress
+#
+# Core lives in the container, not the repository. These entries also cover
+# core files left over from older setups that mounted the whole repository.
+# ---------------------------------------------------------------------------
 /wp-admin/
 /wp-includes/
-/wp-content/*
-/wp-activate.php
-/wp-blog-header.php
-/wp-comments-post.php
-/wp-config-sample.php
-/wp-config-docker.php
-/wp-cron.php
-/wp-links-opml.php
-/wp-load.php
-/wp-login.php
-/wp-mail.php
-/wp-settings.php
-/wp-signup.php
-/wp-trackback.php
-/xmlrpc.php
+/wp-*.php
+!/wp-config.php
 /index.php
-/.htaccess
-/LICENSE
+/xmlrpc.php
 /license.txt
 /readme.html
+/.htaccess
 
-#WordPress Theme Exceptions
-!/wp-content/themes
-wp-content/themes/*
-!wp-content/themes/whalepress/
+# wp-content: only the theme, must-use plugins and custom plugins are tracked.
+/wp-content/*
+!/wp-content/index.php
+!/wp-content/mu-plugins/
+!/wp-content/plugins/
+!/wp-content/themes/
 
-#WordPress Plugin Exceptions
-!wp-content/plugins/
-wp-content/plugins/*
-#!wp-content/plugins/example-plugin/
+# Composer installs plugins here; track custom plugins with an exception
+# below AND in .dockerignore's counterpart (see docs/2.2-Plugins.md).
+/wp-content/plugins/*
+!/wp-content/plugins/index.php
+# !/wp-content/plugins/my-plugin/
 
+/wp-content/themes/*
+!/wp-content/themes/index.php
+!/wp-content/themes/whalepress/
 
-#Additional files and directories
-.DS_Store
-.env
-.idea/
-.vscode/
+# Must-use plugins installed by Composer.
+/wp-content/mu-plugins/*/
+
+# ---------------------------------------------------------------------------
+# Dependencies and build output
+# ---------------------------------------------------------------------------
 /vendor/
-wp-content/vendor/
-phpinfo.php
-node_modules
-local/var
-cypress.env.json
-cypress/screenshots
-cypress/videos
+node_modules/
+
+# ---------------------------------------------------------------------------
+# Local environment and tooling
+# ---------------------------------------------------------------------------
+.env
 auth.json
+local/var/
+local/initial-db/*
+!local/initial-db/.gitkeep
+.phpunit.cache/
+.phpcs-cache
+playwright-report/
+test-results/
+tests/e2e/.auth/
+
+# Editors and OS
+.DS_Store
+.idea/
+.vscode/*
+!.vscode/extensions.json
+wp-content/themes/whalepress/languages/twig-strings.php

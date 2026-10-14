@@ -1,12 +1,18 @@
 {
-    "phpsab.executablePathCBF": "/home/[USER]/.config/composer/vendor/bin/phpcbf",
-    "phpsab.executablePathCS": "/home/[USER]/.config/composer/vendor/bin/phpcs",
-    "phpsab.autoRulesetSearch": false,
-    "phpsab.standard": "WordPress",
-    "phpsab.snifferArguments": [
-        "--ignore=*/wp-admin/*,*/wp-includes/*"
-    ],
-    "editor.formatOnSave": true,
+	// Copy to .vscode/settings.json.
+	"editor.formatOnSave": true,
+	"editor.defaultFormatter": "esbenp.prettier-vscode",
+	"[php]": {
+		"editor.defaultFormatter": "valeryanm.vscode-phpsab"
+	},
+	"phpsab.executablePathCS": "./vendor/bin/phpcs",
+	"phpsab.executablePathCBF": "./vendor/bin/phpcbf",
+	"phpsab.autoRulesetSearch": true,
+	"intelephense.environment.phpVersion": "8.3.0",
+	"intelephense.stubs": ["Core", "date", "json", "pcre", "spl", "standard", "wordpress"],
+	"tailwindCSS.experimental.configFile": "wp-content/themes/whalepress/assets/css/app.css",
+	"tailwindCSS.includeLanguages": { "twig": "html" },
+	"files.associations": { "*.twig": "twig" },
+	"stylelint.validate": ["css"],
+	"eslint.workingDirectories": ["wp-content/themes/whalepress"]
 }
-
-// An example configuration for PHPCS and PHPCBF using the PHP CodeSniffer extension. Don't forget to update the paths above with yours.

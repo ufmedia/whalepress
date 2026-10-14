@@ -1,0 +1,68 @@
+name: Build image
+description: Build the production image with Buildx, and optionally push it.
+
+inputs:
+  image:
+    description: Image name without a tag, e.g. ghcr.io/org/repo.
+    required: true
+  version:
+    description: Release version without the leading "v", e.g. 1.4.0.
+    required: false
+    default: ''
+  push:
+    description: Push to the registry.
+    required: false
+    default: 'false'
+  load:
+    description: Load the image into the local Docker daemon (for tests and scans).
+    required: false
+    default: 'false'
+  cache-scope:
+    description: GitHub Actions cache scope for layer caching.
+    required: false
+    default: production
+  composer-auth:
+    description: COMPOSER_AUTH JSON for private Composer repositories.
+    required: false
+    default: ''
+
+outputs:
+  digest:
+    description: Image digest (when pushed).
+    value: ${{ steps.build.outputs.digest }}
+  tags:
+    description: Tags applied to the image.
+    value: ${{ steps.meta.outputs.tags }}
+
+runs:
+  using: composite
+  steps:
+    - uses: docker/setup-buildx-action@f87e5991a6d7451dcb8d9637bfbc97413f497069 # v4.4.1
+
+    - id: meta
+      uses: docker/metadata-action@dc802804100637a589fabce1cb79ff13a1411302 # v6.2.0
+      with:
+        images: ${{ inputs.image }}
+        tags: |
+          type=semver,pattern={{version}},value=v${{ inputs.version }},enable=${{ inputs.version != '' }}
+          type=semver,pattern={{major}}.{{minor}},value=v${{ inputs.version }},enable=${{ inputs.version != '' }}
+          type=raw,value=latest,enable=${{ inputs.version != '' }}
+          type=raw,value=ci,enable=${{ inputs.version == '' }}
+
+    - id: build
+      uses: docker/build-push-action@c3c9e263c25d99ce0380d002d59b67737d91b0dc # v7.4.0
+      with:
+        context: .
+        target: production
+        push: ${{ inputs.push }}
+        load: ${{ inputs.load }}
+        tags: ${{ steps.meta.outputs.tags }}
+        labels: ${{ steps.meta.outputs.labels }}
+        build-args: |
+          APP_VERSION=${{ inputs.version || '0.0.0-development' }}
+        secrets: |
+          composer_auth=${{ inputs.composer-auth }}
+        cache-from: type=gha,scope=${{ inputs.cache-scope }}
+        cache-to: type=gha,mode=max,scope=${{ inputs.cache-scope }}
+        provenance: ${{ inputs.push == 'true' }}
+        sbom: ${{ inputs.push == 'true' }}

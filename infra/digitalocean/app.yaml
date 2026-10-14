@@ -1,0 +1,93 @@
+# DigitalOcean App Platform spec for the DOCR pathway.
+#
+#   doctl apps create --spec infra/digitalocean/app.yaml
+#
+# Then set DO_APP_ID (from `doctl apps list`) as a repository variable so the
+# deploy workflow redeploys after each release. Replace the [PLACEHOLDERS];
+# values marked SECRET are encrypted by App Platform once saved.
+#
+# Note: App Platform containers have no persistent disk. Offload uploads to
+# Spaces (e.g. with an S3 offload plugin) before going live.
+
+name: [APP_NAME]
+region: lon
+
+services:
+  - name: wordpress
+    image:
+      registry_type: DOCR
+      repository: [REPO]
+      tag: latest
+    http_port: 80
+    instance_count: 1
+    instance_size_slug: apps-s-1vcpu-1gb
+    health_check:
+      http_path: /wp-includes/images/blank.gif
+    envs:
+      - key: WP_ENVIRONMENT_TYPE
+        value: production
+      - key: WP_HOME
+        value: ${APP_URL}
+      - key: WORDPRESS_DB_HOST
+        value: ${db.HOSTNAME}:${db.PORT}
+      - key: WORDPRESS_DB_NAME
+        value: ${db.DATABASE}
+      - key: WORDPRESS_DB_USER
+        value: ${db.USERNAME}
+      - key: WORDPRESS_DB_PASSWORD
+        value: ${db.PASSWORD}
+        type: SECRET
+      - key: WORDPRESS_AUTH_KEY
+        value: [GENERATE]
+        type: SECRET
+      - key: WORDPRESS_SECURE_AUTH_KEY
+        value: [GENERATE]
+        type: SECRET
+      - key: WORDPRESS_LOGGED_IN_KEY
+        value: [GENERATE]
+        type: SECRET
+      - key: WORDPRESS_NONCE_KEY
+        value: [GENERATE]
+        type: SECRET
+      - key: WORDPRESS_AUTH_SALT
+        value: [GENERATE]
+        type: SECRET
+      - key: WORDPRESS_SECURE_AUTH_SALT
+        value: [GENERATE]
+        type: SECRET
+      - key: WORDPRESS_LOGGED_IN_SALT
+        value: [GENERATE]
+        type: SECRET
+      - key: WORDPRESS_NONCE_SALT
+        value: [GENERATE]
+        type: SECRET
+      - key: DISABLE_WP_CRON
+        value: 'true'
+
+jobs:
+  - name: cron
+    kind: SCHEDULED
+    schedule:
+      cron: '*/5 * * * *'
+    image:
+      registry_type: DOCR
+      repository: [REPO]
+      tag: latest
+    run_command: su -s /bin/sh www-data -c "wp cron event run --due-now --path=/var/www/html"
+    instance_size_slug: apps-s-1vcpu-0.5gb
+    envs:
+      - key: WORDPRESS_DB_HOST
+        value: ${db.HOSTNAME}:${db.PORT}
+      - key: WORDPRESS_DB_NAME
+        value: ${db.DATABASE}
+      - key: WORDPRESS_DB_USER
+        value: ${db.USERNAME}
+      - key: WORDPRESS_DB_PASSWORD
+        value: ${db.PASSWORD}
+        type: SECRET
+
+databases:
+  - name: db
+    engine: MYSQL
+    production: true
+    cluster_name: [MANAGED_DB_CLUSTER]

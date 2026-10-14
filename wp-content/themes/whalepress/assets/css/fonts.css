@@ -1,0 +1,7 @@
+/*
+ * Self-hosted fonts, bundled by Vite. Swap the package to change typeface,
+ * and update the "body" font family in theme.json to match.
+ */
+@import '@fontsource/atkinson-hyperlegible/latin-400.css';
+@import '@fontsource/atkinson-hyperlegible/latin-400-italic.css';
+@import '@fontsource/atkinson-hyperlegible/latin-700.css';

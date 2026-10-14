@@ -1,0 +1,33 @@
+{
+	// Attaches VS Code to the wordpress container with PHP, Composer, Xdebug,
+	// WP-CLI and Node available. Inside the container, run `wp` and `composer`
+	// directly (the npm wrappers call Docker, which isn't available here).
+	"name": "WhalePress",
+	"dockerComposeFile": ["../docker-compose.yml", "docker-compose.yml"],
+	"service": "wordpress",
+	"runServices": ["wordpress", "db", "redis", "mailpit", "adminer"],
+	"workspaceFolder": "/workspace",
+	"overrideCommand": false,
+	"initializeCommand": "test -f .env || cp .env-example .env",
+	"features": {
+		"ghcr.io/devcontainers/features/node:1": { "version": "24" }
+	},
+	"forwardPorts": [5173],
+	"postCreateCommand": "bash .devcontainer/post-create.sh",
+	"customizations": {
+		"vscode": {
+			"extensions": [
+				"bmewburn.vscode-intelephense-client",
+				"xdebug.php-debug",
+				"valeryanm.vscode-phpsab",
+				"bradlc.vscode-tailwindcss",
+				"mblode.twig-language-2",
+				"dbaeumer.vscode-eslint",
+				"stylelint.vscode-stylelint",
+				"esbenp.prettier-vscode",
+				"ms-playwright.playwright",
+				"editorconfig.editorconfig"
+			]
+		}
+	}
+}

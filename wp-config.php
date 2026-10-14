@@ -1,178 +1,175 @@
 <?php
 /**
- * WordPress Configuration File
+ * WordPress configuration.
  *
- * This file contains the following configurations:
- * - Database settings
- * - Security keys and salts
- * - Cache and Redis configuration
- * - Debug settings
- * - Custom WordPress settings
+ * Every value comes from the environment so the same file works locally (via
+ * .env and Docker Compose) and in production images. Each variable can also
+ * be supplied as a Docker secret by pointing VARIABLE_FILE at a file path.
  *
- * @link https://wordpress.org/support/article/editing-wp-config-php/
- * @package WordPress
+ * See docs/2.0-WordPress.md for the full list of variables.
+ *
+ * @package WhalePress
  */
 
-// ==============================================================================
-// HELPER FUNCTIONS
-// ==============================================================================
+// phpcs:disable WordPress.WP.GlobalVariablesOverride.Prohibited -- $table_prefix is a core global.
 
 /**
- * Helper function to lookup "env_FILE", "env", then fallback to default
- * Supports Docker secrets and environment variables
+ * Read an environment variable, preferring a *_FILE secret. Empty values are
+ * treated as unset.
+ *
  * @link https://github.com/docker-library/wordpress/issues/588
+ *
+ * @param string $name     Variable name.
+ * @param string $fallback Value used when the variable is not set.
  */
-if ( ! function_exists( 'getenv_docker' ) ) {
-function getenv_docker( $env, $default ) {
-if ( $fileEnv = getenv( $env . '_FILE' ) ) {
-return rtrim( file_get_contents( $fileEnv ), "\r\n" );
-} elseif ( ( $val = getenv( $env ) ) !== false ) {
-return $val;
-} else {
-return $default;
+function whalepress_env( string $name, string $fallback = '' ): string {
+	$file = getenv( $name . '_FILE' );
+	if ( false !== $file && is_readable( $file ) ) {
+		return rtrim( (string) file_get_contents( $file ), "\r\n" ); // phpcs:ignore WordPress.WP.AlternativeFunctions.file_get_contents_file_get_contents
+	}
+
+	$value = getenv( $name );
+
+	return false === $value || '' === $value ? $fallback : $value;
 }
-}
+
+/**
+ * Read a boolean environment variable ("1", "true", "yes", "on").
+ *
+ * @param string $name     Variable name.
+ * @param bool   $fallback Value used when the variable is not set.
+ */
+function whalepress_env_bool( string $name, bool $fallback = false ): bool {
+	$value = whalepress_env( $name );
+
+	return '' === $value ? $fallback : filter_var( $value, FILTER_VALIDATE_BOOLEAN );
 }
 
 // ==============================================================================
-// DATABASE CONFIGURATION
+// COMPOSER
 // ==============================================================================
 
-/** The name of the database for WordPress */
-define( 'DB_NAME', getenv_docker( 'WORDPRESS_DB_NAME', '' ) );
+/*
+ * vendor/ sits beside wp-content, as in the repository, so the autoloader's
+ * relative paths to the theme resolve. Apache denies HTTP access to it.
+ */
+if ( is_readable( __DIR__ . '/vendor/autoload.php' ) ) {
+	require_once __DIR__ . '/vendor/autoload.php';
+}
 
-/** MySQL database username */
-define( 'DB_USER', getenv_docker( 'WORDPRESS_DB_USER', '' ) );
+// ==============================================================================
+// ENVIRONMENT
+// ==============================================================================
 
-/** MySQL database password */
-define( 'DB_PASSWORD', getenv_docker( 'WORDPRESS_DB_PASSWORD', 'wordpress' ) );
+/** One of: local, development, staging, production. */
+define( 'WP_ENVIRONMENT_TYPE', whalepress_env( 'WP_ENVIRONMENT_TYPE', 'production' ) );
 
-/** MySQL hostname */
-define( 'DB_HOST', getenv_docker( 'WORDPRESS_DB_HOST', 'mysql' ) );
+$whalepress_is_dev = in_array( WP_ENVIRONMENT_TYPE, array( 'local', 'development' ), true );
 
-/** Database charset to use in creating database tables */
-define( 'DB_CHARSET', getenv_docker( 'WORDPRESS_DB_CHARSET', 'utf8' ) );
+// ==============================================================================
+// DATABASE
+// ==============================================================================
 
-/** The database collate type. Don't change this if in doubt */
-define( 'DB_COLLATE', getenv_docker( 'WORDPRESS_DB_COLLATE', '' ) );
+define( 'DB_NAME', whalepress_env( 'WORDPRESS_DB_NAME', 'wordpress' ) );
+define( 'DB_USER', whalepress_env( 'WORDPRESS_DB_USER', 'wordpress' ) );
+define( 'DB_PASSWORD', whalepress_env( 'WORDPRESS_DB_PASSWORD' ) );
+define( 'DB_HOST', whalepress_env( 'WORDPRESS_DB_HOST', 'db' ) );
+define( 'DB_CHARSET', whalepress_env( 'WORDPRESS_DB_CHARSET', 'utf8mb4' ) );
+define( 'DB_COLLATE', whalepress_env( 'WORDPRESS_DB_COLLATE' ) );
 
-/** WordPress database table prefix */
-$table_prefix = getenv_docker( 'WORDPRESS_TABLE_PREFIX', 'wp_' );
-define( 'WORDPRESS_TABLE_PREFIX', $table_prefix);
+$table_prefix = whalepress_env( 'WORDPRESS_TABLE_PREFIX', 'wp_' );
 
 // ==============================================================================
 // AUTHENTICATION KEYS AND SALTS
 // ==============================================================================
 
-/**
- * Authentication unique keys and salts
- * Change these to different unique phrases to invalidate all existing cookies
- * @link https://api.wordpress.org/secret-key/1.1/salt/
+/*
+ * Set these in the environment (`npm run setup` generates them locally). If
+ * any are left empty, WordPress generates random values and stores them in
+ * the database instead, so there is never a shared, committed fallback.
  */
-define( 'AUTH_KEY',         getenv_docker( 'WORDPRESS_AUTH_KEY',         '8f78595c97c8ebe51f29a46f3039ca53cc5c0332' ) );
-define( 'SECURE_AUTH_KEY',  getenv_docker( 'WORDPRESS_SECURE_AUTH_KEY',  '792cada582e82e1dd3d0a764eca292945cb71c50' ) );
-define( 'LOGGED_IN_KEY',    getenv_docker( 'WORDPRESS_LOGGED_IN_KEY',    '4d7c68af5bc4b2edb0a0d54ca6b8a1537aed4f5c' ) );
-define( 'NONCE_KEY',        getenv_docker( 'WORDPRESS_NONCE_KEY',        '4ca01728bd16895f654db6040ece645526d2cc22' ) );
-define( 'AUTH_SALT',        getenv_docker( 'WORDPRESS_AUTH_SALT',        'aa272302742130153c8177759daf0727c789b1af' ) );
-define( 'SECURE_AUTH_SALT', getenv_docker( 'WORDPRESS_SECURE_AUTH_SALT', '025358a4b68dc2c30eb4a8c60a5de4e13d5b626c' ) );
-define( 'LOGGED_IN_SALT',   getenv_docker( 'WORDPRESS_LOGGED_IN_SALT',   '6a7cb5020362ebcb5db4698e1a568fc451f6fdc5' ) );
-define( 'NONCE_SALT',       getenv_docker( 'WORDPRESS_NONCE_SALT',       '0c3c3df70f7e3b7db856683f672d002824443569' ) );
+foreach ( array( 'AUTH_KEY', 'SECURE_AUTH_KEY', 'LOGGED_IN_KEY', 'NONCE_KEY', 'AUTH_SALT', 'SECURE_AUTH_SALT', 'LOGGED_IN_SALT', 'NONCE_SALT' ) as $whalepress_key ) {
+	define( $whalepress_key, whalepress_env( 'WORDPRESS_' . $whalepress_key ) );
+}
 
 // ==============================================================================
-// REDIS AND CACHING CONFIGURATION
+// URLS
 // ==============================================================================
 
-/** Redis password and URL for object caching */
-define( 'WP_REDIS_PASSWORD', getenv( 'REDIS_PASSWORD' ) );
-define( 'WP_REDIS_HOST',      getenv( 'REDIS_URL' ) );
+/*
+ * Behind a TLS-terminating proxy (Traefik, a load balancer, App Platform),
+ * trust X-Forwarded-Proto so WordPress generates https URLs.
+ */
+if ( isset( $_SERVER['HTTP_X_FORWARDED_PROTO'] ) && str_contains( (string) $_SERVER['HTTP_X_FORWARDED_PROTO'], 'https' ) ) { // phpcs:ignore WordPress.Security.ValidatedSanitizedInput
+	$_SERVER['HTTPS'] = 'on';
+}
 
-/** Enable WordPress object cache */
-define( 'WP_CACHE', true );
-
-/** Redis cache key salt for this site */
-define( 'WP_CACHE_KEY_SALT', 'ottersurfboards.co.uk:' );
-
-// ==============================================================================
-// DEBUGGING AND DEVELOPMENT SETTINGS
-// ==============================================================================
-
-/** WordPress environment type (local, development, staging, production) */
-define( 'WP_ENVIRONMENT_TYPE', getenv_docker( 'WP_ENVIRONMENT_TYPE', 'local' ) );
-
-/** Enable WordPress debugging mode */
-define( 'WP_DEBUG', ! ! getenv_docker( 'WP_DEBUG', '' ) );
-
-/** Log errors to wp-content/debug.log */
-define( 'WP_DEBUG_LOG', ! ! getenv_docker( 'WP_DEBUG_LOG', '' ) );
-
-/** Display errors on screen (disable in production) */
-define( 'WP_DEBUG_DISPLAY', ! ! getenv_docker( 'WP_DEBUG_DISPLAY', '' ) );
-
-/** Disable the fatal error handler */
-define( 'WP_DISABLE_FATAL_ERROR_HANDLER', ! ! getenv_docker( 'WP_DISABLE_FATAL_ERROR_HANDLER', '' ) );
-
-/** Disable script concatenation for debugging */
-define( 'CONCATENATE_SCRIPTS', true );
-
-/** Enable script debugging (loads unminified versions) */
-define( 'SCRIPT_DEBUG', false );
+if ( '' !== whalepress_env( 'WP_HOME' ) ) {
+	define( 'WP_HOME', rtrim( whalepress_env( 'WP_HOME' ), '/' ) );
+	define( 'WP_SITEURL', WP_HOME );
+}
 
 // ==============================================================================
-// WORDPRESS CUSTOM SETTINGS
+// DEBUGGING
 // ==============================================================================
 
-/** Increase PHP memory limit for WordPress */
-define( 'WP_MEMORY_LIMIT', '1024M' );
+define( 'WP_DEBUG', whalepress_env_bool( 'WP_DEBUG' ) );
+define( 'WP_DEBUG_LOG', whalepress_env_bool( 'WP_DEBUG_LOG' ) );
+define( 'WP_DEBUG_DISPLAY', whalepress_env_bool( 'WP_DEBUG_DISPLAY' ) );
+define( 'WP_DISABLE_FATAL_ERROR_HANDLER', whalepress_env_bool( 'WP_DISABLE_FATAL_ERROR_HANDLER' ) );
+define( 'SCRIPT_DEBUG', whalepress_env_bool( 'SCRIPT_DEBUG' ) );
 
-/** Set filesystem method to direct (required for Docker) */
+// ==============================================================================
+// OBJECT CACHE (REDIS)
+// ==============================================================================
+
+/*
+ * Used by the Redis Object Cache plugin. Leave REDIS_HOST empty to disable
+ * persistent object caching.
+ */
+define( 'WP_REDIS_HOST', whalepress_env( 'REDIS_HOST' ) );
+define( 'WP_REDIS_PORT', (int) whalepress_env( 'REDIS_PORT', '6379' ) );
+define( 'WP_REDIS_PASSWORD', whalepress_env( 'REDIS_PASSWORD' ) ?: null ); // phpcs:ignore Universal.Operators.DisallowShortTernary
+define( 'WP_REDIS_PREFIX', whalepress_env( 'REDIS_PREFIX', DB_NAME . '_' . $table_prefix ) );
+define( 'WP_REDIS_DISABLED', '' === WP_REDIS_HOST );
+
+// ==============================================================================
+// UPDATES, FILE MODIFICATION AND CRON
+// ==============================================================================
+
+/*
+ * Production images are immutable: core comes from the base image and
+ * plugins from Composer, so updates and installs from wp-admin are disabled
+ * outside local and development environments.
+ */
+define( 'DISALLOW_FILE_EDIT', true );
+define( 'DISALLOW_FILE_MODS', whalepress_env_bool( 'DISALLOW_FILE_MODS', ! $whalepress_is_dev ) );
+define( 'AUTOMATIC_UPDATER_DISABLED', true );
 define( 'FS_METHOD', 'direct' );
 
-/** Enable WordPress Multisite */
-define( 'WP_ALLOW_MULTISITE', ! ! getenv_docker( 'WP_ALLOW_MULTISITE', '' ) );
+/** Set to true when a system cron runs `wp cron event run --due-now`. */
+define( 'DISABLE_WP_CRON', whalepress_env_bool( 'DISABLE_WP_CRON' ) );
 
 // ==============================================================================
-// THIRD-PARTY SERVICE CONFIGURATION
+// PERFORMANCE AND CONTENT
 // ==============================================================================
 
-/** Sentry error tracking - Browser DSN */
-define( 'WP_SENTRY_BROWSER_DSN', '' );
+define( 'WP_MEMORY_LIMIT', whalepress_env( 'WP_MEMORY_LIMIT', '256M' ) );
+define( 'WP_MAX_MEMORY_LIMIT', whalepress_env( 'WP_MAX_MEMORY_LIMIT', '512M' ) );
+define( 'WP_POST_REVISIONS', (int) whalepress_env( 'WP_POST_REVISIONS', '10' ) );
+define( 'WP_ALLOW_MULTISITE', whalepress_env_bool( 'WP_ALLOW_MULTISITE' ) );
 
-/** Sentry error tracking - PHP DSN */
-define( 'WP_SENTRY_PHP_DSN', '' );
+/** Set to true only if a page cache plugin provides advanced-cache.php. */
+define( 'WP_CACHE', whalepress_env_bool( 'WP_CACHE' ) );
 
-/** JWT authentication secret key */
-define( 'JWT_AUTH_SECRET_KEY', '' );
-
-// ==============================================================================
-// REVERSE PROXY AND SSL CONFIGURATION
-// ==============================================================================
-
-/**
- * Handle HTTPS behind a reverse proxy
- * Common in container environments (Docker, Kubernetes, etc.)
- * @link https://wordpress.org/support/article/administration-over-ssl/#using-a-reverse-proxy
- */
-if ( isset( $_SERVER['HTTP_X_FORWARDED_PROTO'] ) && strpos( $_SERVER['HTTP_X_FORWARDED_PROTO'], 'https' ) !== false ) {
-$_SERVER['HTTPS'] = 'on';
-}
+unset( $whalepress_is_dev, $whalepress_key );
 
 // ==============================================================================
-// DYNAMIC CONFIGURATION
+// BOOTSTRAP
 // ==============================================================================
 
-/** Allow additional configuration via environment variable */
-if ( $configExtra = getenv_docker( 'WORDPRESS_CONFIG_EXTRA', '' ) ) {
-eval( $configExtra );
-}
-
-// ==============================================================================
-// WORDPRESS BOOTSTRAP
-// ==============================================================================
-
-/** Absolute path to the WordPress directory */
 if ( ! defined( 'ABSPATH' ) ) {
-define( 'ABSPATH', __DIR__ . '/' );
+	define( 'ABSPATH', __DIR__ . '/' );
 }
 
-/** Sets up WordPress vars and included files */
 require_once ABSPATH . 'wp-settings.php';

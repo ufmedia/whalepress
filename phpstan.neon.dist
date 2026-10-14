@@ -1,0 +1,15 @@
+# Extensions (szepeviktor/phpstan-wordpress) load via phpstan/extension-installer.
+parameters:
+	level: 8
+	phpVersion: 80300
+	paths:
+		- wp-content/themes/whalepress
+		- wp-content/mu-plugins
+	excludePaths:
+		- wp-content/themes/whalepress/node_modules
+		- wp-content/themes/whalepress/dist
+		- wp-content/themes/whalepress/languages
+		- wp-content/mu-plugins/*/*
+	scanFiles:
+		- wp-config.php
+	treatPhpDocTypesAsCertain: false
