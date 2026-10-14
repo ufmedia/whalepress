@@ -1,3 +1,7 @@
+---
+order: 1
+---
+
 # WordPress configuration
 
 `wp-config.php` is committed and reads everything from the environment, so the same file serves local development (`.env` through Compose) and every production pathway. Any variable can also be read from a file by setting `NAME_FILE=/path`, which is how Docker and Swarm secrets are consumed.

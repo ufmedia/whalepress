@@ -1,3 +1,7 @@
+---
+order: 3
+---
+
 # Database
 
 Local development uses **MariaDB 11.8** (LTS) in the `db` service, with data in the `<project>_db_data` volume. WordPress connects with the credentials in `.env`.
@@ -52,7 +56,3 @@ npm run up
 ```
 
 Run `npm run db:import -- <file> --from=<url>` instead if the dump's URLs need rewriting.
-
-## Upgrading from the MySQL-based setup
-
-Earlier versions of WhalePress used MySQL 9 in a `<project>_mysql_data` volume. MariaDB uses a new volume, so the old one is left untouched. To bring data across, export it with the old stack (`docker compose exec db mysqldump …`) before upgrading, then `npm run db:import`.

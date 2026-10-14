@@ -1,15 +1,65 @@
+import { execFileSync } from 'node:child_process';
+import { utimesSync } from 'node:fs';
 import process from 'node:process';
+import { fileURLToPath } from 'node:url';
 import { defineConfig } from 'vitepress';
+import { sidebar } from './sidebar.mjs';
 
-const repo = 'https://github.com/ufmedia/whalepress';
+const docs = fileURLToPath(new URL('..', import.meta.url));
+const sidebarOptions = { sections: ['getting-started', 'building', 'shipping', 'reference'] };
 
-// Served from /<repository>/ on GitHub Pages; set DOCS_BASE=/ for a custom domain.
-const base = process.env.DOCS_BASE || '/whalepress/';
+/**
+ * The sidebar is built when the config loads, so reload the dev server when
+ * a page is added, removed or retitled. Touching this file triggers
+ * VitePress's own reload (Vite's server.restart() leaves search half-built).
+ */
+const sidebarReload = {
+	name: 'docs-sidebar-reload',
+	configureServer(server) {
+		let current = JSON.stringify(sidebar(docs, sidebarOptions));
+		const check = (file) => {
+			if (!file.endsWith('.md')) {
+				return;
+			}
+			const next = JSON.stringify(sidebar(docs, sidebarOptions));
+			if (next !== current) {
+				current = next;
+				const now = new Date();
+				utimesSync(fileURLToPath(import.meta.url), now, now);
+			}
+		};
+		server.watcher.on('add', check).on('unlink', check).on('change', check);
+	},
+};
+
+/**
+ * The repository's GitHub URL: from Actions, or from the "origin" remote
+ * locally. Undefined for a repository that hasn't been pushed yet.
+ */
+function repositoryUrl() {
+	if (process.env.GITHUB_REPOSITORY) {
+		return `${process.env.GITHUB_SERVER_URL || 'https://github.com'}/${process.env.GITHUB_REPOSITORY}`;
+	}
+	try {
+		const remote = execFileSync('git', ['remote', 'get-url', 'origin'], {
+			encoding: 'utf8',
+			stdio: ['ignore', 'pipe', 'ignore'],
+		}).trim();
+		const match = remote.match(/github\.com[:/](.+?)(?:\.git)?$/);
+		return match ? `https://github.com/${match[1]}` : undefined;
+	} catch {
+		return undefined;
+	}
+}
+
+const repo = repositoryUrl();
+
+// The Docs workflow sets DOCS_BASE from the Pages URL (/<repository>/, or / on a custom domain).
+const base = process.env.DOCS_BASE || '/';
 
 export default defineConfig({
 	title: 'WhalePress',
-	description:
-		'A WordPress starter: Timber 2, Tailwind CSS 4 and Vite, with immutable Docker images from local to production.',
+	description: 'Developer documentation.',
 	base,
 	lang: 'en-GB',
 	cleanUrls: true,
@@ -19,59 +69,17 @@ export default defineConfig({
 	head: [['link', { rel: 'icon', href: `${base}whalepress.png` }]],
 	vite: {
 		server: { port: 5174 },
+		plugins: [sidebarReload],
 	},
 	themeConfig: {
 		logo: '/whalepress.png',
-		nav: [
-			{
-				text: 'Guide',
-				link: '/getting-started/installation',
-				activeMatch: '^/(getting-started|building|shipping)/',
-			},
-			{ text: 'Reference', link: '/reference/troubleshooting', activeMatch: '^/reference/' },
-		],
-		sidebar: [
-			{
-				text: 'Getting started',
-				items: [
-					{ text: 'Prerequisites', link: '/getting-started/prerequisites' },
-					{ text: 'Installation', link: '/getting-started/installation' },
-					{ text: 'Database', link: '/getting-started/database' },
-					{ text: 'Local services', link: '/getting-started/local-services' },
-				],
-			},
-			{
-				text: 'Building',
-				items: [
-					{ text: 'WordPress configuration', link: '/building/wordpress' },
-					{ text: 'Theme', link: '/building/theme' },
-					{ text: 'Plugins', link: '/building/plugins' },
-				],
-			},
-			{
-				text: 'Shipping',
-				items: [
-					{ text: 'Testing and standards', link: '/shipping/testing' },
-					{ text: 'Deployment', link: '/shipping/deployment' },
-				],
-			},
-			{
-				text: 'Reference',
-				items: [
-					{ text: 'Further reading', link: '/reference/further-reading' },
-					{ text: 'Troubleshooting', link: '/reference/troubleshooting' },
-				],
-			},
-		],
+		// Generated from the files in docs/: see sidebar.mjs.
+		sidebar: sidebar(docs, sidebarOptions),
 		outline: [2, 3],
 		search: { provider: 'local' },
-		socialLinks: [{ icon: 'github', link: repo }],
-		editLink: {
-			pattern: `${repo}/edit/main/docs/:path`,
-			text: 'Edit this page on GitHub',
-		},
-		footer: {
-			message: 'Released under the GPL-2.0-or-later licence.',
-		},
+		socialLinks: repo ? [{ icon: 'github', link: repo }] : [],
+		editLink: repo
+			? { pattern: `${repo}/edit/main/docs/:path`, text: 'Edit this page on GitHub' }
+			: undefined,
 	},
 });

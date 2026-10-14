@@ -1,3 +1,7 @@
+---
+order: 3
+---
+
 # Plugins
 
 Plugins are managed with Composer, never through wp-admin (which is read-only in production; see `DISALLOW_FILE_MODS`).

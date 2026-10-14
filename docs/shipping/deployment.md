@@ -1,6 +1,10 @@
+---
+order: 2
+---
+
 # Deployment
 
-WhalePress has four deployment pathways. Three ship **immutable Docker images** (GHCR, AWS, DigitalOcean); the fourth syncs code to **Hostinger** managed hosting over SSH, for sites (such as demos) that don't need a container platform.
+There are four deployment pathways. Three ship **immutable Docker images** (GHCR, AWS, DigitalOcean); the fourth syncs code to **Hostinger** managed hosting over SSH, for sites (such as demos) that don't need a container platform.
 
 For the container pathways: The `production` target in the `Dockerfile` bakes in WordPress core, the built theme, Composer's `vendor/` and plugins, the must-use plugins and `wp-config.php`. Configuration comes from environment variables and secrets at runtime (see [WordPress configuration](../building/wordpress.md)), so one image runs in every environment.
 
@@ -134,9 +138,9 @@ define( 'DISALLOW_FILE_MODS', true );        // Plugins and theme come from depl
 These docs are built with [VitePress](https://vitepress.dev) and published to GitHub Pages by `.github/workflows/docs.yml` whenever `docs/` changes on `main`. They stay in the repository so code and documentation change together; CI builds them on every pull request, failing on dead links.
 
 - **Preview locally:** `npm run docs:dev` (http://localhost:5174).
-- **First-time setup:** in the repository settings, set **Pages → Build and deployment → Source** to **GitHub Actions**.
-- **Navigation:** the sidebar is defined in `docs/.vitepress/config.mjs`. Add new pages there.
-- **Base path:** the site is served from `/<repository>/`. For a custom domain, set the `DOCS_BASE` repository variable to `/` and add the domain in the Pages settings.
+- **First-time setup:** in the repository settings, set **Pages → Build and deployment → Source** to **GitHub Actions**. Until then the workflow builds the site, catching dead links, without publishing it.
+- **Adding pages:** add a Markdown file; the sidebar is generated from the files. See [Writing documentation](../reference/writing-docs.md).
+- **Base path and links:** taken from the Pages URL (`/<repository>/`, or `/` on a custom domain) and the repository the workflow runs in, so nothing in the config names the repository. `DOCS_BASE` (a repository variable) overrides the base path.
 
 ## Production checklist
 

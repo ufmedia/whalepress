@@ -1,3 +1,7 @@
+---
+order: 1
+---
+
 # Testing and standards
 
 Everything below runs in CI on every pull request, and the relevant subset runs on staged files before each commit.

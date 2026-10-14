@@ -1,10 +1,12 @@
 # AGENTS.md
 
-Guidance for AI coding agents (and humans) working in this repository. Full documentation is in `docs/` (a VitePress site published to GitHub Pages). Update the relevant page in the same change as the code, and add new pages to the sidebar in `docs/.vitepress/config.mjs`.
+Guidance for AI coding agents (and humans) working in this repository. Full documentation is in `docs/`, a wiki published to GitHub Pages. Update the relevant page in the same change as the code. New pages need only a Markdown file with a `# Heading`; the sidebar is generated (see `docs/reference/writing-docs.md`).
 
 ## What this is
 
-A WordPress starter: Timber 2 (Twig) classic theme with PSR-4 classes, Tailwind CSS 4 + Vite, block editor for **content only** (no full-site editing), Docker for local and production, Composer at the project root.
+A WordPress project built on a shared stack: Timber 2 (Twig) classic theme with PSR-4 classes, Tailwind CSS 4 + Vite, block editor for **content only** (no full-site editing), Docker for local and production, Composer at the project root.
+
+The project's name appears as the theme directory, PHP namespace, text domain and `<slug>_`/`<slug>/` prefixes. `npm run init` renames all of them; never rename them by hand. Keep documentation project-agnostic: describe how things work, not what the project is, and don't hard-code repository URLs (the docs config derives them).
 
 ## Layout
 
