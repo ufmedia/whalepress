@@ -1,42 +1,62 @@
-<img src="https://github.com/ufmedia/WhalePress/blob/main/local/whalepress.png" align="center" height="332" width="400">
+---
+layout: home
 
-## WhalePress
+hero:
+  name: WhalePress
+  text: Bespoke WordPress, built like software.
+  tagline: Timber 2 templates, Tailwind CSS 4 and Vite, immutable Docker images, and a full quality pipeline, from local to production.
+  image:
+    src: /whalepress.png
+    alt: WhalePress
+  actions:
+    - theme: brand
+      text: Get started
+      link: /getting-started/installation
+    - theme: alt
+      text: Theme guide
+      link: /building/theme
+    - theme: alt
+      text: GitHub
+      link: https://github.com/ufmedia/WhalePress
 
-WhalePress is a WordPress starter for teams who build bespoke sites in code. It pairs a containerised local environment with an opinionated, modern theme stack, and ships immutable Docker images to whichever host you deploy to.
+features:
+  - title: Local in one command
+    details: Docker Compose with MariaDB, Redis, Mailpit, Adminer and on-demand Xdebug. Database pull and import with URL rewriting, an uploads proxy, and a devcontainer.
+    link: /getting-started/local-services
+  - title: Timber and Twig
+    details: Thin PHP controllers, Twig views and PSR-4 service classes. Composer at the project root; no theme-level dependency soup.
+    link: /building/theme#php-architecture
+  - title: Tokens in theme.json
+    details: Utopia fluid type and space generated into theme.json and mapped to Tailwind 4, so templates and the block editor share one design system.
+    link: /building/theme#styling-tailwind-css-4-and-theme-json
+  - title: Content-only block editor
+    details: Curated blocks, preset-only design controls, and editor styles that match the front end. No full-site editing.
+    link: /building/theme#the-block-editor
+  - title: Quality built in
+    details: PHPCS, PHPStan level 8, Rector, PHPUnit, ESLint, Stylelint, Prettier and Playwright with axe, enforced by hooks and CI.
+    link: /shipping/testing
+  - title: Ship anywhere
+    details: Semantic releases deployed to GHCR, AWS ECR/ECS, DigitalOcean DOCR/App Platform, or Hostinger. Every PR is tested against the production image.
+    link: /shipping/deployment
+---
 
-**The stack**
+## Principles
 
-- **Docker Compose** locally: WordPress, MariaDB, Redis, Mailpit and Adminer, with Xdebug on demand.
-- **Timber 2 / Twig** for templates, with PSR-4 PHP classes for theme logic.
-- **Tailwind CSS 4 + Vite** for assets, with hot module replacement and design tokens defined once in `theme.json`.
-- **Block editor for content only**: no full-site editing; layout belongs to Twig.
-- **Quality tooling**: PHPCS (WordPress standards), PHPStan, Rector, PHPUnit, ESLint, Stylelint, Prettier and Playwright with axe accessibility checks.
-- **CI/CD**: every pull request runs the full suite against the production image; merges to `main` are released with semantic-release and deployed to GHCR, AWS (ECR/ECS) or DigitalOcean (DOCR/App Platform).
+- **One source of truth.** Configuration comes from the environment, design tokens from `theme.json`, and dependencies from lockfiles.
+- **Immutable production.** Core, plugins and theme ship with each deployment. Nothing is installed or updated from wp-admin in production.
+- **Test what you ship.** CI runs the end-to-end suite against the exact image that gets deployed.
+- **Docs live with the code.** This site is built from the `docs/` folder of the repository, so it changes in the same pull requests as the code it describes.
 
-**Principles**
+## Quick start
 
-- _One source of truth._ Configuration comes from the environment; design tokens come from `theme.json`; dependencies come from lockfiles.
-- _Immutable production._ Core, plugins and theme are baked into the image. Nothing is installed or updated from wp-admin in production.
-- _Same image everywhere._ CI tests the exact image that gets deployed.
+Requires Docker with Compose and Node 24. PHP is optional.
 
-## Contents
+```sh
+gh repo clone ufmedia/WhalePress my-site && cd my-site
+nvm use
+npm install
+npm run setup   # .env, assets, containers, Composer, WordPress
+npm start       # Containers + Vite dev server
+```
 
-1. Getting started
-   - [Prerequisites](./1.0-Prerequisites.md)
-   - [Installation](./1.1-Installation.md)
-   - [Database](./1.2-Database.md)
-   - [Local services](./1.3-Local-Services.md)
-2. Building
-   - [WordPress configuration](./2.0-WordPress.md)
-   - [Theme](./2.1-Theme.md)
-   - [Plugins](./2.2-Plugins.md)
-3. Shipping
-   - [Testing and standards](./3.0-Testing-and-Standards.md)
-   - [Deployment](./3.1-Deployment.md)
-4. Reference
-   - [Further reading](./4.0-Further-Reading.md)
-   - [Troubleshooting](./4.1-Troubleshooting.md)
-
-## Something missing?
-
-Open a [discussion](https://github.com/ufmedia/WhalePress/discussions) or an issue.
+Then read [Installation](./getting-started/installation.md) for the full command reference.

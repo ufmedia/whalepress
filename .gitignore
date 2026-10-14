@@ -22,7 +22,7 @@
 !/wp-content/themes/
 
 # Composer installs plugins here; track custom plugins with an exception
-# below AND in .dockerignore's counterpart (see docs/2.2-Plugins.md).
+# below AND in .dockerignore's counterpart (see docs/building/plugins.md).
 /wp-content/plugins/*
 !/wp-content/plugins/index.php
 # !/wp-content/plugins/my-plugin/
@@ -60,3 +60,7 @@ tests/e2e/.auth/
 .vscode/*
 !.vscode/extensions.json
 wp-content/themes/whalepress/languages/twig-strings.php
+
+# VitePress
+docs/.vitepress/cache/
+docs/.vitepress/dist/

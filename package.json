@@ -34,7 +34,10 @@
     "test:php": "node local/php.js composer test",
     "test:e2e": "playwright test",
     "test:e2e:ui": "playwright test --ui",
-    "prepare": "husky"
+    "prepare": "husky",
+    "docs:dev": "vitepress dev docs",
+    "docs:build": "vitepress build docs",
+    "docs:preview": "vitepress preview docs"
   },
   "devDependencies": {
     "@axe-core/playwright": "^4.13.0",
@@ -47,6 +50,7 @@
     "husky": "^9.1.7",
     "lint-staged": "^17.6.0",
     "prettier": "^3.9.10",
-    "semantic-release": "^25.0.9"
+    "semantic-release": "^25.0.9",
+    "vitepress": "^1.6.4"
   }
 }

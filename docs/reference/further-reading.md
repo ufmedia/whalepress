@@ -1,4 +1,4 @@
-## Further reading
+# Further reading
 
 **Theme stack**
 

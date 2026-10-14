@@ -6,7 +6,7 @@
  * .env and Docker Compose) and in production images. Each variable can also
  * be supplied as a Docker secret by pointing VARIABLE_FILE at a file path.
  *
- * See docs/2.0-WordPress.md for the full list of variables.
+ * See docs/building/wordpress.md for the full list of variables.
  *
  * @package WhalePress
  */

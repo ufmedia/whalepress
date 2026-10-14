@@ -1,6 +1,6 @@
 # AGENTS.md
 
-Guidance for AI coding agents (and humans) working in this repository. Full documentation is in `docs/`.
+Guidance for AI coding agents (and humans) working in this repository. Full documentation is in `docs/` (a VitePress site published to GitHub Pages). Update the relevant page in the same change as the code, and add new pages to the sidebar in `docs/.vitepress/config.mjs`.
 
 ## What this is
 

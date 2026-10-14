@@ -87,8 +87,11 @@ jobs:
       - name: Prettier
         run: npm run format:check
 
-      - name: Build
+      - name: Build theme
         run: npm run build
+
+      - name: Build docs (fails on dead links)
+        run: npm run docs:build
 
   e2e:
     name: Image and end-to-end tests
@@ -191,7 +194,6 @@ jobs:
   # others are opt-in by setting DEPLOY_ECR / DEPLOY_DOCR / DEPLOY_HOSTINGER
   # to "true".
   # See docs/shipping/deployment.md for the secrets and variables each one needs.
-  # See docs/3.1-Deployment.md for the secrets and variables each one needs.
 
   deploy-ghcr:
     name: Deploy (GHCR)

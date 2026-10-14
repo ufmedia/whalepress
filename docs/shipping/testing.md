@@ -1,4 +1,4 @@
-## Testing and standards
+# Testing and standards
 
 Everything below runs in CI on every pull request, and the relevant subset runs on staged files before each commit.
 
@@ -10,7 +10,7 @@ npm run test        # PHPUnit, then Playwright
 npm run composer -- qa   # All PHP checks in one go
 ```
 
-### PHP
+## PHP
 
 | Tool                                                                                                                                   | Config              | Notes                                                                                                                                                                                                                                                        |
 | -------------------------------------------------------------------------------------------------------------------------------------- | ------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
@@ -21,7 +21,7 @@ npm run composer -- qa   # All PHP checks in one go
 
 Unit tests extend `WhalePress\Tests\TestCase`, which sets up Brain Monkey. Because services take their dependencies through constructors (paths, URLs, environment), most logic can be tested with plain values. See `ViteTest`.
 
-### Front end
+## Front end
 
 | Tool                                                                                            | Config                                             | Scope                                                                              |
 | ----------------------------------------------------------------------------------------------- | -------------------------------------------------- | ---------------------------------------------------------------------------------- |
@@ -29,9 +29,17 @@ Unit tests extend `WhalePress\Tests\TestCase`, which sets up Brain Monkey. Becau
 | [Stylelint](https://stylelint.io)                                                               | `wp-content/themes/whalepress/stylelint.config.js` | `stylelint-config-standard`, aware of Tailwind 4 at-rules.                         |
 | [Prettier](https://prettier.io) + [Twig plugin](https://github.com/zackad/prettier-plugin-twig) | `.prettierrc.json`                                 | JS, CSS, Twig, JSON, YAML and Markdown across the repository. PHP is PHPCBF's job. |
 
-The Twig formatter can't parse tags inside an HTML tag (`<a {% if x %}…{% endif %}>`). Use conditional attribute values instead: `aria-current="{{ item.current ? 'page' : 'false' }}"`.
+The Twig formatter can't parse tags inside an HTML tag. Use conditional attribute values instead:
 
-### End-to-end: Playwright
+```twig
+{# Not parseable #}
+<a href="{{ item.link }}" {% if item.current %}aria-current="page"{% endif %}>
+
+{# Use instead #}
+<a href="{{ item.link }}" aria-current="{{ item.current ? 'page' : 'false' }}">
+```
+
+## End-to-end: Playwright
 
 ```sh
 npm run test:e2e               # Against WP_HOME from .env
@@ -52,22 +60,22 @@ The `expectAccessible()` fixture (in `tests/e2e/fixtures.js`) runs [axe-core](ht
 
 Install browsers once with `npx playwright install chromium`.
 
-### Commits and hooks
+## Commits and hooks
 
 [Husky](https://typicode.github.io/husky/) installs two hooks when you run `npm install`:
 
 - **pre-commit:** [lint-staged](https://github.com/lint-staged/lint-staged) runs ESLint, Stylelint, Prettier and PHPCBF/PHPCS on staged files only (`lint-staged.config.js`).
 - **commit-msg:** [commitlint](https://commitlint.js.org) enforces [Conventional Commits](https://www.conventionalcommits.org), which semantic-release uses to choose the next version (`fix:` → patch, `feat:` → minor, `feat!:` or `BREAKING CHANGE:` → major).
 
-### Continuous integration
+## Continuous integration
 
 `.github/workflows/ci.yml` runs three jobs in parallel on every pull request and push to `main`:
 
 1. **PHP quality:** PHPCS (annotated inline with cs2pr), PHPStan, Rector, PHPUnit.
-2. **Assets and formatting:** commitlint for the PR's commits, ESLint, Stylelint, Prettier and a production build.
+2. **Assets and formatting:** commitlint for the PR's commits, ESLint, Stylelint, Prettier, a production build of the theme, and a build of this documentation site (which fails on dead links).
 3. **Image and end-to-end tests:** builds the production image, scans it with [Trivy](https://trivy.dev) (fails on fixable critical CVEs), runs it with `docker-compose.test.yml` and runs the full Playwright suite against it. On failure, the Playwright report and container logs are attached.
 
-Pushes to `main` that pass then [release and deploy](./3.1-Deployment.md).
+Pushes to `main` that pass then [release and deploy](./deployment.md).
 
 Two manual workflows test deployed environments: **E2E (deployed site)** runs the front-end Playwright projects, and **OWASP ZAP baseline** runs a passive security scan. Both read `HOST_URL` from the chosen GitHub environment.
 

@@ -1,4 +1,4 @@
-## Local services
+# Local services
 
 | Service   | URL                                       | Purpose                                                  |
 | --------- | ----------------------------------------- | -------------------------------------------------------- |
@@ -8,7 +8,7 @@
 | Redis     | internal                                  | Persistent object cache, as in production.               |
 | Vite      | http://localhost:5173                     | Asset dev server with HMR (`npm start` / `npm run dev`). |
 
-### What's mounted
+## What's mounted
 
 Only `wp-content/`, `wp-config.php` and `vendor/` are mounted from the repository. WordPress core lives inside the container and is refreshed from the image whenever the container is recreated. Apache runs as your host user (`HOST_UID`/`HOST_GID` in `.env`), so files WordPress writes, such as uploads, stay editable on Linux.
 
@@ -20,7 +20,7 @@ Log in with system **MySQL / MariaDB**, server **db**, and the `WORDPRESS_DB_USE
 
 ## Mailpit
 
-`SMTP_HOST=mailpit` routes all mail through the `whalepress-mail` must-use plugin to Mailpit. Nothing leaves your machine. The same plugin sends real mail in production when `SMTP_*` variables are set; see [WordPress configuration](./2.0-WordPress.md#mail).
+`SMTP_HOST=mailpit` routes all mail through the `whalepress-mail` must-use plugin to Mailpit. Nothing leaves your machine. The same plugin sends real mail in production when `SMTP_*` variables are set; see [WordPress configuration](../building/wordpress.md#mail).
 
 ## Redis
 

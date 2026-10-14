@@ -1,8 +1,8 @@
-## Database
+# Database
 
 Local development uses **MariaDB 11.8** (LTS) in the `db` service, with data in the `<project>_db_data` volume. WordPress connects with the credentials in `.env`.
 
-Browse it with [Adminer](./1.3-Local-Services.md#adminer), or from the command line:
+Browse it with [Adminer](./local-services.md#adminer), or from the command line:
 
 ```sh
 npm run wp -- db cli                      # Interactive MariaDB shell
@@ -40,7 +40,7 @@ DB_PULL_COMMAND=mysqldump --single-transaction -h db.example.com -u reader -p'â€
 
 There is intentionally no `db:push`: overwriting a production database should be a deliberate, manual operation.
 
-Pair a pulled database with the [uploads proxy](./2.0-WordPress.md#uploads-proxy) so media loads without copying the uploads folder.
+Pair a pulled database with the [uploads proxy](../building/wordpress.md#uploads-proxy) so media loads without copying the uploads folder.
 
 ## Seeding a fresh environment
 

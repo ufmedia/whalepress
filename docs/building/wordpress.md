@@ -1,8 +1,10 @@
-## WordPress configuration
+# WordPress configuration
 
 `wp-config.php` is committed and reads everything from the environment, so the same file serves local development (`.env` through Compose) and every production pathway. Any variable can also be read from a file by setting `NAME_FILE=/path`, which is how Docker and Swarm secrets are consumed.
 
 Empty values count as unset.
+
+## Environment variables
 
 ### Core
 
@@ -52,6 +54,10 @@ Adding your own setting? Define it in `wp-config.php` with `whalepress_env( 'NAM
 ## Must-use plugins
 
 `wp-content/mu-plugins/` holds behaviour that should apply regardless of theme.
+
+### Autoload
+
+`whalepress-autoload.php` loads Composer's `vendor/autoload.php` from beside `wp-content`. The project's `wp-config.php` already does this; the plugin covers hosts that use their own `wp-config.php`, such as [Hostinger](../shipping/deployment.md#hostinger). It is a no-op when the autoloader is already loaded.
 
 ### Hardening
 

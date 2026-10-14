@@ -1,4 +1,4 @@
-## Prerequisites
+# Prerequisites
 
 | Tool                                                          | Version           | Notes                                                       |
 | ------------------------------------------------------------- | ----------------- | ----------------------------------------------------------- |
@@ -8,7 +8,7 @@
 
 **PHP and Composer are optional on your machine.** Every PHP command (`npm run composer`, `npm run lint:php`, `npm run analyse`, `npm run test:php`) uses your local PHP if it is 8.3+ with the `dom`, `mbstring`, `tokenizer` and `xmlwriter` extensions; otherwise it runs inside a `composer:2` container. Set `WHALEPRESS_PHP=container` to always use the container.
 
-### Ports
+## Ports
 
 The defaults are below; change any of them in `.env` if they clash with something else.
 
@@ -19,6 +19,6 @@ The defaults are below; change any of them in `.env` if they clash with somethin
 | Mailpit         | 8025    |
 | Vite dev server | 5173    |
 
-### Editor
+## Editor
 
-VS Code users get extension recommendations from `.vscode/extensions.json`, and can copy the debugging and formatting settings from `local/.vscode-example/`. A [devcontainer](./1.3-Local-Services.md#devcontainer) is also available.
+VS Code users get extension recommendations from `.vscode/extensions.json`, and can copy the debugging and formatting settings from `local/.vscode-example/`. A [devcontainer](./local-services.md#devcontainer) is also available.

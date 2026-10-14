@@ -1,8 +1,9 @@
-![CI/CD](https://github.com/ufmedia/WhalePress/actions/workflows/ci.yml/badge.svg)
+![CI/CD](https://github.com/ufmedia/whalepress/actions/workflows/ci.yml/badge.svg)
+![Docs](https://github.com/ufmedia/whalepress/actions/workflows/docs.yml/badge.svg)
 ![GitHub contributors](https://img.shields.io/github/contributors-anon/ufmedia/WhalePress)
 ![GitHub last commit](https://img.shields.io/github/last-commit/ufmedia/WhalePress)
 
-<img src="local/whalepress.png" align="center" height="332" width="400">
+<img src="docs/public/whalepress.png" align="center" height="332" width="400">
 
 # WhalePress
 
@@ -11,7 +12,7 @@ A WordPress starter for developers who build bespoke sites in code: **Timber 2**
 - **Local:** Docker Compose with MariaDB, Redis, Mailpit, Adminer and on-demand Xdebug; one-command setup; HMR; database pull and import with URL rewriting; an uploads proxy; a devcontainer.
 - **Theme:** PSR-4 service classes, Twig views, Utopia fluid type and space generated into `theme.json` and mapped to Tailwind, and a content-only block editor whose styles match the front end.
 - **Quality:** PHPCS (WPCS), PHPStan level 8, Rector, PHPUnit + Brain Monkey, ESLint, Stylelint, Prettier (Twig included), Playwright with axe, and Husky + lint-staged + commitlint.
-- **Delivery:** every PR is tested against the production image; merges to `main` are released by semantic-release and deployed to **GHCR**, **AWS** (ECR/ECS) and/or **DigitalOcean** (DOCR/App Platform).
+- **Delivery:** every PR is tested against the production image; merges to `main` are released by semantic-release and deployed to **GHCR**, **AWS** (ECR/ECS), **DigitalOcean** (DOCR/App Platform) and/or **Hostinger**.
 
 ## Quick start
 
@@ -27,14 +28,12 @@ npm start       # Containers + Vite dev server
 
 ## Documentation
 
-Start at [docs/Home.md](docs/Home.md).
+**[ufmedia.github.io/whalepress](https://ufmedia.github.io/whalepress/)**, built from [`docs/`](docs/index.md) with VitePress. Preview locally with `npm run docs:dev`.
 
-|                                                                                                                                                                         |                 |
-| ----------------------------------------------------------------------------------------------------------------------------------------------------------------------- | --------------- |
-| [Prerequisites](docs/1.0-Prerequisites.md) · [Installation](docs/1.1-Installation.md) · [Database](docs/1.2-Database.md) · [Local services](docs/1.3-Local-Services.md) | Getting started |
-| [WordPress configuration](docs/2.0-WordPress.md) · [Theme](docs/2.1-Theme.md) · [Plugins](docs/2.2-Plugins.md)                                                          | Building        |
-| [Testing and standards](docs/3.0-Testing-and-Standards.md) · [Deployment](docs/3.1-Deployment.md)                                                                       | Shipping        |
-| [Further reading](docs/4.0-Further-Reading.md) · [Troubleshooting](docs/4.1-Troubleshooting.md)                                                                         | Reference       |
+- **Getting started:** [Prerequisites](docs/getting-started/prerequisites.md) · [Installation](docs/getting-started/installation.md) · [Database](docs/getting-started/database.md) · [Local services](docs/getting-started/local-services.md)
+- **Building:** [WordPress configuration](docs/building/wordpress.md) · [Theme](docs/building/theme.md) · [Plugins](docs/building/plugins.md)
+- **Shipping:** [Testing and standards](docs/shipping/testing.md) · [Deployment](docs/shipping/deployment.md)
+- **Reference:** [Further reading](docs/reference/further-reading.md) · [Troubleshooting](docs/reference/troubleshooting.md)
 
 ## License
 

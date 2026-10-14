@@ -1,8 +1,8 @@
-## Plugins
+# Plugins
 
 Plugins are managed with Composer, never through wp-admin (which is read-only in production; see `DISALLOW_FILE_MODS`).
 
-### From wordpress.org
+## From wordpress.org
 
 [WordPress Packagist](https://wpackagist.org) mirrors the plugin directory:
 
@@ -17,7 +17,7 @@ Use `require-dev` for plugins that should only exist locally, like the bundled Q
 
 Must-use plugins from Composer (`type: wordpress-muplugin`) install into `wp-content/mu-plugins/<name>/`. Note that WordPress only auto-loads PHP files at the top level of `mu-plugins/`, so add a small loader file for them.
 
-### Premium and private plugins
+## Premium and private plugins
 
 For plugins from a private Composer repository (Satis, Private Packagist, or a vendor's own, such as Gravity Forms or Delicious Brains), add the repository to `composer.json` and supply credentials through `COMPOSER_AUTH`:
 
@@ -35,7 +35,7 @@ For plugins from a private Composer repository (Satis, Private Packagist, or a v
   ```
 - **CI:** add a `COMPOSER_AUTH` repository secret containing the JSON, e.g. `{"http-basic":{"composer.example.com":{"username":"…","password":"…"}}}`. Every deploy workflow passes it to the build.
 
-### Custom plugins
+## Custom plugins
 
 Plugins you write live in `wp-content/plugins/<name>/` and are committed. Two ignore files allow-list what is tracked and what goes into the image, so add an exception to both:
 
@@ -49,9 +49,9 @@ Plugins you write live in `wp-content/plugins/<name>/` and are committed. Two ig
 !wp-content/plugins/my-plugin/
 ```
 
-Site-wide behaviour that must not be deactivated belongs in `wp-content/mu-plugins/` instead (see the bundled [must-use plugins](./2.0-WordPress.md#must-use-plugins)). Those are tracked and copied into the image automatically.
+Site-wide behaviour that must not be deactivated belongs in `wp-content/mu-plugins/` instead (see the bundled [must-use plugins](./wordpress.md#must-use-plugins)). Those are tracked and copied into the image automatically.
 
-### Bundled plugins
+## Bundled plugins
 
 | Plugin                                     | Environment | Why                                                                   |
 | ------------------------------------------ | ----------- | --------------------------------------------------------------------- |

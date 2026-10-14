@@ -147,7 +147,9 @@ async function importDb() {
 
 async function pullDb() {
 	if (!env.DB_PULL_COMMAND) {
-		fail('Set DB_PULL_COMMAND (and DB_PULL_FROM_URL) in .env. See docs/1.2-Database.md.');
+		fail(
+			'Set DB_PULL_COMMAND (and DB_PULL_FROM_URL) in .env. See docs/getting-started/database.md.',
+		);
 	}
 	let remote;
 	await importStream(

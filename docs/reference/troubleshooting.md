@@ -1,4 +1,4 @@
-## Troubleshooting
+# Troubleshooting
 
 **`npm run setup` says Node 24 is required.**
 Run `nvm use` (or install Node 24) in the project directory. Husky's hooks also load nvm, so commits work from GUI clients.
@@ -32,3 +32,15 @@ Core comes from the image. After changing `WORDPRESS_IMAGE` in the `Dockerfile`,
 
 **Trivy fails CI on a base-image CVE.**
 Only fixable critical vulnerabilities fail the build. Bump `WORDPRESS_IMAGE` (Dependabot opens these PRs), or, if no fix exists upstream yet, add the CVE to a `.trivyignore` file with a comment and a review date.
+
+**Hostinger: "Composer dependencies are missing".**
+`vendor/` wasn't synced, or `wp-content/mu-plugins/whalepress-autoload.php` is missing. Re-run **Deploy (Hostinger)** and check that `public_html/vendor/autoload.php` exists.
+
+**Hostinger: the site shows a PHP syntax error after deploying.**
+The site is on PHP 8.2 or older. Switch it to 8.3+ in hPanel (Advanced → PHP Configuration).
+
+**Hostinger: "Host key verification failed".**
+The `known_hosts` value in the `HOSTINGER` secret doesn't match the server. Regenerate it with `ssh-keyscan -p 65002 <host>`.
+
+**Docs build fails with "dead link".**
+VitePress checks every internal link. Fix the path (links are relative, with the `.md` extension) or the heading anchor.

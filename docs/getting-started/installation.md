@@ -1,4 +1,4 @@
-## Installation
+# Installation
 
 ```sh
 gh repo clone ufmedia/WhalePress my-site
@@ -40,15 +40,16 @@ npm run logs       # Tail WordPress/Apache logs
 | `npm run dev` / `npm run build`               | Vite dev server / production build of the theme.                              |
 | `npm run wp -- <args>`                        | WP-CLI in the container, e.g. `npm run wp -- plugin list`.                    |
 | `npm run composer -- <args>`                  | Composer, e.g. `npm run composer -- require wpackagist-plugin/wordpress-seo`. |
-| `npm run db:export` / `db:import` / `db:pull` | Database tools, see [Database](./1.2-Database.md).                            |
+| `npm run db:export` / `db:import` / `db:pull` | Database tools, see [Database](./database.md).                                |
 | `npm run lint`                                | PHPCS, ESLint, Stylelint and Prettier.                                        |
 | `npm run analyse` / `npm run rector`          | PHPStan / Rector dry run.                                                     |
 | `npm run test`                                | PHPUnit, then Playwright.                                                     |
 | `npm run format`                              | Format everything Prettier handles.                                           |
 | `npm run i18n`                                | Generate `languages/whalepress.pot` from PHP and Twig.                        |
+| `npm run docs:dev` / `docs:build`             | Preview / build this documentation site (VitePress).                          |
 
 ## Starting a new project from WhalePress
 
-- Rename the theme directory, and update `THEME_NAME` in `.env-example`, the PSR-4 path in `composer.json`, the paths in `phpcs.xml.dist`, `phpstan.neon.dist`, `rector.php`, `lint-staged.config.js`, the root `package.json` scripts, `.gitignore`, `.dockerignore` and `THEME_DIR` in `.github/workflows/ci.yml`.
+- Rename the theme directory, and update `THEME_NAME` in `.env-example`, the PSR-4 path in `composer.json`, the paths in `phpcs.xml.dist`, `phpstan.neon.dist`, `rector.php`, `lint-staged.config.js`, the root `package.json` scripts, `.gitignore`, `.dockerignore`, `THEME_DIR` in `.github/workflows/ci.yml` and `THEME_NAME` in `.github/workflows/deploy-hostinger.yml`.
 - Change the `WhalePress\` namespace, the `whalepress` text domain and hook prefixes if you want them to match the project.
-- Replace `local/whalepress.png`, the theme `screenshot.png` and this documentation as you see fit.
+- Replace `docs/public/whalepress.png`, the theme `screenshot.png` and this documentation as you see fit; the docs site publishes from `docs/` (see [Deployment](../shipping/deployment.md#documentation-site)).

@@ -1,4 +1,4 @@
-## The theme
+# The theme
 
 `wp-content/themes/whalepress` is a classic (non-FSE) theme: PHP controllers pass data to Twig views through [Timber 2](https://timber.github.io/docs/v2/), theme logic lives in PSR-4 classes, and Vite builds Tailwind CSS 4 and ES modules. The block editor is for **post content only**.
 
