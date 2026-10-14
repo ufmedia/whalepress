@@ -188,7 +188,9 @@ jobs:
           fi
 
   # Deployments. GHCR is on unless the DEPLOY_GHCR variable is "false"; the
-  # others are opt-in by setting DEPLOY_ECR / DEPLOY_DOCR to "true".
+  # others are opt-in by setting DEPLOY_ECR / DEPLOY_DOCR / DEPLOY_HOSTINGER
+  # to "true".
+  # See docs/shipping/deployment.md for the secrets and variables each one needs.
   # See docs/3.1-Deployment.md for the secrets and variables each one needs.
 
   deploy-ghcr:
@@ -222,6 +224,17 @@ jobs:
     permissions:
       contents: read
     uses: ./.github/workflows/deploy-docr.yml
+    with:
+      version: ${{ needs.release.outputs.version }}
+    secrets: inherit
+
+  deploy-hostinger:
+    name: Deploy (Hostinger)
+    needs: release
+    if: needs.release.outputs.published == 'true' && vars.DEPLOY_HOSTINGER == 'true'
+    permissions:
+      contents: read
+    uses: ./.github/workflows/deploy-hostinger.yml
     with:
       version: ${{ needs.release.outputs.version }}
     secrets: inherit

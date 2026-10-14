@@ -1,0 +1,184 @@
+name: Deploy (Hostinger)
+
+# Deploys a release to Hostinger shared/cloud hosting over SSH + rsync. Unlike
+# the container pathways, WordPress core and wp-config.php are Hostinger's;
+# this syncs only what the project owns:
+#
+#   vendor/                          → public_html/vendor/       (Timber etc.; web access denied)
+#   wp-content/themes/<theme>/       → built theme, mirrored with --delete
+#   wp-content/plugins/<composer>/   → each Composer plugin, mirrored individually
+#   wp-content/mu-plugins/*.php      → must-use plugins (others on the server are left alone)
+#
+# Plugins, themes and drop-ins installed by Hostinger (LiteSpeed Cache, etc.)
+# are never touched. The site needs PHP 8.3+ (hPanel → Advanced → PHP Configuration).
+#
+# Secret:    HOSTINGER   JSON: {"host": "...", "user": "...", "port": "65002",
+#                               "ssh_key": "-----BEGIN ...", "known_hosts": "..."}
+#                        known_hosts is optional but recommended (`ssh-keyscan -p <port> <host>`).
+# Secret:    COMPOSER_AUTH (optional) for private Composer repositories.
+# Variables: HOSTINGER_DOMAIN (e.g. demo.example.com), or HOSTINGER_PATH to
+#            override the web root (default /home/<user>/domains/<domain>/public_html).
+#
+# Runs from the CI/CD pipeline after a release when DEPLOY_HOSTINGER is "true",
+# or manually for any tag.
+
+on:
+  workflow_call:
+    inputs:
+      version:
+        type: string
+        required: true
+  workflow_dispatch:
+    inputs:
+      version:
+        description: Version to deploy, without the "v" (e.g. 1.4.0).
+        type: string
+        required: true
+
+permissions:
+  contents: read
+
+concurrency:
+  group: deploy-hostinger
+  cancel-in-progress: false
+
+env:
+  THEME_NAME: whalepress
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    environment: hostinger
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          ref: v${{ inputs.version }}
+
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+          cache-dependency-path: wp-content/themes/${{ env.THEME_NAME }}/package-lock.json
+
+      - name: Build theme
+        working-directory: wp-content/themes/${{ env.THEME_NAME }}
+        env:
+          VERSION: ${{ inputs.version }}
+        run: |
+          npm ci --no-audit --no-fund
+          npm run build
+          sed -i "s/^Version: .*/Version: ${VERSION}/" style.css
+
+      - uses: shivammathur/setup-php@eb7c497e18156a6bbabfef1d3a82760b9eda3962 # 2.40.0
+        with:
+          php-version: '8.3'
+          coverage: none
+          tools: composer:v2
+
+      - name: Install Composer dependencies
+        env:
+          COMPOSER_AUTH: ${{ secrets.COMPOSER_AUTH }}
+        run: |
+          composer install --no-dev --no-interaction --no-progress --prefer-dist --classmap-authoritative
+          # vendor/ sits in the web root on shared hosting: deny all HTTP access.
+          cat > vendor/.htaccess <<'EOF'
+          <IfModule mod_authz_core.c>
+              Require all denied
+          </IfModule>
+          <IfModule !mod_authz_core.c>
+              Order allow,deny
+              Deny from all
+          </IfModule>
+          EOF
+
+      - name: Configure SSH
+        env:
+          HOSTINGER: ${{ secrets.HOSTINGER }}
+          DOMAIN: ${{ vars.HOSTINGER_DOMAIN }}
+          WEB_ROOT: ${{ vars.HOSTINGER_PATH }}
+        run: |
+          if [ -z "$HOSTINGER" ]; then
+            echo "::error::Add the HOSTINGER secret (see the comment at the top of this workflow)."
+            exit 1
+          fi
+          host=$(jq -r '.host' <<<"$HOSTINGER")
+          user=$(jq -r '.user' <<<"$HOSTINGER")
+          port=$(jq -r '.port // "65002"' <<<"$HOSTINGER")
+
+          install -m 700 -d ~/.ssh
+          jq -r '.ssh_key' <<<"$HOSTINGER" > ~/.ssh/hostinger
+          chmod 600 ~/.ssh/hostinger
+          echo "::add-mask::$host"
+
+          known_hosts=$(jq -r '.known_hosts // empty' <<<"$HOSTINGER")
+          if [ -n "$known_hosts" ]; then
+            printf '%s\n' "$known_hosts" > ~/.ssh/known_hosts
+          else
+            echo "::warning::No known_hosts in the HOSTINGER secret; trusting the host key on first use."
+            ssh-keyscan -p "$port" "$host" > ~/.ssh/known_hosts 2>/dev/null
+          fi
+
+          cat > ~/.ssh/config <<EOF
+          Host hostinger
+            HostName $host
+            User $user
+            Port $port
+            IdentityFile ~/.ssh/hostinger
+            IdentitiesOnly yes
+          EOF
+
+          if [ -z "$WEB_ROOT" ]; then
+            if [ -z "$DOMAIN" ]; then
+              echo "::error::Set the HOSTINGER_DOMAIN (or HOSTINGER_PATH) variable."
+              exit 1
+            fi
+            WEB_ROOT="/home/$user/domains/$DOMAIN/public_html"
+          fi
+          echo "WEB_ROOT=$WEB_ROOT" >> "$GITHUB_ENV"
+
+          # Variables in ssh commands are expanded locally on purpose.
+          # shellcheck disable=SC2029
+          ssh hostinger "test -f '$WEB_ROOT/wp-load.php'" || {
+            echo "::error::No WordPress install found at $WEB_ROOT. Install WordPress in hPanel first."
+            exit 1
+          }
+
+      - name: Sync
+        run: |
+          set -euo pipefail
+          RSYNC=(rsync -az --human-readable --itemize-changes)
+          content="$WEB_ROOT/wp-content"
+
+          # shellcheck disable=SC2029
+          ssh hostinger "mkdir -p '$WEB_ROOT/vendor' '$content/themes/$THEME_NAME' '$content/mu-plugins' '$content/plugins'"
+
+          "${RSYNC[@]}" --delete vendor/ "hostinger:$WEB_ROOT/vendor/"
+
+          "${RSYNC[@]}" --delete \
+            --exclude node_modules --exclude hot \
+            --exclude 'assets/css' --exclude 'assets/js' --exclude scripts \
+            --exclude 'package*.json' --exclude '*.config.js' \
+            "wp-content/themes/$THEME_NAME/" "hostinger:$content/themes/$THEME_NAME/"
+
+          # Only this project's must-use plugins; leave Hostinger's alone.
+          "${RSYNC[@]}" wp-content/mu-plugins/*.php "hostinger:$content/mu-plugins/"
+
+          # Each Composer-managed plugin is mirrored individually, so plugins
+          # installed on the server outside Composer are untouched.
+          for plugin in wp-content/plugins/*/; do
+            name=$(basename "$plugin")
+            "${RSYNC[@]}" --delete "$plugin" "hostinger:$content/plugins/$name/"
+          done
+
+      - name: Activate and flush caches
+        run: |
+          # shellcheck disable=SC2029
+          ssh hostinger "cd '$WEB_ROOT' && \
+            wp theme activate '$THEME_NAME' && \
+            wp plugin activate $(find wp-content/plugins -mindepth 1 -maxdepth 1 -type d -printf '%f ') && \
+            wp rewrite flush && \
+            wp cache flush && \
+            { ! wp plugin is-active litespeed-cache || wp litespeed-purge all; }"
+
+      - name: Summary
+        run: echo "### Deployed v${{ inputs.version }} to Hostinger" >> "$GITHUB_STEP_SUMMARY"
