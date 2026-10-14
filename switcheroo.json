@@ -1,9 +1,9 @@
 [
 	{
-		"id": "petalon001",
-		"title": "Block Editor Output",
+		"id": "example-flag",
+		"title": "Example flag",
 		"status": "Experimental",
-		"description": "Enable output from the block editor in the frontend.",
+		"description": "An example feature flag. Replace or remove it.",
 		"link": "#"
 	}
 ]

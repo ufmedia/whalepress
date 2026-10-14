@@ -1,14 +1,8 @@
 {
-    "name": "ufmedia/whalepress",
-    "description": "A containerised WordPress starter built on Timber, Tailwind CSS and Vite.",
+    "name": "whalepress/whalepress",
+    "description": "Containerised WordPress built on Timber, Tailwind CSS and Vite.",
     "type": "project",
     "license": "GPL-2.0-or-later",
-    "authors": [
-        {
-            "name": "John Thompson",
-            "email": "john@ufmedia.co.uk"
-        }
-    ],
     "repositories": [
         {
             "type": "composer",

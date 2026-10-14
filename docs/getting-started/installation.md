@@ -1,9 +1,14 @@
+---
+order: 2
+---
+
 # Installation
 
+Creating the project for the first time? Follow [Starting a new project](./new-project.md) first.
+
 ```sh
-gh repo clone ufmedia/WhalePress my-site
-cd my-site
-git remote remove origin   # Starting a new project
+git clone <repository-url> my-project
+cd my-project
 nvm use
 npm install
 npm run setup
@@ -12,7 +17,7 @@ npm run setup
 `npm run setup` is interactive and safe to re-run. It:
 
 1. Checks for Node 24 and Docker Compose.
-2. Creates `.env` from `.env-example`, asking for the project name, theme, port and URL, and generating salts and an admin password.
+2. Creates `.env` from `.env-example`, asking for the Compose project name, port and URL, and generating salts and an admin password.
 3. Installs the theme's npm dependencies and builds its assets.
 4. Builds the `dev` image and starts the stack, waiting for health checks.
 5. Runs `composer install` (in a container).
@@ -47,9 +52,4 @@ npm run logs       # Tail WordPress/Apache logs
 | `npm run format`                              | Format everything Prettier handles.                                           |
 | `npm run i18n`                                | Generate `languages/whalepress.pot` from PHP and Twig.                        |
 | `npm run docs:dev` / `docs:build`             | Preview / build this documentation site (VitePress).                          |
-
-## Starting a new project from WhalePress
-
-- Rename the theme directory, and update `THEME_NAME` in `.env-example`, the PSR-4 path in `composer.json`, the paths in `phpcs.xml.dist`, `phpstan.neon.dist`, `rector.php`, `lint-staged.config.js`, the root `package.json` scripts, `.gitignore`, `.dockerignore`, `THEME_DIR` in `.github/workflows/ci.yml` and `THEME_NAME` in `.github/workflows/deploy-hostinger.yml`.
-- Change the `WhalePress\` namespace, the `whalepress` text domain and hook prefixes if you want them to match the project.
-- Replace `docs/public/whalepress.png`, the theme `screenshot.png` and this documentation as you see fit; the docs site publishes from `docs/` (see [Deployment](../shipping/deployment.md#documentation-site)).
+| `npm run init`                                | Rename the project ([Starting a new project](./new-project.md)).              |

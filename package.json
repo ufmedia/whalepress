@@ -2,14 +2,14 @@
   "name": "whalepress",
   "version": "0.0.0-development",
   "private": true,
-  "description": "A containerised WordPress starter built on Timber, Tailwind CSS and Vite.",
+  "description": "Containerised WordPress built on Timber, Tailwind CSS and Vite.",
   "license": "GPL-2.0-or-later",
-  "author": "John Thompson",
   "type": "module",
   "engines": {
     "node": ">=24"
   },
   "scripts": {
+    "init": "node local/init.js",
     "setup": "node local/setup.js",
     "start": "node local/start.js",
     "up": "docker compose up -d --wait",

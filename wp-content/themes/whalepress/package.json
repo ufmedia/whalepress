@@ -4,7 +4,6 @@
   "private": true,
   "description": "Front-end build for the WhalePress theme.",
   "license": "GPL-2.0-or-later",
-  "author": "John Thompson",
   "type": "module",
   "engines": {
     "node": ">=24"
