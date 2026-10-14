@@ -6,8 +6,8 @@ parameters:
 		- wp-content/themes/whalepress
 		- wp-content/mu-plugins
 	excludePaths:
-		- wp-content/themes/whalepress/node_modules
-		- wp-content/themes/whalepress/dist
+		- wp-content/themes/whalepress/node_modules (?)
+		- wp-content/themes/whalepress/dist (?)
 		- wp-content/themes/whalepress/languages
 		- wp-content/mu-plugins/*/*
 	scanFiles:
