@@ -41,7 +41,7 @@ services:
       THEME_NAME: whalepress
 
   db:
-    image: mariadb:11.8
+    image: mariadb:13.0
     environment:
       MARIADB_DATABASE: wordpress
       MARIADB_USER: wordpress
