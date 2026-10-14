@@ -17,7 +17,7 @@ export default {
 		`prettier --write ${quote(files)}`,
 	],
 	'**/*.php': (files) => [
-		`node local/php.js vendor/bin/phpcbf ${quote(files)} || true`,
+		`node local/php.js vendor/bin/phpcbf ${quote(files)}`,
 		`node local/php.js vendor/bin/phpcs ${quote(files)}`,
 	],
 	'**/*.{twig,json,yml,yaml,md}': 'prettier --write --ignore-unknown',

@@ -30,8 +30,14 @@ function hostPhpIsSuitable() {
 const command =
 	tool === 'composer' ? ['composer', ...relativeArgs] : ['php', tool, ...relativeArgs];
 
-const status = hostPhpIsSuitable()
+let status = hostPhpIsSuitable()
 	? run(command[0], command.slice(1), { allowFailure: true })
 	: compose(['run', '--rm', '-T', 'composer', ...command], { allowFailure: true });
+
+// PHPCBF exits 1 when it fixed everything and 2 when some issues remain (which
+// PHPCS then reports). Only 3 (a processing error) is a real failure.
+if (path.basename(tool) === 'phpcbf' && (status === 1 || status === 2)) {
+	status = 0;
+}
 
 process.exit(status);
