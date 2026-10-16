@@ -62,9 +62,16 @@
 		font-style: italic;
 	}
 
+	:where(blockquote cite) {
+		display: block;
+		color: var(--wp--preset--color--muted);
+		font-size: var(--wp--preset--font-size--step-minus-1);
+		font-style: normal;
+	}
+
 	:where(figcaption) {
 		margin-block-start: var(--wp--preset--spacing--2-xs);
-		color: var(--wp--preset--color--neutral);
+		color: var(--wp--preset--color--muted);
 		font-size: var(--wp--preset--font-size--step-minus-1);
 	}
 
@@ -76,7 +83,8 @@
 	:where(pre) {
 		overflow-x: auto;
 		padding: var(--wp--preset--spacing--s);
-		background-color: color-mix(in srgb, var(--wp--preset--color--neutral) 10%, transparent);
+		border-radius: 0.5rem;
+		background-color: var(--wp--preset--color--surface);
 	}
 
 	:where(table) {
@@ -85,20 +93,228 @@
 	}
 
 	:where(th, td) {
-		border: 1px solid color-mix(in srgb, var(--wp--preset--color--neutral) 40%, transparent);
+		border-block-end: 1px solid var(--wp--preset--color--border);
 		padding: var(--wp--preset--spacing--2-xs) var(--wp--preset--spacing--xs);
 		text-align: start;
 	}
 
+	:where(thead) {
+		border-block-end: 2px solid var(--wp--preset--color--border);
+	}
+
 	:where(hr) {
 		border: 0;
-		border-block-start: 1px solid
-			color-mix(in srgb, var(--wp--preset--color--neutral) 40%, transparent);
+		border-block-start: 1px solid var(--wp--preset--color--border);
 	}
 
 	:where(img, video) {
 		max-width: 100%;
 		height: auto;
+	}
+
+	/*
+	 * Containers without WordPress layout support get no flow spacing from
+	 * core, so space their children like the rest of the content.
+	 */
+	:where(.wp-block-media-text__content) {
+		> * {
+			margin-block: 0;
+		}
+
+		> * + * {
+			margin-block-start: var(--wp--style--block-gap, 1.5rem);
+		}
+	}
+
+	/* Groups with a background colour need room inside it. */
+	:where(.wp-block-group.has-background) {
+		padding: var(--wp--preset--spacing--l) var(--wp--preset--spacing--m);
+		border-radius: 1rem;
+
+		&:where(.alignfull) {
+			border-radius: 0;
+		}
+	}
+
+	/* Block styles, registered in src/Editor/BlockStyles.php. */
+	:where(.is-style-card) {
+		padding: var(--wp--preset--spacing--m);
+		border: 1px solid var(--wp--preset--color--border);
+		border-radius: 0.75rem;
+		background-color: var(--wp--preset--color--background);
+	}
+
+	:where(.is-style-lead) {
+		color: var(--wp--preset--color--muted);
+		font-size: var(--wp--preset--font-size--step-1);
+		line-height: 1.5;
+	}
+
+	:where(.is-style-eyebrow) {
+		color: var(--wp--preset--color--primary);
+		font-size: var(--wp--preset--font-size--step-minus-1);
+		font-weight: 700;
+		letter-spacing: 0.05em;
+		text-transform: uppercase;
+	}
+
+	:where(ul.is-style-plain, ol.is-style-plain) {
+		padding-inline-start: 0;
+		list-style-type: none;
+	}
+}
+
+/*
+ * Core blocks whose own (unlayered, single-class) styles would otherwise win.
+ * The wrapper in each selector outranks them, as with the button block below.
+ */
+:is(.entry-content, .editor-styles-wrapper) {
+	/* An eyebrow sits close to the heading it introduces. */
+	.is-style-eyebrow + :is(h1, h2, h3, h4, h5, h6) {
+		margin-block-start: var(--wp--preset--spacing--2-xs);
+	}
+
+	.wp-block-separator:not(.has-background, .is-style-dots) {
+		border: 0;
+		border-block-start: 1px solid var(--wp--preset--color--border);
+	}
+
+	/* Core draws heavy black rules and a light-only (#f0f0f0) stripe. */
+	.wp-block-table {
+		thead {
+			border-block-end: 2px solid var(--wp--preset--color--border);
+		}
+
+		tfoot {
+			border-block-start: 2px solid var(--wp--preset--color--border);
+		}
+
+		th,
+		td {
+			border: 0;
+			border-block-end: 1px solid var(--wp--preset--color--border);
+			padding: var(--wp--preset--spacing--2-xs) var(--wp--preset--spacing--xs);
+		}
+
+		&.is-style-stripes {
+			border-block-end: 0;
+
+			tbody tr:nth-child(odd) {
+				background-color: var(--wp--preset--color--surface);
+			}
+
+			th,
+			td {
+				border-color: transparent;
+			}
+		}
+	}
+
+	.wp-block-pullquote {
+		padding-block: var(--wp--preset--spacing--l);
+		border-block: 1px solid var(--wp--preset--color--border);
+
+		blockquote {
+			margin: 0;
+			padding: 0;
+			border: 0;
+			font-style: normal;
+		}
+
+		p {
+			font-size: var(--wp--preset--font-size--step-3);
+			font-weight: 700;
+			line-height: 1.25;
+			text-wrap: balance;
+		}
+
+		cite {
+			margin-block-start: var(--wp--preset--spacing--s);
+			color: var(--wp--preset--color--muted);
+			font-size: var(--wp--preset--font-size--step-minus-1);
+		}
+	}
+
+	/* Details: an accordion row. Consecutive blocks join into one list. */
+	.wp-block-details {
+		padding-block: var(--wp--preset--spacing--s);
+		border-block-end: 1px solid var(--wp--preset--color--border);
+
+		&:not(.wp-block-details + .wp-block-details) {
+			border-block-start: 1px solid var(--wp--preset--color--border);
+		}
+
+		+ .wp-block-details {
+			margin-block-start: 0;
+		}
+
+		> summary {
+			display: flex;
+			gap: var(--wp--preset--spacing--s);
+			align-items: baseline;
+			justify-content: space-between;
+			font-weight: 700;
+			list-style: none;
+			cursor: pointer;
+
+			&::-webkit-details-marker {
+				display: none;
+			}
+
+			&::after {
+				flex: none;
+				color: var(--wp--preset--color--primary);
+				font-size: 1.5em;
+				font-weight: 400;
+				line-height: 1;
+				content: '+';
+				transition: rotate 150ms;
+			}
+		}
+
+		&[open] > summary::after {
+			rotate: 45deg;
+		}
+	}
+}
+
+/*
+ * Button block. WordPress styles buttons with unlayered (0,1,0) selectors, so
+ * these need the wrapper in the selector to win. Matches daisyUI's btn,
+ * btn-primary and btn-outline (the button component) using theme.json
+ * presets, since the editor canvas doesn't load daisyUI.
+ */
+:is(.entry-content, .editor-styles-wrapper) .wp-element-button {
+	display: inline-flex;
+	align-items: center;
+	min-height: 2.5rem;
+	padding: 0 1rem;
+	border: 1px solid transparent;
+	border-radius: 0.5rem;
+	background-color: var(--wp--preset--color--primary);
+	color: var(--wp--preset--color--primary-contrast);
+	font-size: 0.875rem;
+	font-weight: 600;
+	line-height: 1.2;
+	text-decoration: none;
+
+	&:hover {
+		background-color: color-mix(
+			in oklab,
+			var(--wp--preset--color--primary) 85%,
+			var(--wp--preset--color--foreground)
+		);
+	}
+}
+
+:is(.entry-content, .editor-styles-wrapper) .is-style-outline > .wp-element-button {
+	border-color: currentcolor;
+	background-color: transparent;
+	color: var(--wp--preset--color--foreground);
+
+	&:hover {
+		background-color: var(--wp--preset--color--foreground);
+		color: var(--wp--preset--color--background);
 	}
 }
 
@@ -111,6 +327,7 @@
 
 	> * {
 		max-width: min(100% - 2 * var(--gutter), var(--wp--style--global--content-size));
+		margin-block: 0;
 		margin-inline: auto;
 	}
 
@@ -144,5 +361,14 @@
 		display: table;
 		clear: both;
 		content: '';
+	}
+}
+
+/* Full-width groups keep their content off the screen edge. */
+:is(.entry-content, .editor-styles-wrapper .is-root-container) > .alignfull:where(.wp-block-group) {
+	padding-inline: var(--wp--preset--spacing--s);
+
+	&:where(.has-background) {
+		padding-block: var(--wp--preset--spacing--xl);
 	}
 }

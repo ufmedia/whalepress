@@ -34,6 +34,7 @@ Composer is at the project root: Timber and the theme's `WhalePress\` namespace 
 | `Setup\Cleanup`                            | Removes emoji scripts, RSD and shortlinks from `wp_head`.                                            |
 | `Assets\Vite`                              | Enqueues built assets from the manifest, or the dev server when it is running.                       |
 | `Editor\BlockEditor`                       | Content-only editor: allowed blocks, no remote patterns, block directory, font library or Openverse. |
+| `Editor\BlockStyles`                       | Extra block styles (Card, Lead, Eyebrow, Plain), styled in `content.css`.                            |
 | `Content\PostTypes` / `Content\Taxonomies` | Register custom post types and taxonomies from a definitions array (examples in the docblocks).      |
 | `Views\Context`                            | Global Twig context: `menus.primary`, `menus.footer`, `environment`.                                 |
 | `Views\Twig`                               | Twig functions, e.g. `icon()`.                                                                       |
@@ -138,9 +139,30 @@ While the dev server runs, it writes its URL to `wp-content/themes/whalepress/ho
 
 Content editing uses the block editor; templates and layout don't.
 
-- `theme.json` disables custom colours, gradients, duotone, font sizes, spacing controls, borders and shadows, so editors pick from the presets only.
+- `theme.json` disables custom colours, gradients, duotone, font sizes, margins, borders and shadows, so editors pick from the presets only. Padding is on, limited to the spacing scale.
 - `Editor\BlockEditor::ALLOWED_BLOCKS` lists the available blocks. Change it, or filter `whalepress/allowed_blocks`.
 - Full-site editing, block templates, core and remote patterns, the font library, block directory and Openverse are all off.
+
+Content defaults, all in `content.css`: groups with a background colour get padding and rounded corners; full-width groups keep their content off the screen edge; tables, pullquotes, details (an accordion), separators and quotes match the palette in both colour schemes.
+
+### Block styles
+
+`Editor\BlockStyles` registers extra options in each block's Styles panel. Change the list there or filter `whalepress/block_styles`; each style's CSS is an `.is-style-{name}` rule in `content.css` (a unit test checks every style has one).
+
+| Block         | Style   | Use                                                                           |
+| ------------- | ------- | ----------------------------------------------------------------------------- |
+| Group, Column | Card    | Bordered, padded panel. On columns, a row of cards stretches to equal height. |
+| Paragraph     | Lead    | Larger, muted introduction.                                                   |
+| Paragraph     | Eyebrow | Small uppercase label above a heading.                                        |
+| List          | Plain   | No bullets or indent.                                                         |
+
+### Patterns
+
+Starting-point sections live in `patterns/`, one PHP file each, and appear in the inserter's Patterns tab: feature columns, a stats band, text beside an image, a testimonial, FAQs and a call to action. WordPress registers every file in the folder from its header comment (`Title`, `Slug`, `Categories`). Strings are wrapped in `esc_html_e()` so they can be translated.
+
+To add one, build the section in the editor, copy it with **Copy all blocks** (or from the code editor), and save it as `patterns/{name}.php` with a header. Use only allowed blocks and theme presets; an e2e test fails if any pattern contains invalid or disallowed blocks.
+
+WordPress caches the list of pattern files until the theme's version changes. Locally, `WP_DEVELOPMENT_MODE` is `theme` (see [WordPress](./wordpress.md)), which turns the cache off; elsewhere, bump the version in `style.css` or flush the object cache after adding a pattern.
 
 Building custom blocks? Register them from a service (`register_block_type()` with a `block.json`), add their entry points to `vite.config.js`, and add them to the allowed list.
 

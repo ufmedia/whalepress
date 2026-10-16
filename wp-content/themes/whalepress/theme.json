@@ -61,7 +61,7 @@
 			"customSpacingSize": false,
 			"defaultSpacingSizes": false,
 			"margin": false,
-			"padding": false,
+			"padding": true,
 			"units": [
 				"rem",
 				"%"

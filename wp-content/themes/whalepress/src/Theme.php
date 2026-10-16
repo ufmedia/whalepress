@@ -46,6 +46,7 @@ final class Theme {
 			new Setup\Cleanup(),
 			new Vite( get_theme_file_path(), get_theme_file_uri(), wp_get_environment_type() ),
 			new Editor\BlockEditor(),
+			new Editor\BlockStyles(),
 			new Content\PostTypes(),
 			new Content\Taxonomies(),
 			new Views\Context(),
