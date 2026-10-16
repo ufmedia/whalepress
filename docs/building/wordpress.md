@@ -12,14 +12,15 @@ Empty values count as unset.
 
 ### Core
 
-| Variable                                              | Default                              | Notes                                                                                                                                              |
-| ----------------------------------------------------- | ------------------------------------ | -------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `WP_ENVIRONMENT_TYPE`                                 | `production`                         | `local`, `development`, `staging` or `production`. Drives several defaults below.                                                                  |
-| `WP_HOME`                                             | —                                    | Site URL; also used for `WP_SITEURL`. Unset to use the database values.                                                                            |
-| `WORDPRESS_DB_HOST` / `_NAME` / `_USER` / `_PASSWORD` | `db` / `wordpress` / `wordpress` / — |                                                                                                                                                    |
-| `WORDPRESS_DB_CHARSET` / `_COLLATE`                   | `utf8mb4` / —                        |                                                                                                                                                    |
-| `WORDPRESS_TABLE_PREFIX`                              | `wp_`                                |                                                                                                                                                    |
-| `WORDPRESS_AUTH_KEY` … `WORDPRESS_NONCE_SALT`         | —                                    | Eight keys and salts. If unset, WordPress generates random values and stores them in the database, so there is never a shared, committed fallback. |
+| Variable                                              | Default                                            | Notes                                                                                                                                              |
+| ----------------------------------------------------- | -------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `WP_ENVIRONMENT_TYPE`                                 | `production`                                       | `local`, `development`, `staging` or `production`. Drives several defaults below.                                                                  |
+| `WP_DEVELOPMENT_MODE`                                 | `theme` when local or development, otherwise empty | `theme` stops WordPress caching theme.json and the theme's `patterns/` folder.                                                                     |
+| `WP_HOME`                                             | —                                                  | Site URL; also used for `WP_SITEURL`. Unset to use the database values.                                                                            |
+| `WORDPRESS_DB_HOST` / `_NAME` / `_USER` / `_PASSWORD` | `db` / `wordpress` / `wordpress` / —               |                                                                                                                                                    |
+| `WORDPRESS_DB_CHARSET` / `_COLLATE`                   | `utf8mb4` / —                                      |                                                                                                                                                    |
+| `WORDPRESS_TABLE_PREFIX`                              | `wp_`                                              |                                                                                                                                                    |
+| `WORDPRESS_AUTH_KEY` … `WORDPRESS_NONCE_SALT`         | —                                                  | Eight keys and salts. If unset, WordPress generates random values and stores them in the database, so there is never a shared, committed fallback. |
 
 ### Debugging
 

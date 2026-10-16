@@ -66,6 +66,12 @@ define( 'WP_ENVIRONMENT_TYPE', whalepress_env( 'WP_ENVIRONMENT_TYPE', 'productio
 
 $whalepress_is_dev = in_array( WP_ENVIRONMENT_TYPE, array( 'local', 'development' ), true );
 
+/*
+ * 'theme' stops WordPress caching the theme's patterns folder and theme.json,
+ * so changes show up without flushing the object cache.
+ */
+define( 'WP_DEVELOPMENT_MODE', whalepress_env( 'WP_DEVELOPMENT_MODE', $whalepress_is_dev ? 'theme' : '' ) );
+
 // ==============================================================================
 // DATABASE
 // ==============================================================================
