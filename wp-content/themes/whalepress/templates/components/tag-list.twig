@@ -1,0 +1,26 @@
+{#
+  Terms as a row of badges, e.g. a post's tags.
+
+    {{ component('tag-list', { terms: post.tags, label: __('Tags', 'whalepress') }) }}
+
+  @param list   terms Timber\Term objects. Renders nothing when empty.
+  @param string label Heading for screen readers.
+  @param string class Optional classes.
+#}
+{% if terms %}
+  <div class="{{ class ?? '' }}">
+    <h2 class="sr-only">{{ label }}</h2>
+    <ul class="flex flex-wrap gap-2-xs">
+      {% for term in terms %}
+        <li>
+          <a
+            href="{{ term.link }}"
+            class="badge badge-lg border-base-300 hover:border-base-content"
+          >
+            {{- term.name -}}
+          </a>
+        </li>
+      {% endfor %}
+    </ul>
+  </div>
+{% endif %}

@@ -1,22 +1,42 @@
-{% extends 'base.twig' %}
+{% extends 'layouts/base.twig' %}
 
 {% block content %}
   <article id="post-{{ post.ID }}" class="{{ post.class }}">
-    <header class="container-content mb-l">
-      <h1 class="text-step-4 font-bold">{{ post.title }}</h1>
-      <p class="mt-xs text-step-minus-1 text-neutral">
-        {{ __('By', 'whalepress') }}
-        <a href="{{ post.author.link }}">{{ post.author.name }}</a>
+    {% set meta %}
+      {{ __('By', 'whalepress') }}
+      <a href="{{ post.author.link }}" class="link link-hover">{{ post.author.name }}</a>
+      &middot;
+      <time datetime="{{ post.date('c') }}">{{ post.date }}</time>
+      {% if post.can_edit %}
         &middot;
-        <time datetime="{{ post.date('c') }}">{{ post.date }}</time>
-        {% if post.can_edit %}
-          &middot; <a href="{{ post.edit_link }}">{{ __('Edit', 'whalepress') }}</a>
-        {% endif %}
-      </p>
-    </header>
+        <a href="{{ post.edit_link }}" class="link link-hover">{{ __('Edit', 'whalepress') }}</a>
+      {% endif %}
+    {% endset %}
 
+    {{
+      component(
+        'page-header',
+        {
+          title: post.title,
+          eyebrow: component(
+            'post-terms',
+            {
+              terms: post.categories,
+              class: 'mb-xs'
+            }
+          ),
+          meta: meta
+        }
+      )
+    }}
+
+    {#
+      A div, not a <figure>: WordPress's unlayered :where(figure) margin
+      outranks Tailwind's layered utilities, so container-wide couldn't
+      centre it.
+    #}
     {% if post.thumbnail %}
-      <figure class="container-wide mb-l">
+      <div class="container-wide mb-l">
         <img
           src="{{ post.thumbnail.src('large') }}"
           srcset="{{ post.thumbnail.srcset('large') }}"
@@ -24,15 +44,43 @@
           width="{{ post.thumbnail.width }}"
           height="{{ post.thumbnail.height }}"
           alt="{{ post.thumbnail.alt }}"
-          class="h-auto w-full"
+          class="mx-auto h-auto w-full rounded-box"
         />
-      </figure>
+      </div>
     {% endif %}
 
     <div class="entry-content">
       {{ post.content }}
     </div>
 
-    {% include 'partials/comments.twig' %}
+    {{
+      component(
+        'tag-list',
+        {
+          terms: post.tags,
+          label: __('Tags', 'whalepress'),
+          class: 'container-content mt-xl'
+        }
+      )
+    }}
+
+    {{
+      component(
+        'post-navigation',
+        {
+          prev: post.prev,
+          next: post.next
+        }
+      )
+    }}
+
+    {{
+      component(
+        'comments',
+        {
+          post: post
+        }
+      )
+    }}
   </article>
 {% endblock %}

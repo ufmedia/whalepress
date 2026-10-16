@@ -1,0 +1,34 @@
+{#
+  Links to the previous and next posts.
+
+    {{ component('post-navigation', { prev: post.prev, next: post.next }) }}
+
+  @param Timber\Post|null prev
+  @param Timber\Post|null next
+#}
+{% set tile =
+  'group flex flex-col gap-3-xs rounded-box border border-base-300 p-s transition-colors hover:border-base-content'
+%}
+
+{% if prev or next %}
+  <nav
+    class="container-content mt-xl grid gap-s sm:grid-cols-2"
+    aria-label="{{ __('More posts', 'whalepress') }}"
+  >
+    {% if prev %}
+      <a href="{{ prev.link }}" class="{{ tile }}">
+        <span class="text-step-minus-1 text-base-content/70">
+          {{ __('Previous', 'whalepress') }}
+        </span>
+        <span class="font-bold group-hover:underline">{{ prev.title }}</span>
+      </a>
+    {% endif %}
+
+    {% if next %}
+      <a href="{{ next.link }}" class="{{ tile }} sm:col-start-2 sm:text-end">
+        <span class="text-step-minus-1 text-base-content/70">{{ __('Next', 'whalepress') }}</span>
+        <span class="font-bold group-hover:underline">{{ next.title }}</span>
+      </a>
+    {% endif %}
+  </nav>
+{% endif %}

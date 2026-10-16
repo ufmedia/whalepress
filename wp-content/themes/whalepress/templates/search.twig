@@ -1,8 +1,10 @@
 {% extends 'index.twig' %}
 
 {% block content %}
-  <div class="container-content mb-l">
-    {{ function('get_search_form') }}
+  <div class="container-wide mb-l">
+    <div class="max-w-content">
+      {{ component('search-form') }}
+    </div>
   </div>
   {{ parent() }}
 {% endblock %}

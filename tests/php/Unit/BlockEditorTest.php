@@ -32,6 +32,17 @@ final class BlockEditorTest extends TestCase {
 		$this->assertSame( array( 'core/paragraph' ), ( new BlockEditor() )->allowed_block_types( true ) );
 	}
 
+	public function test_adds_widget_area_blocks_in_the_widget_editor_only(): void {
+		$editor = new BlockEditor();
+
+		$widgets = $editor->allowed_block_types( true, new \WP_Block_Editor_Context( 'core/edit-widgets' ) );
+		$posts   = $editor->allowed_block_types( true, new \WP_Block_Editor_Context( 'core/edit-post' ) );
+
+		$this->assertContains( 'core/widget-area', $widgets );
+		$this->assertContains( 'core/paragraph', $widgets );
+		$this->assertNotContains( 'core/widget-area', $posts );
+	}
+
 	public function test_disables_the_font_library_and_openverse(): void {
 		$settings = ( new BlockEditor() )->editor_settings( array( 'fontLibraryEnabled' => true ) );
 

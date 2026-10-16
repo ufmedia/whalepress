@@ -42,6 +42,11 @@ final class Context implements Hookable {
 			'footer'  => Timber::get_menu( 'footer' ),
 		);
 
+		// Rendered widget areas, keyed by ID; empty when an area has no widgets.
+		$context['widgets'] = array(
+			'footer' => is_active_sidebar( 'footer' ) ? (string) Timber::get_widgets( 'footer' ) : '',
+		);
+
 		$context['environment'] = wp_get_environment_type();
 
 		return $context;

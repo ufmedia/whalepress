@@ -1,0 +1,50 @@
+{#
+  Call to action: a contained panel with a heading, text and buttons, or any
+  markup (a form, for example) in place of the buttons.
+
+    {{ component('cta', {
+      title: __('Ready to start?', 'whalepress'),
+      actions: [{ label: __('Contact us', 'whalepress'), url: '/contact/' }]
+    }) }}
+
+    {{ component('cta', { title: __('Looking for something?', 'whalepress'), content: component('search-form') }) }}
+
+  @param string title
+  @param string text    Optional; may contain HTML.
+  @param list   actions Optional buttons (see button.twig).
+  @param string content Optional markup shown instead of the buttons.
+  @param int    level   Heading level, default 2.
+#}
+<div class="container-wide py-2-xl">
+  <div
+    class="grid items-center gap-m rounded-box border border-base-300 bg-base-200 p-l-xl lg:grid-cols-[3fr_2fr]"
+  >
+    <div>
+      {{
+        component(
+          'heading',
+          {
+            level: level ?? 2,
+            content: title,
+            class: 'text-step-3 font-bold tracking-tight'
+          }
+        )
+      }}
+      {% if text %}
+        <div class="mt-xs text-step-1 text-base-content/70">
+          {{ text }}
+        </div>
+      {% endif %}
+    </div>
+
+    <div class="lg:justify-self-end">
+      {{ content
+        ?? component(
+          'buttons',
+          {
+            actions: actions ?? []
+          }
+        ) }}
+    </div>
+  </div>
+</div>

@@ -1,27 +1,71 @@
-{% extends 'base.twig' %}
+{#
+  Post lists: the blog, archives and search results.
+
+  @param Timber\PostCollection posts
+  @param string                title       Optional.
+  @param string                description Optional; may contain HTML.
+  @param list                  terms       Optional terms to filter by (see components/term-filter.twig).
+  @param string                all_url     Optional "All" link for the filter.
+  @param int                   current     Optional ID of the term being viewed.
+#}
+{% extends 'layouts/base.twig' %}
 
 {% block content %}
   {% if title %}
-    {% include 'partials/page-header.twig' with {
-      title: title,
-      description: description
-    } only %}
+    {{
+      component(
+        'page-header',
+        {
+          title: title,
+          description: description,
+          width: 'wide'
+        }
+      )
+    }}
   {% endif %}
 
-  <div class="container-content">
-    {% for post in posts %}
-      {% include ['partials/tease-' ~ post.post_type ~ '.twig', 'partials/tease.twig'] %}
+  <div class="container-wide">
+    {{
+      component(
+        'term-filter',
+        {
+          terms: terms ?? [],
+          all_url: all_url ?? null,
+          current: current ?? null,
+          label: __('Categories', 'whalepress')
+        }
+      )
+    }}
+
+    {% if posts|length %}
+      <div class="auto-grid">
+        {% for item in posts %}
+          {{
+            component(
+              ['post-card-' ~ item.post_type, 'post-card'],
+              {
+                post: item
+              }
+            )
+          }}
+        {% endfor %}
+      </div>
     {% else %}
       <p>
         {{ __('Nothing found.', 'whalepress') }}
       </p>
-    {% endfor %}
+    {% endif %}
 
-    {% include 'partials/pagination.twig' with {
-      pagination: posts.pagination({
-        mid_size: 2,
-        end_size: 1
-      })
-    } only %}
+    {{
+      component(
+        'pagination',
+        {
+          pagination: posts.pagination({
+            mid_size: 2,
+            end_size: 1
+          })
+        }
+      )
+    }}
   </div>
 {% endblock %}

@@ -1,0 +1,33 @@
+{#
+  Search form (daisyUI join). Also replaces WordPress's own get_search_form()
+  output, through Views\Forms.
+
+    {{ component('search-form') }}
+
+  @param string action Optional form action, default the home URL.
+  @param string query  Optional current search, default the one being viewed.
+  @param string class  Optional classes.
+#}
+{% set id = function('wp_unique_id', 'search-') %}
+
+<form
+  role="search"
+  method="get"
+  action="{{ action ?? function('home_url', '/') }}"
+  class="join w-full {{ class ?? '' }}"
+>
+  <label class="input join-item w-full" for="{{ id }}">
+    <span class="sr-only">{{ __('Search for:', 'whalepress') }}</span>
+    <input
+      id="{{ id }}"
+      type="search"
+      name="s"
+      value="{{ query ?? function('get_search_query') }}"
+      placeholder="{{ __('Search…', 'whalepress') }}"
+      class="grow"
+    />
+  </label>
+  <button type="submit" class="btn join-item btn-primary">
+    {{- __('Search', 'whalepress') -}}
+  </button>
+</form>

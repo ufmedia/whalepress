@@ -1,0 +1,43 @@
+{#
+  Button (daisyUI btn): a link when it has a url, otherwise a <button>.
+
+    {{ component('button', { label: __('Read more', 'whalepress'), url: post.link, icon: 'arrow-right' }) }}
+    {{ component('button', { label: __('Send', 'whalepress'), type: 'submit' }) }}
+
+  @param string label
+  @param string url     Optional. An <a> when set, otherwise a <button>.
+  @param string variant 'primary' (default), 'outline', 'ghost', 'neutral' or 'link'.
+  @param string size    Optional: 'sm' or 'lg'.
+  @param string icon    Optional trailing icon from assets/icons.
+  @param string type    <button> type: 'button' (default) or 'submit'.
+  @param string class   Optional extra classes.
+#}
+{# Full class names, so Tailwind finds them when scanning templates. #}
+{% set variants = {
+  primary: 'btn-primary',
+  outline: 'btn-outline',
+  ghost: 'btn-ghost',
+  neutral: 'btn-neutral',
+  link: 'btn-link'
+} %}
+{% set sizes = {
+  sm: 'btn-sm',
+  lg: 'btn-lg'
+} %}
+{% set classes =
+  ['btn', variants[variant ?? 'primary'] ?? 'btn-primary', sizes[size ?? ''] ?? '', class ?? '']
+    |filter(c => c)
+    |join(' ')
+%}
+{% set inner %}
+  {{- label -}}
+  {%- if icon %}
+    {{ icon(icon, 'size-5') }}
+  {%- endif -%}
+{% endset %}
+
+{% if url %}
+  <a href="{{ url }}" class="{{ classes }}">{{ inner }}</a>
+{% else %}
+  <button type="{{ type ?? 'button' }}" class="{{ classes }}">{{ inner }}</button>
+{% endif %}

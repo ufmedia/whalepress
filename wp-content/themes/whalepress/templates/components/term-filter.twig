@@ -1,0 +1,38 @@
+{#
+  Links to filter a post list by term, e.g. the blog's categories.
+
+    {{ component('term-filter', { terms: terms, all_url: all_url, current: current, label: __('Categories', 'whalepress') }) }}
+
+  @param list   terms   Timber\Term objects. Renders nothing with fewer than two.
+  @param string all_url Optional "All" link, e.g. the posts page.
+  @param int    current Optional ID of the term being viewed.
+  @param string label   Accessible name for the navigation.
+#}
+{% if (terms|length) > 1 %}
+  <nav class="mb-l" aria-label="{{ label }}">
+    <ul class="flex flex-wrap gap-2-xs">
+      {% if all_url %}
+        <li>
+          <a
+            href="{{ all_url }}"
+            class="btn rounded-full {{ current ? '' : 'btn-neutral' }}"
+            aria-current="{{ current ? 'false' : 'page' }}"
+          >
+            {{- __('All', 'whalepress') -}}
+          </a>
+        </li>
+      {% endif %}
+      {% for term in terms %}
+        <li>
+          <a
+            href="{{ term.link }}"
+            class="btn rounded-full {{ term.id == current ? 'btn-neutral' : '' }}"
+            aria-current="{{ term.id == current ? 'page' : 'false' }}"
+          >
+            {{- term.name -}}
+          </a>
+        </li>
+      {% endfor %}
+    </ul>
+  </nav>
+{% endif %}

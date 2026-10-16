@@ -1,0 +1,80 @@
+{#
+  One menu item, recursive. An item with children becomes a disclosure
+  (Alpine `disclosure`, assets/js/components/disclosure.js): its title is a
+  button that shows the submenu, and the item's own link, if it has one,
+  leads the submenu. The caret is daisyUI's menu-dropdown-toggle, turned by
+  aria-expanded.
+
+  @param Timber\MenuItem item
+  @param string          link_class Optional classes for links.
+  @param bool            dropdown   Float the submenu on large screens.
+#}
+{% set has_link = item.link and item.link != '#' %}
+
+{% if item.children %}
+  <li
+    class="relative {{ item.classes|join(' ') }}"
+    x-data="disclosure"
+    x-on:keydown.escape="dismiss"
+    x-on:click.outside="close"
+  >
+    <button
+      type="button"
+      class="menu-dropdown-toggle aria-expanded:after:translate-y-px aria-expanded:after:rotate-45 {{
+      link_class
+      }}"
+      aria-expanded="false"
+      aria-controls="submenu-{{ item.id }}"
+      x-ref="toggle"
+      x-on:click="toggle"
+      x-bind:aria-expanded="open"
+    >
+      {{- item.title -}}
+    </button>
+    <ul
+      id="submenu-{{ item.id }}"
+      class="{{
+      dropdown
+        ? 'lg:absolute lg:top-full lg:z-10 lg:mt-2-xs lg:ms-0 lg:min-w-48 lg:rounded-box lg:border lg:border-base-300 lg:bg-base-100 lg:p-2-xs lg:shadow-lg'
+      }}"
+      x-show="open"
+      x-cloak
+    >
+      {% if has_link %}
+        <li>
+          <a
+            href="{{ item.link }}"
+            class="{{ link_class }} aria-[current=page]:font-bold"
+            aria-current="{{ item.current ? 'page' : 'false' }}"
+          >
+            {{- item.title -}}
+          </a>
+        </li>
+      {% endif %}
+      {% for child in item.children %}
+        {{
+          component(
+            'menu-item',
+            {
+              item: child,
+              link_class: link_class,
+              dropdown: false
+            }
+          )
+        }}
+      {% endfor %}
+    </ul>
+  </li>
+{% else %}
+  <li class="{{ item.classes|join(' ') }}">
+    <a
+      href="{{ item.link }}"
+      class="{{ link_class }} aria-[current=page]:font-bold"
+      aria-current="{{ item.current ? 'page' : 'false' }}"
+      target="{{ item.target }}"
+      rel="{{ item.is_target_blank ? 'noopener' }}"
+    >
+      {{- item.title -}}
+    </a>
+  </li>
+{% endif %}

@@ -1,20 +1,69 @@
 /*
- * Tailwind theme, mapped from theme.json presets.
+ * Tailwind and daisyUI themes, mapped from theme.json presets.
  *
  * theme.json is the source of truth: WordPress outputs each preset as a
  * --wp--preset--* custom property on the front end and in the editor. Change
  * values there (or in scripts/fluid-scales.js and run `npm run tokens`), then
  * add or remove the matching line here.
  */
+
+/*
+ * daisyUI components (https://daisyui.com/components/). The built-in themes
+ * are off; the single theme below takes its colours from theme.json, so
+ * components, utilities (bg-base-200, text-primary …) and editor colours all
+ * match.
+ */
+@plugin 'daisyui' {
+	themes: false;
+	logs: false;
+}
+
+/*
+ * The palette is made of light-dark() pairs, so this one theme covers both
+ * schemes: it follows color-scheme (base.css), set by the system preference
+ * or the visitor's choice from the toggle. Status colours aren't offered to
+ * editors, so they are defined here rather than in theme.json.
+ */
+@plugin 'daisyui/theme' {
+	name: 'whalepress';
+	default: true;
+	color-scheme: light dark;
+
+	--color-base-100: var(--wp--preset--color--background);
+	--color-base-200: var(--wp--preset--color--surface);
+	--color-base-300: var(--wp--preset--color--border);
+	--color-base-content: var(--wp--preset--color--foreground);
+	--color-primary: var(--wp--preset--color--primary);
+	--color-primary-content: var(--wp--preset--color--primary-contrast);
+	--color-neutral: var(--wp--preset--color--foreground);
+	--color-neutral-content: var(--wp--preset--color--background);
+	--color-secondary: light-dark(#475569, #94a3b8);
+	--color-secondary-content: light-dark(#fff, #0b1120);
+	--color-accent: light-dark(#6d28d9, #a78bfa);
+	--color-accent-content: light-dark(#fff, #0b1120);
+	--color-info: light-dark(#0369a1, #38bdf8);
+	--color-info-content: light-dark(#fff, #0b1120);
+	--color-success: light-dark(#15803d, #4ade80);
+	--color-success-content: light-dark(#fff, #0b1120);
+	--color-warning: light-dark(#b45309, #fbbf24);
+	--color-warning-content: light-dark(#fff, #0b1120);
+	--color-error: light-dark(#b91c1c, #f87171);
+	--color-error-content: light-dark(#fff, #0b1120);
+
+	/* Flat and minimal: no depth or noise effects. */
+	--radius-selector: 1rem;
+	--radius-field: 0.5rem;
+	--radius-box: 1rem;
+	--size-selector: 0.25rem;
+	--size-field: 0.25rem;
+	--border: 1px;
+	--depth: 0;
+	--noise: 0;
+}
+
 @theme inline {
 	--font-sans: var(--wp--preset--font-family--body);
 	--font-mono: var(--wp--preset--font-family--mono);
-
-	--color-background: var(--wp--preset--color--background);
-	--color-foreground: var(--wp--preset--color--foreground);
-	--color-primary: var(--wp--preset--color--primary);
-	--color-secondary: var(--wp--preset--color--secondary);
-	--color-neutral: var(--wp--preset--color--neutral);
 
 	--text-step-minus-2: var(--wp--preset--font-size--step-minus-2);
 	--text-step-minus-2--line-height: 1.6;
@@ -53,3 +102,21 @@
 	--container-content: var(--wp--style--global--content-size);
 	--container-wide: var(--wp--style--global--wide-size);
 }
+
+/*
+ * dark: matches the system preference unless the visitor has chosen light,
+ * or an explicit dark choice (data-theme on <html>, set by the toggle).
+ */
+/* stylelint-disable nesting-selector-no-missing-scoping-root -- Tailwind's @custom-variant is the scope. */
+@custom-variant dark {
+	&:where([data-theme='dark'], [data-theme='dark'] *) {
+		@slot;
+	}
+
+	@media (prefers-color-scheme: dark) {
+		&:where(:root:not([data-theme='light']), :root:not([data-theme='light']) *) {
+			@slot;
+		}
+	}
+}
+/* stylelint-enable nesting-selector-no-missing-scoping-root */

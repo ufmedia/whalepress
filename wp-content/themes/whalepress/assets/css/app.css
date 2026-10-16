@@ -9,6 +9,7 @@
 @import './theme.css';
 @import './base.css';
 @import './layout.css';
+@import './components.css';
 @import './content.css';
 
 @source '../../templates';

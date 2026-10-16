@@ -1,0 +1,64 @@
+{#
+  A page section: vertical rhythm, a container and an optional heading. The
+  heading labels the section, so it is announced as a region. Capture the
+  body with {% set %} and pass it as content:
+
+    {% set cards %}
+      <div class="auto-grid">…</div>
+    {% endset %}
+    {{ component('section', {
+      title: __('Latest posts', 'whalepress'),
+      actions: [{ label: __('View all', 'whalepress'), url: posts_url, variant: 'outline' }],
+      content: cards
+    }) }}
+
+  @param string title   Optional heading (h2).
+  @param string intro   Optional lead text below the heading.
+  @param string id      Optional. Defaults to one derived from the title.
+  @param string width   'wide' (default) or 'content'.
+  @param string class   Optional classes for <section>, e.g. 'bg-base-200'.
+  @param list   actions Optional buttons beside the heading on large screens.
+  @param string content Section body (HTML).
+#}
+{% set id = id ?? title ? function('sanitize_title', title) : null %}
+
+<section
+  class="py-2-xl {{ class ?? '' }}"
+  {{ id ? ('id="' ~ (id|e) ~ '"')|raw }}
+  {{ title ? ('aria-labelledby="' ~ (id|e) ~ '-title"')|raw }}
+>
+  <div class="{{ width == 'content' ? 'container-content' : 'container-wide' }}">
+    {% if title %}
+      <header class="mb-l flex flex-wrap items-end justify-between gap-s">
+        <div class="max-w-content">
+          {{
+            component(
+              'heading',
+              {
+                level: 2,
+                content: title,
+                class: 'text-step-3 font-bold tracking-tight',
+                id: id ~ '-title'
+              }
+            )
+          }}
+          {% if intro %}
+            <p class="mt-xs text-step-1 text-base-content/70">
+              {{ intro }}
+            </p>
+          {% endif %}
+        </div>
+        {{
+          component(
+            'buttons',
+            {
+              actions: actions ?? []
+            }
+          )
+        }}
+      </header>
+    {% endif %}
+
+    {{ content }}
+  </div>
+</section>

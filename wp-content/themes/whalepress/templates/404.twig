@@ -1,12 +1,17 @@
-{% extends 'base.twig' %}
+{% extends 'layouts/base.twig' %}
 
 {% block content %}
-  {% include 'partials/page-header.twig' with {
-    title: __('Page not found', 'whalepress'),
-    description: __('Sorry, we couldn’t find that page.', 'whalepress')
-  } only %}
+  {{
+    component(
+      'page-header',
+      {
+        title: __('Page not found', 'whalepress'),
+        description: __('Sorry, we couldn’t find that page.', 'whalepress')
+      }
+    )
+  }}
 
   <div class="container-content">
-    {{ function('get_search_form') }}
+    {{ component('search-form') }}
   </div>
 {% endblock %}

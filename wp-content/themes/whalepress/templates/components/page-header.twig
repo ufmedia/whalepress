@@ -1,0 +1,25 @@
+{#
+  Page heading.
+
+    {{ component('page-header', { title: post.title }) }}
+
+  @param string title
+  @param string eyebrow     Optional markup above the title, e.g. post-terms.
+  @param string description Optional lead text; may contain HTML.
+  @param string meta        Optional small print below the title (author, date).
+  @param string width       'content' (default) or 'wide', to line up with what follows.
+#}
+<header class="{{ width == 'wide' ? 'container-wide' : 'container-content' }} mb-l">
+  {{ eyebrow }}
+  <h1 class="max-w-content text-step-4 font-bold">{{ title }}</h1>
+  {% if meta %}
+    <p class="mt-xs text-step-minus-1 text-base-content/70">
+      {{ meta }}
+    </p>
+  {% endif %}
+  {% if description %}
+    <div class="mt-s max-w-content text-step-1 text-base-content/70">
+      {{ description }}
+    </div>
+  {% endif %}
+</header>

@@ -1,0 +1,16 @@
+{#
+  Heading at a variable level, so components keep a correct outline wherever
+  they are used (Twig can't build a tag name without a tag inside the markup).
+
+    {{ component('heading', { level: 2, content: post.title, class: 'text-step-2 font-bold' }) }}
+
+  @param int    level   1–6, default 2.
+  @param string content Text or markup (already escaped).
+  @param string class   Optional classes.
+  @param string id      Optional id, e.g. to label a section.
+#}
+{%- set tag = 'h' ~ (level in 1..6 ? level : 2) -%}
+{%- set open = '<' ~ tag ~ (id ? ' id="' ~ (id|e) ~ '"') ~ (class ? ' class="' ~ (class|e) ~ '"')
+  ~ '>'
+-%}
+{{- open|raw }}{{ content }}{{ ('</' ~ tag ~ '>')|raw -}}

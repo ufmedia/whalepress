@@ -14,6 +14,15 @@ $context['title']       = get_the_archive_title();
 $context['description'] = get_the_archive_description();
 $context['posts']       = Timber::get_posts();
 
+// On category archives, the same category links as the blog.
+if ( is_category() ) {
+	$whalepress_posts_page = (int) get_option( 'page_for_posts' );
+
+	$context['terms']   = Timber::get_terms( array( 'taxonomy' => 'category' ) );
+	$context['current'] = get_queried_object_id();
+	$context['all_url'] = $whalepress_posts_page ? get_permalink( $whalepress_posts_page ) : home_url( '/' );
+}
+
 $templates = array( 'archive.twig', 'index.twig' );
 
 if ( is_post_type_archive() ) {

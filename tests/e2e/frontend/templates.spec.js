@@ -17,7 +17,7 @@ test('search results render', async ({ page }) => {
 
 test('a single post renders', async ({ page, expectAccessible }) => {
 	await page.goto('/');
-	const firstPost = page.locator('main article h2 a').first();
+	const firstPost = page.locator('main article :is(h2, h3) a').first();
 	test.skip((await firstPost.count()) === 0, 'No posts on the front page');
 
 	await firstPost.click();
@@ -25,4 +25,21 @@ test('a single post renders', async ({ page, expectAccessible }) => {
 	await expect(page.locator('main article > .entry-content')).toBeVisible();
 	await expect(page.locator('#comments')).toBeVisible();
 	await expectAccessible();
+});
+
+test('a single post shows its featured image centred', async ({ page }) => {
+	await page.goto('/');
+	const firstPost = page.locator('main article :is(h2, h3) a').first();
+	test.skip((await firstPost.count()) === 0, 'No posts on the front page');
+
+	await firstPost.click();
+	const image = page.locator('main article > div:not(.entry-content) img').first();
+	test.skip((await image.count()) === 0, 'The post has no featured image');
+
+	const box = await image.boundingBox();
+	const viewport = page.viewportSize();
+	const left = box.x;
+	const right = viewport.width - (box.x + box.width);
+	// Allow for a scrollbar on one side.
+	expect(Math.abs(left - right)).toBeLessThan(20);
 });

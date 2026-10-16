@@ -1,0 +1,63 @@
+{#
+  Site header: site name, primary menu and the colour scheme toggle. Sticky
+  on large screens. On small screens the menu is a disclosure (Alpine
+  `disclosure`): the toggle sets data-open on the navigation, which shows it.
+
+    {{ component('site-header', { site: site, menus: menus }) }}
+
+  @param Timber\Site site
+  @param array       menus Timber menus keyed by location (primary is used).
+#}
+{% set items = menus.primary.items ?? [] %}
+
+<header
+  class="z-40 border-b border-base-300 bg-base-100/90 backdrop-blur-md lg:sticky lg:top-[var(--wp-admin--admin-bar--height,0px)]"
+>
+  <div
+    class="navbar container-wide flex-wrap gap-x-m px-0"
+    x-data="disclosure"
+    x-on:keydown.escape.window="dismiss"
+  >
+    <a href="{{ site.url }}" class="me-auto text-step-1 font-bold" rel="home">{{- site.name -}}</a>
+
+    <div class="flex items-center gap-3-xs lg:order-last">
+      {{ component('theme-toggle') }}
+
+      {% if items %}
+        <button
+          type="button"
+          class="btn btn-square btn-ghost swap swap-rotate aria-expanded:swap-active lg:hidden"
+          aria-label="{{ __('Menu', 'whalepress') }}"
+          aria-controls="primary-navigation"
+          aria-expanded="false"
+          x-ref="toggle"
+          x-on:click="toggle"
+          x-bind:aria-expanded="open"
+        >
+          <span class="swap-off">{{ icon('menu', 'size-6') }}</span>
+          <span class="swap-on">{{ icon('close', 'size-6') }}</span>
+        </button>
+      {% endif %}
+    </div>
+
+    {% if items %}
+      <nav
+        id="primary-navigation"
+        class="w-full max-lg:hidden max-lg:data-open:block lg:w-auto"
+        aria-label="{{ __('Primary', 'whalepress') }}"
+        x-bind:data-open="open"
+      >
+        {{
+          component(
+            'menu',
+            {
+              items: items,
+              class: 'menu w-full gap-3-xs p-0 text-step-0 [--menu-active-bg:var(--color-base-200)] [--menu-active-fg:var(--color-base-content)] lg:menu-horizontal lg:w-auto',
+              dropdown: true
+            }
+          )
+        }}
+      </nav>
+    {% endif %}
+  </div>
+</header>

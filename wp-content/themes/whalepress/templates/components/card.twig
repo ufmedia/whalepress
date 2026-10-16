@@ -1,0 +1,78 @@
+{#
+  Card (daisyUI card). When it has a url the whole card is clickable, but
+  only the title is a link, so screen readers hear one concise link per card.
+
+    <div class="auto-grid">
+      {% for item in items %}
+        {{ component('card', { title: item.title, url: item.link, text: item.summary, image: item.thumbnail }) }}
+      {% endfor %}
+    </div>
+
+  @param string       title
+  @param string       url   Optional.
+  @param string       text  Optional; may contain HTML.
+  @param string       meta  Optional small text shown above the title (a date, a category).
+  @param Timber\Image image Optional. Decorative: the title describes the card.
+  @param int          level Heading level, default 3.
+  @param string       class Optional extra classes.
+#}
+{% set heading %}
+  {% if url %}
+    <a
+      href="{{ url }}"
+      class="after:absolute after:inset-0 after:rounded-[inherit] hover:underline focus-visible:outline-none"
+    >
+      {{- title -}}
+    </a>
+  {% else %}
+    {{ title }}
+  {% endif %}
+{% endset %}
+
+<article
+  class="card relative overflow-hidden border border-base-300 bg-base-100 transition-shadow has-[a:focus-visible]:outline-2 has-[a:focus-visible]:outline-offset-2 has-[a:focus-visible]:outline-primary {{
+  url
+    ? 'hover:shadow-lg hover:shadow-base-content/5'
+  }} {{ class ?? '' }}"
+>
+  {% if image %}
+    <figure>
+      <img
+        src="{{ image.src('medium_large') }}"
+        srcset="{{ image.srcset('medium_large') }}"
+        sizes="(min-width: 48rem) 33vw, 100vw"
+        width="{{ image.width }}"
+        height="{{ image.height }}"
+        alt=""
+        class="aspect-video w-full object-cover"
+        loading="lazy"
+      />
+    </figure>
+  {% endif %}
+
+  <div class="card-body gap-2-xs p-m">
+    {{
+      component(
+        'heading',
+        {
+          level: level ?? 3,
+          content: heading,
+          class: 'card-title text-step-1'
+        }
+      )
+    }}
+
+    {% if meta %}
+      {# flex-none: daisyUI lets paragraphs in a card body grow. #}
+      <p class="order-first flex-none text-step-minus-1 text-base-content/70">
+        {{ meta }}
+      </p>
+    {% endif %}
+
+    {% if text %}
+      <div class="text-base-content/70">
+        {{ text }}
+      </div>
+    {% endif %}
+  </div>
+</article>

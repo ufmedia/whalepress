@@ -1,0 +1,122 @@
+{#
+  Home page: a hero, the page's own content (static front page), the latest
+  posts as cards and, when the home page is the blog, a search prompt.
+  Everything shown is real site data; replace or reorder the sections freely.
+
+  A static front page's hero comes from the page: its title, excerpt (lead
+  text) and featured image. The rest of the page is block content, so
+  editors own everything between the hero and the latest posts.
+
+  @param Timber\Post|null      post        The static front page, if there is one.
+  @param Timber\PostCollection posts       Latest posts.
+  @param string|null           posts_url   The posts page, if one is set.
+  @param string|null           posts_title Its title, used as the hero button label.
+#}
+{% extends 'layouts/base.twig' %}
+
+{# The hero is full-bleed and sections carry their own spacing. #}
+{% set main_class = '' %}
+
+{% block content %}
+  {% if posts_url %}
+    {% set hero_actions = [
+      {
+        label: posts_title,
+        url: posts_url,
+        icon: 'arrow-right'
+      }
+    ] %}
+  {% elseif posts|length %}
+    {% set hero_actions = [
+      {
+        label: __('Latest posts', 'whalepress'),
+        url: '#latest',
+        icon: 'arrow-right'
+      }
+    ] %}
+  {% endif %}
+
+  {{
+    component(
+      'hero',
+      {
+        title: post ? post.title : site.name,
+        text: post ? post.post_excerpt|e : site.description,
+        image: post ? post.thumbnail,
+        actions: hero_actions ?? []
+      }
+    )
+  }}
+
+  {% if post and post.content %}
+    <div class="entry-content py-2-xl">
+      {{ post.content }}
+    </div>
+  {% endif %}
+
+  {% if posts|length %}
+    {% set cards %}
+      <div class="auto-grid">
+        {% for item in posts %}
+          {{
+            component(
+              ['post-card-' ~ item.post_type, 'post-card'],
+              {
+                post: item,
+                level: 3
+              }
+            )
+          }}
+        {% endfor %}
+      </div>
+
+      {% if not post %}
+        {{
+          component(
+            'pagination',
+            {
+              pagination: posts.pagination({
+                mid_size: 2,
+                end_size: 1
+              })
+            }
+          )
+        }}
+      {% endif %}
+    {% endset %}
+
+    {{
+      component(
+        'section',
+        {
+          title: __('Latest posts', 'whalepress'),
+          id: 'latest',
+          actions: post and posts_url
+            ? [
+              {
+                label: __('View all posts', 'whalepress'),
+                url: posts_url,
+                variant: 'outline'
+              }
+            ]
+            : [],
+          content: cards
+        }
+      )
+    }}
+  {% endif %}
+
+  {# Only when the home page is the blog: a static page brings its own calls to action. #}
+  {% if not post %}
+    {{
+      component(
+        'cta',
+        {
+          title: __('Looking for something?', 'whalepress'),
+          text: __('Search all posts and pages.', 'whalepress'),
+          content: component('search-form')
+        }
+      )
+    }}
+  {% endif %}
+{% endblock %}

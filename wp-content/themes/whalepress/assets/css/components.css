@@ -1,0 +1,125 @@
+/*
+ * daisyUI styles for markup WordPress generates, where templates can't add
+ * classes: the comment and password forms, forms that plugins put in post
+ * content, and blocks in the Footer widget area. Everything else uses daisyUI
+ * classes directly in templates/components. Layered, so utilities still win.
+ */
+@layer components {
+	/* comment_form(): labels above full-width fields. The submit button gets
+	 * its classes from Views\Forms. */
+	.comment-form {
+		display: grid;
+		gap: var(--spacing-s);
+
+		label {
+			display: block;
+			margin-block-end: var(--spacing-3-xs);
+			font-weight: 700;
+		}
+
+		textarea {
+			@apply textarea w-full;
+		}
+
+		input:not([type='checkbox'], [type='submit'], [type='hidden']) {
+			@apply input w-full;
+		}
+
+		[type='checkbox'] {
+			@apply checkbox checkbox-sm;
+		}
+
+		.required {
+			color: var(--color-primary);
+		}
+
+		:is(.comment-notes, .logged-in-as) {
+			color: color-mix(in oklab, var(--color-base-content) 70%, transparent);
+			font-size: var(--text-step-minus-1);
+		}
+
+		.comment-form-cookies-consent {
+			display: flex;
+			gap: var(--spacing-2-xs);
+			align-items: center;
+
+			label {
+				margin: 0;
+				font-weight: 400;
+			}
+		}
+	}
+
+	.comment-reply-title {
+		font-size: var(--text-step-2);
+		font-weight: 700;
+
+		small {
+			margin-inline-start: var(--spacing-xs);
+			font-size: var(--text-step-minus-1);
+			font-weight: 400;
+		}
+	}
+
+	/* get_the_password_form() and forms from plugins, e.g. a contact form. */
+	:is(.post-password-form, .entry-content form) {
+		:is(
+			input:not(
+				[type='checkbox'],
+				[type='radio'],
+				[type='range'],
+				[type='file'],
+				[type='submit'],
+				[type='button'],
+				[type='reset'],
+				[type='image'],
+				[type='hidden']
+			)
+		) {
+			@apply input;
+		}
+
+		textarea {
+			@apply textarea;
+		}
+
+		select {
+			@apply select;
+		}
+
+		[type='checkbox'] {
+			@apply checkbox;
+		}
+
+		[type='radio'] {
+			@apply radio;
+		}
+
+		[type='submit'] {
+			@apply btn btn-primary;
+		}
+	}
+
+	/* Blocks in the Footer widget area (components/site-footer.twig). */
+	.footer-widgets {
+		:is(h2, h3, h4, .widget-title) {
+			color: var(--color-base-content);
+			font-size: var(--text-step-0);
+			font-weight: 700;
+		}
+
+		.widget > * + * {
+			margin-block-start: var(--spacing-2-xs);
+		}
+
+		a {
+			@apply link link-hover;
+
+			text-decoration-line: underline;
+
+			&:hover {
+				color: var(--color-base-content);
+			}
+		}
+	}
+}

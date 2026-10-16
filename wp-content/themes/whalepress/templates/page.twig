@@ -1,10 +1,15 @@
-{% extends 'base.twig' %}
+{% extends 'layouts/base.twig' %}
 
 {% block content %}
   <article id="post-{{ post.ID }}">
-    {% include 'partials/page-header.twig' with {
-      title: post.title
-    } only %}
+    {{
+      component(
+        'page-header',
+        {
+          title: post.title
+        }
+      )
+    }}
 
     <div class="entry-content">
       {{ post.content }}

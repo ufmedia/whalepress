@@ -53,10 +53,19 @@ final class BlockEditor implements Hookable {
 	);
 
 	/**
+	 * Blocks the widget editors need to manage widget areas, added there only.
+	 */
+	public const array WIDGET_BLOCKS = array(
+		'core/legacy-widget',
+		'core/widget-area',
+		'core/widget-group',
+	);
+
+	/**
 	 * Register hooks.
 	 */
 	public function register(): void {
-		add_filter( 'allowed_block_types_all', array( $this, 'allowed_block_types' ) );
+		add_filter( 'allowed_block_types_all', array( $this, 'allowed_block_types' ), 10, 2 );
 		add_filter( 'block_editor_settings_all', array( $this, 'editor_settings' ) );
 		add_filter( 'should_load_remote_block_patterns', '__return_false' );
 
@@ -66,16 +75,23 @@ final class BlockEditor implements Hookable {
 	/**
 	 * Restrict the inserter to content blocks.
 	 *
-	 * @param bool|list<string> $allowed Blocks allowed so far (ignored: the list is authoritative).
+	 * @param bool|list<string>             $allowed Blocks allowed so far (ignored: the list is authoritative).
+	 * @param \WP_Block_Editor_Context|null $context Where the editor is used.
 	 * @return list<string>
 	 */
-	public function allowed_block_types( bool|array $allowed ): array {
+	public function allowed_block_types( bool|array $allowed, ?\WP_Block_Editor_Context $context = null ): array {
 		/**
 		 * Filters the blocks available in the editor.
 		 *
 		 * @param list<string> $blocks Block names.
 		 */
-		return apply_filters( 'whalepress/allowed_blocks', self::ALLOWED_BLOCKS );
+		$blocks = apply_filters( 'whalepress/allowed_blocks', self::ALLOWED_BLOCKS );
+
+		if ( $context instanceof \WP_Block_Editor_Context && in_array( $context->name, array( 'core/edit-widgets', 'core/customize-widgets' ), true ) ) {
+			return array_values( array_unique( array_merge( $blocks, self::WIDGET_BLOCKS ) ) );
+		}
+
+		return $blocks;
 	}
 
 	/**

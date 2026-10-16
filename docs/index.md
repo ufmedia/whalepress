@@ -8,7 +8,7 @@ This is the developer documentation for the project: how to run it locally, how 
 | -------------- | ----------------------------------------------------------------------------------------------- | ----------------------------------------------------- |
 | Local services | Docker Compose: WordPress (Apache, PHP 8.4), MariaDB, Redis, Mailpit, Adminer, Xdebug           | [Local services](./getting-started/local-services.md) |
 | Configuration  | `wp-config.php` read from environment variables; must-use plugins for hardening and mail        | [WordPress configuration](./building/wordpress.md)    |
-| Theme          | Classic theme: Timber 2 (Twig) views, PSR-4 classes, Tailwind CSS 4 and Vite                    | [Theme](./building/theme.md)                          |
+| Theme          | Classic theme: Twig components, PSR-4 classes, Tailwind CSS 4, daisyUI, Alpine.js and Vite      | [Theme](./building/theme.md)                          |
 | Editor         | Block editor for post content only (no full-site editing), styled from `theme.json` tokens      | [Theme](./building/theme.md#the-block-editor)         |
 | Dependencies   | Composer at the project root (plugins via WordPress Packagist); npm for tooling and assets      | [Plugins](./building/plugins.md)                      |
 | Quality        | PHPCS, PHPStan, Rector, PHPUnit, ESLint, Stylelint, Prettier, Playwright, commit hooks          | [Testing and standards](./shipping/testing.md)        |

@@ -10,6 +10,7 @@ declare(strict_types=1);
 namespace WhalePress;
 
 use Timber\Timber;
+use WhalePress\Assets\ColorScheme;
 use WhalePress\Assets\Vite;
 use WhalePress\Contracts\Hookable;
 
@@ -45,12 +46,14 @@ final class Theme {
 			new Setup\ThemeSupport(),
 			new Setup\Cleanup(),
 			new Vite( get_theme_file_path(), get_theme_file_uri(), wp_get_environment_type() ),
+			new ColorScheme(),
 			new Editor\BlockEditor(),
 			new Editor\BlockStyles(),
 			new Content\PostTypes(),
 			new Content\Taxonomies(),
 			new Views\Context(),
 			new Views\Twig( get_theme_file_path( 'assets/icons' ) ),
+			new Views\Forms(),
 		);
 
 		/**

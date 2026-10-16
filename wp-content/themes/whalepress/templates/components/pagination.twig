@@ -1,0 +1,34 @@
+{#
+  Numbered pagination (daisyUI join).
+
+    {{ component('pagination', { pagination: posts.pagination({ mid_size: 2, end_size: 1 }) }) }}
+
+  @param Timber\Pagination pagination
+#}
+{% if (pagination.pages|length) > 1 %}
+  <nav class="mt-l" aria-label="{{ __('Pagination', 'whalepress') }}">
+    <div class="join flex-wrap">
+      {% if pagination.prev %}
+        <a class="btn join-item" href="{{ pagination.prev.link }}">
+          {{- __('Previous', 'whalepress') -}}
+        </a>
+      {% endif %}
+
+      {% for page in pagination.pages %}
+        {% if page.link %}
+          <a class="btn join-item" href="{{ page.link }}">{{ page.title }}</a>
+        {% elseif page.current %}
+          <span class="btn join-item btn-primary" aria-current="page">{{ page.title }}</span>
+        {% else %}
+          <span class="btn join-item pointer-events-none">{{ page.title }}</span>
+        {% endif %}
+      {% endfor %}
+
+      {% if pagination.next %}
+        <a class="btn join-item" href="{{ pagination.next.link }}">
+          {{- __('Next', 'whalepress') -}}
+        </a>
+      {% endif %}
+    </div>
+  </nav>
+{% endif %}

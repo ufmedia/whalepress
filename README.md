@@ -3,7 +3,7 @@
 
 # WhalePress
 
-WordPress with a Timber 2 (Twig) theme, Tailwind CSS 4 and Vite, the block editor for content only, and Docker images from local to production.
+WordPress with a Timber 2 (Twig) theme, Tailwind CSS 4 with daisyUI, Alpine.js and Vite, the block editor for content only, and Docker images from local to production.
 
 ## Quick start
 

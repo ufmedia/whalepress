@@ -1,0 +1,16 @@
+{#
+  A short, linked list of terms, e.g. a post's categories, as an eyebrow.
+
+    {{ component('post-terms', { terms: post.categories }) }}
+
+  @param list   terms Timber\Term objects. Renders nothing when empty.
+  @param string class Optional classes.
+#}
+{% if terms %}
+  <p class="text-step-minus-1 font-bold tracking-wide text-primary uppercase {{ class ?? '' }}">
+    {% for term in terms %}
+      <a href="{{ term.link }}" class="link link-hover">{{ term.name }}</a>
+      {{- not loop.last ? ', ' -}}
+    {% endfor %}
+  </p>
+{% endif %}

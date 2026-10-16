@@ -25,6 +25,7 @@ final class ThemeSupport implements Hookable {
 		add_action( 'after_setup_theme', array( $this, 'add_image_sizes' ) );
 		add_action( 'init', array( $this, 'load_textdomain' ) );
 		add_action( 'init', array( $this, 'register_menus' ) );
+		add_action( 'widgets_init', array( $this, 'register_widget_areas' ) );
 	}
 
 	/**
@@ -38,6 +39,9 @@ final class ThemeSupport implements Hookable {
 		add_theme_support( 'automatic-feed-links' );
 		add_theme_support( 'post-thumbnails' );
 		add_theme_support( 'responsive-embeds' );
+
+		// The front page hero shows the page's excerpt as its lead text.
+		add_post_type_support( 'page', 'excerpt' );
 
 		// Opts out of core's default editor typography; assets/css/editor.css replaces it.
 		add_theme_support( 'editor-styles' );
@@ -85,6 +89,27 @@ final class ThemeSupport implements Hookable {
 			array(
 				'primary' => __( 'Primary navigation', 'whalepress' ),
 				'footer'  => __( 'Footer navigation', 'whalepress' ),
+			)
+		);
+	}
+
+	/**
+	 * Register widget areas.
+	 *
+	 * Widgets are edited with the block editor (Appearance > Widgets), limited
+	 * to the same blocks as post content. Render one in Twig with
+	 * `{{ function('dynamic_sidebar', 'footer') }}`.
+	 */
+	public function register_widget_areas(): void {
+		register_sidebar(
+			array(
+				'id'            => 'footer',
+				'name'          => __( 'Footer', 'whalepress' ),
+				'description'   => __( 'Shown in the site footer, beside the site name. Use it for an address, opening hours or social links.', 'whalepress' ),
+				'before_widget' => '<div id="%1$s" class="widget %2$s">',
+				'after_widget'  => '</div>',
+				'before_title'  => '<h2 class="widget-title">',
+				'after_title'   => '</h2>',
 			)
 		);
 	}

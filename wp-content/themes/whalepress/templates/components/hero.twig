@@ -1,0 +1,69 @@
+{#
+  Hero: the page's lead section.
+
+    {{ component('hero', {
+      title: post.title,
+      text: post.excerpt({ words: 30, read_more: false }),
+      actions: [{ label: __('Get started', 'whalepress'), url: '#start' }]
+    }) }}
+
+  @param string       title
+  @param string       eyebrow Optional short label above the title.
+  @param string       text    Optional lead text; may contain HTML.
+  @param list         actions Optional buttons (see button.twig).
+  @param Timber\Image image   Optional; shown beside the text on large screens.
+  @param int          level   Heading level, default 1.
+#}
+<div
+  class="border-b border-base-300 bg-[radial-gradient(ellipse_at_top_left,color-mix(in_oklab,var(--color-primary)_12%,transparent),transparent_60%)] py-3-xl"
+>
+  <div class="container-wide grid items-center gap-xl {{ image ? 'lg:grid-cols-2' }}">
+    <div class="max-w-content">
+      {% if eyebrow %}
+        <p class="mb-s text-step-minus-1 font-bold tracking-wide text-primary uppercase">
+          {{ eyebrow }}
+        </p>
+      {% endif %}
+
+      {{
+        component(
+          'heading',
+          {
+            level: level ?? 1,
+            content: title,
+            class: 'text-step-6 font-bold tracking-tight'
+          }
+        )
+      }}
+
+      {% if text %}
+        <div class="mt-m text-step-1 text-base-content/70">
+          {{ text }}
+        </div>
+      {% endif %}
+
+      {{
+        component(
+          'buttons',
+          {
+            actions: actions ?? [],
+            class: 'mt-l'
+          }
+        )
+      }}
+    </div>
+
+    {% if image %}
+      <img
+        src="{{ image.src('large') }}"
+        srcset="{{ image.srcset('large') }}"
+        sizes="(min-width: 64rem) 50vw, 100vw"
+        width="{{ image.width }}"
+        height="{{ image.height }}"
+        alt="{{ image.alt }}"
+        class="aspect-4/3 w-full rounded-box object-cover"
+        fetchpriority="high"
+      />
+    {% endif %}
+  </div>
+</div>

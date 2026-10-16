@@ -21,6 +21,8 @@ export default {
 			},
 		],
 		'at-rule-no-deprecated': [true, { ignoreAtRules: ['apply'] }],
+		// @apply takes Tailwind and daisyUI class names, not CSS.
+		'at-rule-prelude-no-invalid': [true, { ignoreAtRules: ['apply'] }],
 		'import-notation': 'string',
 		// Tailwind's --text-*--line-height and WordPress's --wp--preset--* names.
 		'custom-property-pattern': null,

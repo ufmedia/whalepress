@@ -1,3 +1,15 @@
+{#
+  Document shell. Every view extends it and fills the `content` block:
+
+    {% extends 'layouts/base.twig' %}
+    {% block content %}…{% endblock %}
+
+  Main's vertical padding defaults to py-xl; views that start with a
+  full-bleed section (e.g. a hero) can replace it by setting `main_class`
+  outside any block:
+
+    {% set main_class = 'pb-xl' %}
+#}
 <!DOCTYPE html>
 <html {{ site.language_attributes }}>
   <head>
@@ -5,23 +17,44 @@
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     {{ function('wp_head') }}
   </head>
-  <body class="{{ body_class }} bg-background font-sans text-foreground antialiased">
+  <body
+    class="{{
+    body_class
+    }} flex min-h-dvh flex-col bg-base-100 font-sans text-base-content antialiased"
+  >
     {{ function('wp_body_open') }}
 
     <a class="skip-link" href="#main">{{ __('Skip to content', 'whalepress') }}</a>
 
     {% block header %}
-      {% include 'sections/header.twig' %}
+      {{
+        component(
+          'site-header',
+          {
+            site: site,
+            menus: menus
+          }
+        )
+      }}
     {% endblock %}
 
-    <main id="main" class="py-xl" tabindex="-1">
+    <main id="main" class="flex-1 {{ main_class ?? 'py-xl' }}" tabindex="-1">
       {% block content %}
 
       {% endblock %}
     </main>
 
     {% block footer %}
-      {% include 'sections/footer.twig' %}
+      {{
+        component(
+          'site-footer',
+          {
+            site: site,
+            menus: menus,
+            widgets: widgets.footer ?? ''
+          }
+        )
+      }}
     {% endblock %}
 
     {{ function('wp_footer') }}

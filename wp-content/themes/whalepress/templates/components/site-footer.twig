@@ -1,0 +1,56 @@
+{#
+  Site footer: the site name and tagline (Settings > General), the Footer
+  widget area (Appearance > Widgets), the footer menu and a copyright line.
+  Each part is skipped when empty.
+
+    {{ component('site-footer', { site: site, menus: menus, widgets: widgets.footer }) }}
+
+  @param Timber\Site site
+  @param array       menus   Timber menus keyed by location (footer is used).
+  @param string      widgets Optional rendered widget area.
+#}
+{% set items = menus.footer.items ?? [] %}
+
+<footer class="border-t border-base-300 bg-base-200 py-xl text-step-minus-1 text-base-content/70">
+  <div class="container-wide grid gap-l md:grid-cols-[2fr_1fr]">
+    <div class="flex flex-col gap-s">
+      <div>
+        <a href="{{ site.url }}" class="text-step-1 font-bold text-base-content" rel="home">
+          {{- site.name -}}
+        </a>
+        {% if site.description %}
+          <p class="mt-3-xs">
+            {{ site.description }}
+          </p>
+        {% endif %}
+      </div>
+
+      {% if widgets %}
+        <div class="footer-widgets flex flex-col gap-s">
+          {{ widgets }}
+        </div>
+      {% endif %}
+    </div>
+
+    {% if items %}
+      <nav aria-label="{{ __('Footer', 'whalepress') }}">
+        {{
+          component(
+            'menu',
+            {
+              items: items,
+              class: 'flex flex-col gap-2-xs md:items-end',
+              link_class: 'link link-hover'
+            }
+          )
+        }}
+      </nav>
+    {% endif %}
+  </div>
+
+  <div class="container-wide mt-l border-t border-base-300 pt-s">
+    <p>
+      &copy; {{ 'now'|date('Y') }} {{ site.name }}
+    </p>
+  </div>
+</footer>

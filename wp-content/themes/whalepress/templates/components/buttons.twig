@@ -1,0 +1,15 @@
+{#
+  A row of buttons.
+
+    {{ component('buttons', { actions: [{ label: __('Contact us', 'whalepress'), url: '/contact/' }] }) }}
+
+  @param list   actions Each item takes the button component's props.
+  @param string class   Optional classes for the wrapper.
+#}
+{% if actions %}
+  <div class="flex flex-wrap items-center gap-xs {{ class ?? '' }}">
+    {% for action in actions %}
+      {{ component('button', action) }}
+    {% endfor %}
+  </div>
+{% endif %}

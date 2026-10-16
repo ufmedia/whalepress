@@ -1,27 +1,30 @@
 {#
-  Recursive menu list.
+  Navigation menu from a WordPress menu. Style it with daisyUI's menu
+  classes, or plain utilities and link_class:
 
-  Usage:
-    {% import 'components/menu.twig' as nav %}
-    {{ nav.list(menus.primary.items, 'flex gap-m') }}
+    {{ component('menu', { items: menus.primary.items, class: 'menu lg:menu-horizontal', dropdown: true }) }}
+    {{ component('menu', { items: menus.footer.items, class: 'flex gap-s', link_class: 'link link-hover' }) }}
+
+  Items with children open a submenu with a toggle button (see menu-item.twig).
+
+  @param list   items      Timber\MenuItem objects.
+  @param string class      Classes for the <ul>.
+  @param string link_class Optional classes for each link.
+  @param bool   dropdown   Float submenus below their parent on large screens, for horizontal menus.
 #}
-{% macro list(items, class = '') %}
-  <ul class="{{ class }}">
+{% if items %}
+  <ul class="{{ class ?? '' }}">
     {% for item in items %}
-      <li class="{{ item.classes|join(' ') }}">
-        <a
-          href="{{ item.link }}"
-          class="no-underline hover:underline aria-[current=page]:font-bold"
-          aria-current="{{ item.current ? 'page' : 'false' }}"
-          target="{{ item.target }}"
-          rel="{{ item.is_target_blank ? 'noopener' }}"
-        >
-          {{- item.title -}}
-        </a>
-        {% if item.children %}
-          {{ _self.list(item.children, 'ms-s mt-2-xs flex flex-col gap-2-xs') }}
-        {% endif %}
-      </li>
+      {{
+        component(
+          'menu-item',
+          {
+            item: item,
+            link_class: link_class ?? '',
+            dropdown: dropdown ?? false
+          }
+        )
+      }}
     {% endfor %}
   </ul>
-{% endmacro %}
+{% endif %}

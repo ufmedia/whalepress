@@ -1,0 +1,23 @@
+{#
+  Light/dark toggle (Alpine `colorScheme`, assets/js/components/color-scheme.js).
+  A daisyUI swap between the two icons, driven by aria-pressed. Hidden until
+  Alpine starts, so it never shows without JavaScript.
+
+    {{ component('theme-toggle') }}
+
+  @param string label Accessible name, default "Dark theme".
+  @param string class Optional extra classes.
+#}
+<button
+  type="button"
+  class="btn btn-square btn-ghost swap swap-rotate aria-pressed:swap-active {{ class ?? '' }}"
+  aria-label="{{ label ?? __('Dark theme', 'whalepress') }}"
+  aria-pressed="false"
+  x-data="colorScheme"
+  x-on:click="toggle"
+  x-bind:aria-pressed="dark"
+  x-cloak
+>
+  <span class="swap-off">{{ icon('moon', 'size-5') }}</span>
+  <span class="swap-on">{{ icon('sun', 'size-5') }}</span>
+</button>

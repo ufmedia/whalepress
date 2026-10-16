@@ -1,0 +1,33 @@
+{#
+  A post as a card: image, date, first category and excerpt. Used by post
+  lists; add post-card-{post_type}.twig to change one post type's card.
+
+    {{ component(['post-card-' ~ post.post_type, 'post-card'], { post: post }) }}
+
+  @param Timber\Post post
+  @param int         level Heading level, default 2.
+#}
+{% set category = post.category %}
+{% set meta %}
+  <time datetime="{{ post.date('c') }}">{{ post.date }}</time>
+  {%- if category %}
+    &middot; {{ category.name }}
+  {%- endif %}
+{% endset %}
+
+{{
+  component(
+    'card',
+    {
+      title: post.title,
+      url: post.link,
+      text: post.excerpt({
+        words: 24,
+        read_more: false
+      }),
+      image: post.thumbnail,
+      meta: meta,
+      level: level ?? 2
+    }
+  )
+}}

@@ -8,3 +8,13 @@
 	width: min(100% - 2 * var(--spacing-gutter), var(--container-wide));
 	margin-inline: auto;
 }
+
+/*
+ * Responsive grid without breakpoints: as many columns as fit at the minimum
+ * width. Change the minimum per instance, e.g. class="auto-grid [--auto-grid-min:14rem]".
+ */
+@utility auto-grid {
+	display: grid;
+	grid-template-columns: repeat(auto-fill, minmax(min(100%, var(--auto-grid-min, 18rem)), 1fr));
+	gap: var(--spacing-m);
+}

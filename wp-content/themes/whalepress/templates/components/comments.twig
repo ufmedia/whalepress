@@ -1,24 +1,32 @@
 {#
-  Comment thread and form.
+  Comment thread and form. The form is core's comment_form(), styled in
+  assets/css/components.css.
+
+    {{ component('comments', { post: post }) }}
 
   @param Timber\Post post
 #}
 {% if post.comment_count or post.comment_status == 'open' %}
-  <section id="comments" class="container-content mt-xl border-t border-neutral/20 pt-l">
+  <section id="comments" class="container-content mt-xl border-t border-base-300 pt-l">
     {% if post.comment_count %}
       <h2 class="text-step-2 font-bold">{{ __('Comments', 'whalepress') }}</h2>
       <ol>
         {% for comment in post.comments %}
-          {% include 'partials/comment.twig' with {
-            comment: comment
-          } only %}
+          {{
+            component(
+              'comment',
+              {
+                comment: comment
+              }
+            )
+          }}
         {% endfor %}
       </ol>
     {% endif %}
 
     {% if post.comment_status == 'open' %}
       <div class="mt-l">
-        {{ function('comment_form') }}
+        {{ function('comment_form', [], post.ID) }}
       </div>
     {% else %}
       <p class="mt-m">

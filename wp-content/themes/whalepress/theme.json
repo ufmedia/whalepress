@@ -28,27 +28,37 @@
 				{
 					"slug": "background",
 					"name": "Background",
-					"color": "#ffffff"
+					"color": "light-dark(#ffffff, #0b1120)"
+				},
+				{
+					"slug": "surface",
+					"name": "Surface",
+					"color": "light-dark(#f4f6f9, #141c2f)"
 				},
 				{
 					"slug": "foreground",
 					"name": "Foreground",
-					"color": "#0f172a"
+					"color": "light-dark(#0f172a, #e5e9f0)"
+				},
+				{
+					"slug": "muted",
+					"name": "Muted",
+					"color": "light-dark(#505d71, #9ba7b9)"
+				},
+				{
+					"slug": "border",
+					"name": "Border",
+					"color": "light-dark(#dde3eb, #26314a)"
 				},
 				{
 					"slug": "primary",
 					"name": "Primary",
-					"color": "#0b6bcb"
+					"color": "light-dark(#0b6bcb, #5aa9f5)"
 				},
 				{
-					"slug": "secondary",
-					"name": "Secondary",
-					"color": "#0f2a44"
-				},
-				{
-					"slug": "neutral",
-					"name": "Neutral",
-					"color": "#64748b"
+					"slug": "primary-contrast",
+					"name": "Primary contrast",
+					"color": "light-dark(#ffffff, #0b1120)"
 				}
 			]
 		},
