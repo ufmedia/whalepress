@@ -125,6 +125,10 @@ jobs:
       - name: Install WordPress
         run: docker compose -f docker-compose.test.yml exec -T -u www-data wordpress bash -s < local/bin/install.sh
 
+      # A submenu and a post with a featured image, so those tests run instead of skipping.
+      - name: Seed test content
+        run: docker compose -f docker-compose.test.yml exec -T -u www-data wordpress bash -s < tests/e2e/seed.sh
+
       - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
         with:
           node-version-file: .nvmrc

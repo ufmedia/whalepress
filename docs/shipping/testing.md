@@ -53,12 +53,12 @@ BASE_URL=https://staging.example.com npx playwright test --project=frontend
 
 `playwright.config.js` defines four projects:
 
-| Project           | What it covers                                                                                       |
-| ----------------- | ---------------------------------------------------------------------------------------------------- |
-| `frontend`        | Desktop Chrome: layout, assets, skip link, 404s, search, single posts.                               |
-| `frontend-mobile` | The same suite on a Pixel 7, plus the mobile navigation toggle.                                      |
-| `setup`           | Logs in with `WP_ADMIN_USER` / `WP_ADMIN_PASSWORD` and saves the session.                            |
-| `admin`           | Dashboard, the block editor with theme styles in its canvas, and a post round trip via the REST API. |
+| Project           | What it covers                                                                                                                                             |
+| ----------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `frontend`        | Desktop Chrome: layout, assets, skip link, 404s, search, single posts.                                                                                     |
+| `frontend-mobile` | The same suite on a Pixel 7, plus the mobile navigation toggle and submenus.                                                                               |
+| `setup`           | Logs in with `WP_ADMIN_USER` / `WP_ADMIN_PASSWORD` and saves the session.                                                                                  |
+| `admin`           | Dashboard, the block editor with theme styles in its canvas, a post round trip via the REST API, and theme patterns containing only valid, allowed blocks. |
 
 The `expectAccessible()` fixture (in `tests/e2e/fixtures.js`) runs [axe-core](https://github.com/dequelabs/axe-core) against WCAG 2.2 A/AA and fails on serious or critical violations. Use it in any new page test.
 
@@ -77,7 +77,7 @@ Install browsers once with `npx playwright install chromium`.
 
 1. **PHP quality:** PHPCS (annotated inline with cs2pr), PHPStan, Rector, PHPUnit.
 2. **Assets and formatting:** commitlint for the PR's commits, ESLint, Stylelint, Prettier, a production build of the theme, and a build of this documentation site (which fails on dead links).
-3. **Image and end-to-end tests:** builds the production image, scans it with [Trivy](https://trivy.dev) (fails on fixable critical CVEs), runs it with `docker-compose.test.yml` and runs the full Playwright suite against it. On failure, the Playwright report and container logs are attached.
+3. **Image and end-to-end tests:** builds the production image, scans it with [Trivy](https://trivy.dev) (fails on fixable critical CVEs), runs it with `docker-compose.test.yml`, installs WordPress, seeds test content (`tests/e2e/seed.sh`) and runs the full Playwright suite against it. On failure, the Playwright report and container logs are attached.
 
 Pushes to `main` that pass then [release and deploy](./deployment.md).
 
@@ -88,6 +88,15 @@ To run the CI end-to-end setup locally:
 ```sh
 docker compose -f docker-compose.test.yml up -d --build --wait
 docker compose -f docker-compose.test.yml exec -T -u www-data wordpress bash -s < local/bin/install.sh
+docker compose -f docker-compose.test.yml exec -T -u www-data wordpress bash -s < tests/e2e/seed.sh
 BASE_URL=http://localhost:8099 WP_ADMIN_USER=admin WP_ADMIN_PASSWORD=password npx playwright test
 docker compose -f docker-compose.test.yml down -v
 ```
+
+Always finish with `down -v`. The image declares `/var/www/html` as a volume, and Compose reuses it when it recreates the container, so without `-v` a rebuilt image keeps running the previous theme files.
+
+### Test content
+
+Some tests need content a fresh install doesn't have, and skip without it: the submenu tests need a menu item with children, and the featured image test needs a post with one. `tests/e2e/seed.sh` adds them (a page under the first primary menu item, and a newest post with the theme's screenshot as its featured image, a category and a tag). It is idempotent and meant only for throwaway sites; never run it against a real one. When a new test needs content, seed it there rather than letting the test skip in CI.
+
+The only skips left in CI are deliberate: the mobile navigation toggle test runs on the mobile project only, and the desktop navigation test on the desktop project only.
