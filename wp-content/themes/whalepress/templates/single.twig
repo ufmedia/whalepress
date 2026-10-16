@@ -2,10 +2,13 @@
 
 {% block content %}
   <article id="post-{{ post.ID }}" class="{{ post.class }}">
+    {# Posts created by importers or WP-CLI can have no author. #}
     {% set meta %}
-      {{ __('By', 'whalepress') }}
-      <a href="{{ post.author.link }}" class="link link-hover">{{ post.author.name }}</a>
-      &middot;
+      {% if post.author and post.author.name %}
+        {{ __('By', 'whalepress') }}
+        <a href="{{ post.author.link }}" class="link link-hover">{{ post.author.name }}</a>
+        &middot;
+      {% endif %}
       <time datetime="{{ post.date('c') }}">{{ post.date }}</time>
       {% if post.can_edit %}
         &middot;
