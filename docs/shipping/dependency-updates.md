@@ -14,7 +14,7 @@ order: 3
 | Docker         | Base images in the `Dockerfile` (`WORDPRESS_IMAGE`, `NODE_IMAGE`, `COMPOSER_IMAGE`) | One per image                        |
 | Docker Compose | Service images in `docker-compose.yml`                                              | One per image                        |
 
-Each pull request is labelled `dependencies` plus its ecosystem (`npm`, `php`, `docker` or `github-actions`).
+Each pull request is labelled `dependencies` plus its ecosystem (`npm`, `php`, `docker` or `github-actions`). Security updates arrive separately, grouped the same way (see [Security updates](#security-updates)).
 
 ## Reviewing a grouped pull request
 
@@ -57,7 +57,11 @@ To override the prefix, change the title when squash-merging. Rename a `chore` u
 
 ## Security updates
 
-The groups apply to the weekly version updates only. With Dependabot security updates enabled (Settings → Code security), each vulnerable dependency gets its own pull request as soon as an alert is raised, outside the weekly schedule. Check the prefix before merging: release anything that changes what ships straight away, renaming it to `fix(deps): …` if it arrived as `chore`.
+With Dependabot security updates enabled (Settings → Code security), Dependabot fixes vulnerable dependencies as soon as an alert is raised, outside the weekly schedule. Each grouped ecosystem has a second group with `applies-to: security-updates`, so all of its open security fixes arrive in one pull request (`npm-security`, `composer-security` or `actions-security`), separate from the weekly one. That keeps security fixes small and quick to review and merge, rather than waiting on the weekly group's majors.
+
+The prefixes above apply to security updates too, so a Composer security fix to a `require` package is `fix(deps)` and releases when merged. npm security fixes arrive as `chore`; if one affects the built assets, rename it to `fix(deps): …` to release it straight away.
+
+GitHub doesn't raise alerts for Docker images, so WordPress and PHP security patches arrive through the weekly Docker updates. An alert with no patched version yet gets no pull request; Dependabot picks it up once a fix is published.
 
 ## Private Composer repositories
 
