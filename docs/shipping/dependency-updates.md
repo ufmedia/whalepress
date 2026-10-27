@@ -37,11 +37,27 @@ Ignores made by comment are stored by Dependabot, not in the repository. For a h
 
 ## Releasing updates
 
-Dependabot's commits are `chore(deps)` or `chore(deps-dev)`, which semantic-release doesn't treat as releasable (see [the pipeline](./deployment.md#the-pipeline)). Merging one deploys nothing; the updates go out with the next `fix:` or `feat:` release. To ship an update straight away, such as a plugin's security fix, squash-merge it with the title changed to `fix(deps): …`.
+semantic-release only cuts a release for `fix:` and `feat:` commits (see [the pipeline](./deployment.md#the-pipeline)), so the prefix on a Dependabot commit decides whether merging it deploys. `dependabot.yml` sets the prefix for each ecosystem by one rule: **an update to what runs in production releases; an update to tooling waits for the next release.**
+
+| Updates                                            | Commit                             | Merging it                   |
+| -------------------------------------------------- | ---------------------------------- | ---------------------------- |
+| Composer, including at least one `require` package | `fix(deps)`                        | Releases a patch and deploys |
+| Composer, `require-dev` packages only              | `chore(deps-dev)`                  | Waits for the next release   |
+| Docker base images                                 | `fix(deps)`                        | Releases a patch and deploys |
+| npm, GitHub Actions, Docker Compose                | `chore(deps)` or `chore(deps-dev)` | Waits for the next release   |
+
+Why each is set the way it is:
+
+- **Composer releases** because plugins and Timber run on the site, and plugin releases are often security fixes. On a site that gets little feature work, a `chore` update could otherwise sit unreleased for weeks. Dependabot gives a grouped pull request the production prefix if any update in it is a `require` package, so one plugin bump is enough to release the whole group. The local-only plugins (Query Monitor, User Switching, WP Crontrol) and the PHP tooling are in `require-dev`, so they don't trigger a release on their own.
+- **Docker releases** because the base images carry WordPress core, PHP and the build toolchain. An image update changes what runs even without a code change, and it's the only way WordPress and PHP security patches reach the container pathways. Hostinger provides its own core and PHP, so there these releases just redeploy the same code.
+- **npm waits.** The theme's built CSS and JS do ship (Alpine.js is a runtime dependency; Tailwind, daisyUI and Vite produce the assets), but the weekly group mixes them with linters and test tools, and most bumps don't change the built assets. Releasing every week would mostly redeploy identical assets.
+- **GitHub Actions and Docker Compose wait** because they only affect CI and local development.
+
+To override the prefix, change the title when squash-merging. Rename a `chore` update to `fix(deps): …` to release it now, such as an Alpine.js fix or a daisyUI change you want live. Rename a `fix` update to `chore(deps): …` to merge it without releasing, for example to batch it with other changes.
 
 ## Security updates
 
-The groups apply to the weekly version updates only. With Dependabot security updates enabled (Settings → Code security), each vulnerable dependency gets its own pull request as soon as an alert is raised, outside the weekly schedule. Release these straight away, as above.
+The groups apply to the weekly version updates only. With Dependabot security updates enabled (Settings → Code security), each vulnerable dependency gets its own pull request as soon as an alert is raised, outside the weekly schedule. Check the prefix before merging: release anything that changes what ships straight away, renaming it to `fix(deps): …` if it arrived as `chore`.
 
 ## Private Composer repositories
 
@@ -70,4 +86,4 @@ npm update                                                      # Root tooling
 npm update --prefix wp-content/themes/whalepress                # Theme
 ```
 
-Then run the checks in [Testing and standards](./testing.md) before opening a pull request.
+Then run the checks in [Testing and standards](./testing.md) before opening a pull request, and commit with the prefixes above: `fix(deps): …` for updates that should release, `chore(deps): …` for tooling.

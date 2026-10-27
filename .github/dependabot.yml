@@ -1,4 +1,8 @@
 version: 2
+
+# Commit prefixes decide what merging releases (docs/shipping/dependency-updates.md):
+# `fix` for updates to what runs in production, so merging releases a patch;
+# `chore` for tooling, CI and local-only updates, which wait for the next release.
 updates:
   # One PR for all npm updates (root tooling + theme), majors included.
   - package-ecosystem: npm
@@ -6,37 +10,55 @@ updates:
     schedule:
       interval: weekly
     labels: [dependencies, npm]
+    commit-message:
+      prefix: chore
+      include: scope
     groups:
       npm:
         patterns: ['*']
 
   # One PR for all Composer updates (plugins, Timber, etc.), majors included.
+  # It's `fix` if any update in it is a `require` package.
   - package-ecosystem: composer
     directory: /
     schedule:
       interval: weekly
     labels: [dependencies, php]
+    commit-message:
+      prefix: fix
+      prefix-development: chore
+      include: scope
     groups:
       composer:
         patterns: ['*']
 
+  # Base images carry WordPress core and PHP.
   - package-ecosystem: docker
     directory: /
     schedule:
       interval: weekly
     labels: [dependencies, docker]
+    commit-message:
+      prefix: fix
+      include: scope
 
   - package-ecosystem: docker-compose
     directory: /
     schedule:
       interval: weekly
     labels: [dependencies, docker]
+    commit-message:
+      prefix: chore
+      include: scope
 
   - package-ecosystem: github-actions
     directories: [/, /.github/actions/*]
     schedule:
       interval: weekly
     labels: [dependencies, github-actions]
+    commit-message:
+      prefix: chore
+      include: scope
     groups:
       actions:
         patterns: ['*']

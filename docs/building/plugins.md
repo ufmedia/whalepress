@@ -63,7 +63,7 @@ Dependabot proposes plugin updates each week, in one pull request with the rest 
 npm run composer -- update wpackagist-plugin/wordpress-seo
 ```
 
-Updates ship with the next release; activation state and settings stay in the database.
+Dependabot commits updates to `require` plugins as `fix(deps)`, so merging one releases and deploys it; updates to `require-dev` plugins wait for the next release (see [Releasing updates](../shipping/dependency-updates.md#releasing-updates)). Commit a manual update the same way. Activation state and settings stay in the database.
 
 ## Bundled plugins
 
