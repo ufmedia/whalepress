@@ -40,10 +40,10 @@
     "docs:preview": "vitepress preview docs"
   },
   "devDependencies": {
-    "@axe-core/playwright": "^4.13.0",
-    "@commitlint/cli": "^21.2.3",
+    "@axe-core/playwright": "^4.14.0",
+    "@commitlint/cli": "^21.2.4",
     "@commitlint/config-conventional": "^21.2.3",
-    "@inquirer/prompts": "^8.7.3",
+    "@inquirer/prompts": "^8.7.4",
     "@playwright/test": "^1.64.1",
     "@zackad/prettier-plugin-twig": "^0.17.0",
     "chalk": "^6.0.1",
