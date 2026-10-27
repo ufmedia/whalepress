@@ -26,7 +26,7 @@ push to main ──► same checks ──► semantic-release ──► deploy-g
 - Each enabled container deploy workflow checks out the tag, builds the image with `APP_VERSION=X.Y.Z` (stamped into the theme's `style.css`), pushes `X.Y.Z`, `X.Y` and `latest` tags with SBOM and provenance attestations, then triggers the target platform.
 - Every deploy workflow can also be run manually (**Actions → Deploy (…) → Run workflow**) with any existing version, which is handy for rollbacks.
 - Container deploy jobs use a GitHub environment named `production`, and Hostinger uses `hostinger`. Add required reviewers there to gate releases.
-- All third-party actions are pinned to commit SHAs; Dependabot keeps them current.
+- All third-party actions are pinned to commit SHAs; Dependabot keeps them current (see [Dependency updates](./dependency-updates.md)).
 
 ## Repository settings
 

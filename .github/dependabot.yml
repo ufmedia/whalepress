@@ -1,6 +1,6 @@
 version: 2
 updates:
-  # One PR for npm minor/patch updates (root tooling + theme); majors get their own PRs.
+  # One PR for all npm updates (root tooling + theme), majors included.
   - package-ecosystem: npm
     directories: [/, /wp-content/themes/whalepress]
     schedule:
@@ -9,9 +9,8 @@ updates:
     groups:
       npm:
         patterns: ['*']
-        update-types: [minor, patch]
 
-  # One PR for Composer minor/patch updates; majors get their own PRs.
+  # One PR for all Composer updates (plugins, Timber, etc.), majors included.
   - package-ecosystem: composer
     directory: /
     schedule:
@@ -20,7 +19,6 @@ updates:
     groups:
       composer:
         patterns: ['*']
-        update-types: [minor, patch]
 
   - package-ecosystem: docker
     directory: /

@@ -62,14 +62,14 @@ To start without the starter's commit history, run `git checkout --orphan fresh 
 
 Out of the box, the first push runs CI, creates release v1.0.0 and pushes the image to GHCR, with no secrets needed. Configure the rest in the repository settings:
 
-| Setting                                   | Where                                      | Why                                                                                                                                                                                 |
-| ----------------------------------------- | ------------------------------------------ | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Pages source: **GitHub Actions**          | Settings → Pages                           | Publishes these docs. Until then the Docs workflow builds them and skips publishing.                                                                                                |
-| Branch protection for `main`              | Settings → Rules                           | Require the CI checks (PHP quality, assets, image and end-to-end) and pull requests.                                                                                                |
-| `production` and `hostinger` environments | Settings → Environments                    | Add required reviewers to gate deployments; environment-level secrets keep credentials scoped.                                                                                      |
-| Deployment variables and secrets          | Settings → Secrets and variables → Actions | Enable each pathway you use; see [Deployment](../shipping/deployment.md#repository-settings).                                                                                       |
-| Dependabot alerts and security updates    | Settings → Code security                   | Version updates are already configured in `.github/dependabot.yml`: each week, one PR for npm and one for Composer minor and patch updates, with a separate PR for each major bump. |
-| Package visibility                        | The GHCR package's settings                | Images are private by default when the repository is private. Servers pulling them need a token with `read:packages`.                                                               |
+| Setting                                   | Where                                      | Why                                                                                                                   |
+| ----------------------------------------- | ------------------------------------------ | --------------------------------------------------------------------------------------------------------------------- |
+| Pages source: **GitHub Actions**          | Settings → Pages                           | Publishes these docs. Until then the Docs workflow builds them and skips publishing.                                  |
+| Branch protection for `main`              | Settings → Rules                           | Require the CI checks (PHP quality, assets, image and end-to-end) and pull requests.                                  |
+| `production` and `hostinger` environments | Settings → Environments                    | Add required reviewers to gate deployments; environment-level secrets keep credentials scoped.                        |
+| Deployment variables and secrets          | Settings → Secrets and variables → Actions | Enable each pathway you use; see [Deployment](../shipping/deployment.md#repository-settings).                         |
+| Dependabot alerts and security updates    | Settings → Code security                   | Weekly version updates are already configured; see [Dependency updates](../shipping/dependency-updates.md).           |
+| Package visibility                        | The GHCR package's settings                | Images are private by default when the repository is private. Servers pulling them need a token with `read:packages`. |
 
 ## Pulling in starter updates
 

@@ -55,6 +55,16 @@ Plugins you write live in `wp-content/plugins/<name>/` and are committed. Two ig
 
 Site-wide behaviour that must not be deactivated belongs in `wp-content/mu-plugins/` instead (see the bundled [must-use plugins](./wordpress.md#must-use-plugins)). Those are tracked and copied into the image automatically.
 
+## Updating
+
+Dependabot proposes plugin updates each week, in one pull request with the rest of the Composer packages (see [Dependency updates](../shipping/dependency-updates.md)). To update one by hand:
+
+```sh
+npm run composer -- update wpackagist-plugin/wordpress-seo
+```
+
+Updates ship with the next release; activation state and settings stay in the database.
+
 ## Bundled plugins
 
 | Plugin                                     | Environment | Why                                                                   |
