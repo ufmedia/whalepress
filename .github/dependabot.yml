@@ -4,7 +4,8 @@ version: 2
 # `fix` for updates to what runs in production, so merging releases a patch;
 # `chore` for tooling, CI and local-only updates, which wait for the next release.
 updates:
-  # One PR for all npm updates (root tooling + theme), majors included.
+  # One PR for all npm updates (root tooling + theme), majors included, and
+  # one for all security updates.
   - package-ecosystem: npm
     directories: [/, /wp-content/themes/whalepress]
     schedule:
@@ -16,9 +17,13 @@ updates:
     groups:
       npm:
         patterns: ['*']
+      npm-security:
+        applies-to: security-updates
+        patterns: ['*']
 
-  # One PR for all Composer updates (plugins, Timber, etc.), majors included.
-  # It's `fix` if any update in it is a `require` package.
+  # One PR for all Composer updates (plugins, Timber, etc.), majors included,
+  # and one for all security updates. Each is `fix` if any update in it is a
+  # `require` package.
   - package-ecosystem: composer
     directory: /
     schedule:
@@ -30,6 +35,9 @@ updates:
       include: scope
     groups:
       composer:
+        patterns: ['*']
+      composer-security:
+        applies-to: security-updates
         patterns: ['*']
 
   # Base images carry WordPress core and PHP.
@@ -61,4 +69,7 @@ updates:
       include: scope
     groups:
       actions:
+        patterns: ['*']
+      actions-security:
+        applies-to: security-updates
         patterns: ['*']
