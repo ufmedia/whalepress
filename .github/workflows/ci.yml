@@ -129,6 +129,13 @@ jobs:
       - name: Seed test content
         run: docker compose -f docker-compose.test.yml exec -T -u www-data wordpress bash -s < tests/e2e/seed.sh
 
+      - name: Check WordPress, database and Redis
+        env:
+          COMPOSE_FILE: docker-compose.test.yml
+          WP_HOME: ${{ env.BASE_URL }}
+          WP_CLI_USER: www-data
+        run: tests/stack/check.sh services
+
       - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
         with:
           node-version-file: .nvmrc
@@ -140,10 +147,16 @@ jobs:
       - name: Playwright
         run: npx playwright test
 
+      - name: Check debug.log
+        env:
+          COMPOSE_FILE: docker-compose.test.yml
+          WP_HOME: ${{ env.BASE_URL }}
+        run: tests/stack/check.sh debug-log
+
       - name: Container logs
         if: failure()
         run: |
-          docker compose -f docker-compose.test.yml logs wordpress
+          docker compose -f docker-compose.test.yml logs
           docker compose -f docker-compose.test.yml exec -T wordpress cat wp-content/debug.log || true
 
       - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
@@ -153,10 +166,64 @@ jobs:
           path: playwright-report/
           retention-days: 7
 
+  # The local development stack, set up the way a developer would with
+  # `npm run setup`: the dev image with bind mounts, Composer in its container,
+  # MariaDB, Redis, Mailpit and Adminer. Catches updates (a MariaDB major, a
+  # dev-only plugin, the Compose file) that break local development but not
+  # the production image.
+  dev-stack:
+    name: Development stack
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+          cache-dependency-path: |
+            package-lock.json
+            ${{ env.THEME_DIR }}/package-lock.json
+
+      - run: npm ci
+
+      - name: npm run setup
+        run: npm run setup -- --yes
+
+      - name: Seed test content
+        run: docker compose exec -T -u "$(id -u):$(id -g)" wordpress bash -s < tests/e2e/seed.sh
+
+      - name: Check WordPress, database, Redis, Mailpit and Adminer
+        env:
+          MAILPIT_URL: http://localhost:8025
+          ADMINER_URL: http://localhost:8080
+        run: tests/stack/check.sh services
+
+      - run: npx playwright install --with-deps chromium
+
+      - name: Playwright
+        run: npx playwright test
+
+      - name: Check debug.log
+        run: tests/stack/check.sh debug-log
+
+      - name: Container logs
+        if: failure()
+        run: |
+          docker compose logs
+          cat wp-content/debug.log || true
+
+      - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        if: failure()
+        with:
+          name: playwright-report-dev
+          path: playwright-report/
+          retention-days: 7
+
   release:
     name: Release
     if: github.event_name == 'push' && github.ref == 'refs/heads/main'
-    needs: [php, assets, e2e]
+    needs: [php, assets, e2e, dev-stack]
     runs-on: ubuntu-latest
     permissions:
       contents: write

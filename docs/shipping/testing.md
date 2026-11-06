@@ -73,13 +73,14 @@ Install browsers once with `npx playwright install chromium`.
 
 ## Continuous integration
 
-`.github/workflows/ci.yml` runs three jobs in parallel on every pull request and push to `main`:
+`.github/workflows/ci.yml` runs four jobs in parallel on every pull request and push to `main`. All four are required to merge, so an update that breaks any stage of the pipeline, from local development to the production image, can't be merged (including by [Dependabot auto-merge](./dependency-updates.md#auto-merge)).
 
 1. **PHP quality:** PHPCS (annotated inline with cs2pr), PHPStan, Rector, PHPUnit.
 2. **Assets and formatting:** commitlint for the PR's commits, ESLint, Stylelint, Prettier, a production build of the theme, and a build of this documentation site (which fails on dead links).
-3. **Image and end-to-end tests:** builds the production image, scans it with [Trivy](https://trivy.dev) (fails on fixable critical CVEs), runs it with `docker-compose.test.yml`, installs WordPress, seeds test content (`tests/e2e/seed.sh`) and runs the full Playwright suite against it. On failure, the Playwright report and container logs are attached.
+3. **Image and end-to-end tests:** builds the production image, scans it with [Trivy](https://trivy.dev) (fails on fixable critical CVEs), runs it with `docker-compose.test.yml`, installs WordPress, seeds test content (`tests/e2e/seed.sh`), runs the [stack checks](#stack-checks) and the full Playwright suite, then checks `debug.log`.
+4. **Development stack:** runs `npm run setup -- --yes` exactly as a developer would (the `dev` image with bind mounts, Composer in its container, MariaDB, Redis, Mailpit and Adminer from `docker-compose.yml`), then the same seed, stack checks, Playwright suite and `debug.log` check, plus Mailpit and Adminer. It catches updates that break local development but not the production image, such as a MariaDB major or a dev-only plugin.
 
-Pushes to `main` that pass then [release and deploy](./deployment.md).
+On failure, the Playwright report and container logs are attached. Pushes to `main` that pass then [release and deploy](./deployment.md).
 
 Two manual workflows test deployed environments: **E2E (deployed site)** runs the front-end Playwright projects, and **OWASP ZAP baseline** runs a passive security scan. Both read `HOST_URL` from the chosen GitHub environment.
 
@@ -89,11 +90,31 @@ To run the CI end-to-end setup locally:
 docker compose -f docker-compose.test.yml up -d --build --wait
 docker compose -f docker-compose.test.yml exec -T -u www-data wordpress bash -s < local/bin/install.sh
 docker compose -f docker-compose.test.yml exec -T -u www-data wordpress bash -s < tests/e2e/seed.sh
-BASE_URL=http://localhost:8099 WP_ADMIN_USER=admin WP_ADMIN_PASSWORD=password npx playwright test
-docker compose -f docker-compose.test.yml down -v
+export COMPOSE_FILE=docker-compose.test.yml WP_HOME=http://localhost:8099 WP_CLI_USER=www-data
+tests/stack/check.sh services
+BASE_URL=$WP_HOME WP_ADMIN_USER=admin WP_ADMIN_PASSWORD=password npx playwright test
+tests/stack/check.sh debug-log
+docker compose down -v
 ```
 
 Always finish with `down -v`. The image declares `/var/www/html` as a volume, and Compose reuses it when it recreates the container, so without `-v` a rebuilt image keeps running the previous theme files.
+
+### Stack checks
+
+Healthy containers don't prove the services work together: the WordPress healthcheck only fetches a static file. `tests/stack/check.sh` checks the running stack end to end, from the host:
+
+| Command                          | What it checks                                                                                                                                                                                                                                                                      |
+| -------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `tests/stack/check.sh services`  | WordPress reaches the database and a write reads back; the Redis object cache is connected and persists between requests; the site and REST API respond over HTTP. With `MAILPIT_URL` set, `wp_mail()` arrives in Mailpit; with `ADMINER_URL` set, Adminer logs in to the database. |
+| `tests/stack/check.sh debug-log` | `wp-content/debug.log` has no PHP errors, warnings, notices or deprecations. Run it after the Playwright suite, so every page it visits has been rendered.                                                                                                                          |
+
+It reads `WP_HOME` and the database settings from the environment or `.env`, and runs against the Compose project in the current directory (set `COMPOSE_FILE` for another). To check your local stack:
+
+```sh
+MAILPIT_URL=http://localhost:8025 ADMINER_URL=http://localhost:8080 tests/stack/check.sh services
+```
+
+`debug-log` reads the whole log, so locally it also reports anything logged before; empty `wp-content/debug.log` first to check from a clean slate.
 
 ### Test content
 

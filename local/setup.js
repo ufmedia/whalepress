@@ -1,6 +1,11 @@
 /**
  * Interactive first-run setup: .env, theme assets, containers, Composer and
  * a fresh WordPress install. Safe to re-run.
+ *
+ * Usage: npm run setup [-- --yes]
+ *
+ * --yes skips the prompts: a new .env takes the defaults from .env-example,
+ * and an existing .env is kept. CI uses it to set up the development stack.
  */
 import { randomBytes } from 'node:crypto';
 import { closeSync, existsSync, openSync, readFileSync, writeFileSync } from 'node:fs';
@@ -23,6 +28,8 @@ import {
 	step,
 	success,
 } from './lib.js';
+
+const assumeYes = process.argv.includes('--yes');
 
 const SALTS = [
 	'AUTH_KEY',
@@ -84,7 +91,7 @@ async function createEnv() {
 			if (key === 'WP_HOME') {
 				fallback = `http://localhost:${answers.WP_PORT}`;
 			}
-			value = await input({ message: question, default: fallback });
+			value = assumeYes ? fallback : await input({ message: question, default: fallback });
 			question = null;
 		} else if (SALTS.includes(key)) {
 			value = secret(64);
@@ -111,7 +118,7 @@ async function main() {
 	step('Environment');
 	if (
 		!existsSync(envPath) ||
-		(await confirm({ message: '.env exists. Replace it?', default: false }))
+		(!assumeYes && (await confirm({ message: '.env exists. Replace it?', default: false })))
 	) {
 		await createEnv();
 	} else {
