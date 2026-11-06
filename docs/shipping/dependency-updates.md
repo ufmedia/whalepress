@@ -35,6 +35,18 @@ Ignores made by comment are stored by Dependabot, not in the repository. For a h
       update-types: ['version-update:semver-major']
 ```
 
+## Auto-merge
+
+The Dependabot auto-merge workflow (`.github/workflows/dependabot-auto-merge.yml`) turns on auto-merge for any Dependabot pull request whose updates are all patch or minor. Each one squash-merges as soon as the required CI checks pass, and a failing one stays open. A pull request with a major update, or with an update Dependabot can't classify (some Docker tags), is left for review. If a rebase adds a major update to a group that was set to auto-merge, the workflow switches auto-merge off again.
+
+It needs three things:
+
+- **Allow auto-merge** turned on (Settings → General → Pull Requests).
+- **Required status checks on `main`** (Settings → Rules). Without them, auto-merge merges straight away.
+- **A `DEPENDABOT_AUTOMERGE_TOKEN` secret** (Settings → Secrets and variables → **Dependabot**; workflows triggered by Dependabot can't read Actions secrets). Use a fine-grained personal access token for this repository with **Contents** and **Pull requests** set to read and write. A merge enabled with the default `GITHUB_TOKEN` doesn't trigger the push workflow, so `fix(deps)` updates would never release or deploy. Without the secret, the workflow does nothing.
+
+To stop a pull request merging, so you can rename its title or batch it with other changes (see [Releasing updates](#releasing-updates)), turn auto-merge off with the button on the pull request or `gh pr merge --disable-auto <number>`.
+
 ## Releasing updates
 
 semantic-release only cuts a release for `fix:` and `feat:` commits (see [the pipeline](./deployment.md#the-pipeline)), so the prefix on a Dependabot commit decides whether merging it deploys. `dependabot.yml` sets the prefix for each ecosystem by one rule: **an update to what runs in production releases; an update to tooling waits for the next release.**
