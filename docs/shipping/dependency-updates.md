@@ -45,7 +45,7 @@ It needs three things:
 - **Required status checks on `main`** (Settings → Rules). Without them, auto-merge merges straight away.
 - **A `DEPENDABOT_AUTOMERGE_TOKEN` secret** (Settings → Secrets and variables → **Dependabot**; workflows triggered by Dependabot can't read Actions secrets). Use a fine-grained personal access token for this repository with **Contents** and **Pull requests** set to read and write. A merge enabled with the default `GITHUB_TOKEN` doesn't trigger the push workflow, so `fix(deps)` updates would never release or deploy. Without the secret, the workflow does nothing.
 
-To stop a pull request merging, so you can rename its title or batch it with other changes (see [Releasing updates](#releasing-updates)), turn auto-merge off with the button on the pull request or `gh pr merge --disable-auto <number>`.
+To change what an auto-merging pull request releases, rename its title before its checks finish (see [Releasing updates](#releasing-updates)). To hold one back, for example to batch it with other changes, turn auto-merge off with the button on the pull request or `gh pr merge --disable-auto <number>`.
 
 ## Releasing updates
 
@@ -65,7 +65,7 @@ Why each is set the way it is:
 - **npm waits.** The theme's built CSS and JS do ship (Alpine.js is a runtime dependency; Tailwind, daisyUI and Vite produce the assets), but the weekly group mixes them with linters and test tools, and most bumps don't change the built assets. Releasing every week would mostly redeploy identical assets.
 - **GitHub Actions and Docker Compose wait** because they only affect CI and local development.
 
-To override the prefix, change the title when squash-merging. Rename a `chore` update to `fix(deps): …` to release it now, such as an Alpine.js fix or a daisyUI change you want live. Rename a `fix` update to `chore(deps): …` to merge it without releasing, for example to batch it with other changes.
+Pull requests are squash-merged, and the squashed commit takes the pull request's title, so to override the prefix, rename the pull request. Rename a `chore` update to `fix(deps): …` to release it now, such as an Alpine.js fix or a daisyUI change you want live. Rename a `fix` update to `chore(deps): …` to merge it without releasing, for example to batch it with other changes.
 
 ## Security updates
 
