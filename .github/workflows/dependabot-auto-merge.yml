@@ -1,0 +1,60 @@
+name: Dependabot auto-merge
+
+# Turns on auto-merge for Dependabot pull requests with only patch and minor
+# updates, so they squash-merge once the required CI checks pass. Anything
+# with a major update, or an update type Dependabot can't tell, is left for
+# review (see docs/shipping/dependency-updates.md#auto-merge).
+#
+# Needs a DEPENDABOT_AUTOMERGE_TOKEN Dependabot secret. A merge enabled with
+# the default GITHUB_TOKEN doesn't trigger the push workflow on main, so it
+# would never release or deploy. Without the secret, this workflow does nothing.
+
+on:
+  pull_request:
+    types: [opened, reopened, synchronize]
+
+permissions:
+  contents: read
+
+jobs:
+  auto-merge:
+    name: Auto-merge
+    if: github.event.pull_request.user.login == 'dependabot[bot]'
+    runs-on: ubuntu-latest
+    env:
+      GH_TOKEN: ${{ secrets.DEPENDABOT_AUTOMERGE_TOKEN }}
+      PR_URL: ${{ github.event.pull_request.html_url }}
+    steps:
+      - name: Check for token
+        id: token
+        run: |
+          if [ -z "$GH_TOKEN" ]; then
+            echo "::notice::DEPENDABOT_AUTOMERGE_TOKEN isn't set, so auto-merge is off. See docs/shipping/dependency-updates.md#auto-merge."
+            echo "present=false" >> "$GITHUB_OUTPUT"
+          else
+            echo "present=true" >> "$GITHUB_OUTPUT"
+          fi
+
+      - id: metadata
+        if: steps.token.outputs.present == 'true'
+        uses: dependabot/fetch-metadata@25dd0e34f4fe68f24cc83900b1fe3fe149efef98 # v3.1.0
+
+      # For a grouped pull request, update-type is the largest update in it.
+      - name: Enable auto-merge
+        if: >
+          steps.token.outputs.present == 'true' &&
+          contains(fromJSON('["version-update:semver-patch","version-update:semver-minor"]'), steps.metadata.outputs.update-type)
+        run: gh pr merge --auto --squash "$PR_URL"
+
+      # A rebase can add a major update to a group that was auto-merging.
+      - name: Leave for review
+        if: >
+          steps.token.outputs.present == 'true' &&
+          !contains(fromJSON('["version-update:semver-patch","version-update:semver-minor"]'), steps.metadata.outputs.update-type)
+        env:
+          UPDATE_TYPE: ${{ steps.metadata.outputs.update-type }}
+        run: |
+          echo "::notice::Update type '${UPDATE_TYPE:-unknown}' needs review; auto-merge not enabled."
+          if [ "$(gh pr view "$PR_URL" --json autoMergeRequest --jq '.autoMergeRequest != null')" = "true" ]; then
+            gh pr merge --disable-auto "$PR_URL"
+          fi
