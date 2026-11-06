@@ -25,6 +25,8 @@ npm run setup
 
 When it finishes it prints the site URL and admin credentials (also stored in `.env` as `WP_ADMIN_USER` / `WP_ADMIN_PASSWORD`).
 
+`npm run setup -- --yes` runs without prompts: a new `.env` takes the defaults from `.env-example`, and an existing `.env` is kept. CI uses it to check the development stack.
+
 ## Daily use
 
 ```sh
