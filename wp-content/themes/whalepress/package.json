@@ -20,17 +20,17 @@
   "devDependencies": {
     "@eslint/js": "^10.0.1",
     "@fontsource/atkinson-hyperlegible": "^5.3.0",
-    "@tailwindcss/vite": "^4.3.3",
+    "@tailwindcss/vite": "^4.3.5",
     "daisyui": "^5.7.50",
-    "eslint": "^10.12.0",
+    "eslint": "^10.14.0",
     "eslint-config-prettier": "^10.1.8",
-    "globals": "^17.13.0",
-    "stylelint": "^17.16.0",
-    "stylelint-config-standard": "^40.0.0",
+    "globals": "^17.14.0",
+    "stylelint": "^18.0.0",
+    "stylelint-config-standard": "^41.0.0",
     "tailwindcss": "^4.3.3",
     "vite": "^8.3.6"
   },
   "dependencies": {
-    "alpinejs": "^3.17.4"
+    "alpinejs": "^3.17.5"
   }
 }
