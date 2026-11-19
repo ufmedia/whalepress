@@ -43,13 +43,13 @@
     "@axe-core/playwright": "^4.14.0",
     "@commitlint/cli": "^21.2.4",
     "@commitlint/config-conventional": "^21.2.3",
-    "@inquirer/prompts": "^8.7.5",
-    "@playwright/test": "^1.64.1",
+    "@inquirer/prompts": "^8.8.0",
+    "@playwright/test": "^1.65.1",
     "@zackad/prettier-plugin-twig": "^0.18.0",
     "chalk": "^6.0.1",
     "husky": "^9.1.7",
-    "lint-staged": "^17.6.0",
-    "prettier": "^3.9.10",
+    "lint-staged": "^17.6.1",
+    "prettier": "^3.10.1",
     "semantic-release": "^25.0.9",
     "vitepress": "^1.6.4"
   }
