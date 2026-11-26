@@ -43,14 +43,14 @@
     "@axe-core/playwright": "^4.14.0",
     "@commitlint/cli": "^21.2.4",
     "@commitlint/config-conventional": "^21.2.3",
-    "@inquirer/prompts": "^8.7.5",
-    "@playwright/test": "^1.64.1",
-    "@zackad/prettier-plugin-twig": "^0.18.0",
+    "@inquirer/prompts": "^8.8.1",
+    "@playwright/test": "^1.65.1",
+    "@zackad/prettier-plugin-twig": "^0.18.1",
     "chalk": "^6.0.1",
     "husky": "^9.1.7",
-    "lint-staged": "^17.6.0",
-    "prettier": "^3.9.10",
-    "semantic-release": "^25.0.9",
+    "lint-staged": "^17.6.2",
+    "prettier": "^3.10.1",
+    "semantic-release": "^26.0.1",
     "vitepress": "^1.6.4"
   }
 }
